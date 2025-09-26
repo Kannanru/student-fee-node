@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>MGDC Home</title>
+	<style>
+		:root { --bg:#f6f7fb; --card:#fff; --text:#222; --muted:#666; --brand:#2b6cb0; --ok:#0a7d14; --warn:#a76400; --err:#b00020; }
+		body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg); color:var(--text); }
+		header { background:var(--brand); color:#fff; padding:16px 20px; }
+		header h1 { margin:0; font-size:20px; }
+		.wrap { max-width:1000px; margin:20px auto; padding:0 16px; }
+		.grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; }
+		.card { background:var(--card); border:1px solid #e6e8ee; border-radius:12px; padding:16px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+		.card h2 { margin:0 0 8px; font-size:16px; }
+		label { display:block; font-size:12px; color:var(--muted); margin-top:10px; }
+		input[type="text"], input[type="password"] { width:100%; padding:10px 12px; border:1px solid #d9dbe3; border-radius:8px; font-size:14px; box-sizing: border-box; }
+		.row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+		.btn { appearance:none; border:1px solid #d0d3dc; background:#fff; color:#222; padding:10px 14px; border-radius:10px; cursor:pointer; font-size:14px; }
+		.btn.primary { background:var(--brand); color:#fff; border-color: transparent; }
+		.btn:disabled { opacity: .6; cursor: not-allowed; }
+		small.muted { color:var(--muted); }
+		.kvs { display:grid; grid-template-columns: 140px 1fr; gap:6px 12px; font-size:13px; }
+		.status { display:inline-flex; align-items:center; gap:6px; font-size:12px; }
+		.dot { width:8px; height:8px; border-radius:999px; background:#bbb; display:inline-block; }
+		.dot.ok { background: var(--ok); }
+		.dot.err { background: var(--err); }
+		.links a { display:block; margin:6px 0; text-decoration:none; color:var(--brand); }
+		code { background:#f0f2f7; padding:2px 6px; border-radius:6px; }
+	</style>
+	<script>
+		function $(s){ return document.querySelector(s); }
+		function save(k,v){ try{ localStorage.setItem(k,v);}catch(e){} }
+		function load(k,d){ try{ const v = localStorage.getItem(k); return v!=null?v:d;}catch(e){ return d; } }
+		async function ping(){
+			const base = $('#baseUrl').value.trim();
+			const el = $('#health');
+			el.innerHTML = '<span class="dot"></span> Checking…';
+			try {
+				const r = await fetch(base.replace(/\/$/,'') + '/api/health');
+				const ok = r.ok; el.innerHTML = '<span class="dot '+(ok?'ok':'err')+'"></span>' + (ok?'Online':'Unreachable');
+			} catch { el.innerHTML = '<span class="dot err"></span> Unreachable'; }
+		}
+		function openAdmin(){
+			const base = $('#baseUrl').value.trim().replace(/\/$/,'');
+			const token = $('#token').value.trim();
+			const url = base + '/admin/dashboard' + (token?('?token='+encodeURIComponent(token)):'');
+			window.open(url, '_blank');
+		}
+		function openAlerts(){
+			const base = $('#baseUrl').value.trim().replace(/\/$/,'');
+			const url = base + '/admin/alerts.html';
+			window.open(url, '_blank');
+		}
+		function openSse(){
+			const base = $('#baseUrl').value.trim().replace(/\/$/,'');
+			const url = base + '/api/attendance/stream';
+			window.open(url, '_blank');
+		}
+		window.addEventListener('DOMContentLoaded', () => {
+			$('#baseUrl').value = load('mgdc.baseUrl','http://localhost:5000');
+			$('#token').value = load('mgdc.token','');
+			$('#baseUrl').addEventListener('change', e=> save('mgdc.baseUrl', e.target.value));
+			$('#token').addEventListener('change', e=> save('mgdc.token', e.target.value));
+			ping();
+		});
+	</script>
+	</head>
+<body>
+	<header>
+		<h1>MGDC Portal</h1>
+	</header>
+	<div class="wrap">
+		<div class="card">
+			<div class="kvs">
+				<div>Backend Base URL</div>
+				<div class="row"><input id="baseUrl" type="text" placeholder="http://localhost:5000" style="flex:1 1 auto"><button class="btn" onclick="ping()">Check</button><span id="health" class="status"><span class="dot"></span> Idle</span></div>
+				<div>JWT Token</div>
+				<div><input id="token" type="password" placeholder="Paste token for admin routes (optional)"></div>
+			</div>
+			<small class="muted">Token is stored in your browser's localStorage on this page only.</small>
+		</div>
+
+		<div class="grid" style="margin-top:16px;">
+			<div class="card">
+				<h2>Admin</h2>
+				<div class="row" style="gap:10px; margin: 8px 0 12px;">
+					<button class="btn primary" onclick="openAdmin()">Open Admin Dashboard</button>
+					<button class="btn" onclick="openAlerts()">Live Alerts (SSE)</button>
+					<button class="btn" onclick="openSse()">Raw SSE Stream</button>
+				</div>
+				<small class="muted">Dashboard will append <code>?token=…</code> if provided above.</small>
+			</div>
+
+			<div class="card">
+				<h2>API Documentation</h2>
+				<div class="links">
+					  <a href="/admin/docs" target="_blank">Open HTML API Docs</a>
+					<a href="/admin/postman-collection.json" target="_blank">Open Postman Collection (JSON)</a>
+					<a href="/admin/requests.http" target="_blank">Open REST Client Examples (requests.http)</a>
+				</div>
+				<small class="muted">Links served by the backend under /admin/*</small>
+			</div>
+
+			<div class="card">
+				<h2>Quick Checks</h2>
+				<div class="links">
+					<a href="#" onclick="ping(); return false;">Re-check Health</a>
+					<a href="#" onclick="window.open($('#baseUrl').value.replace(/\/$/,'') + '/api/health','_blank'); return false;">Open /api/health</a>
+					<a href="#" onclick="window.open($('#baseUrl').value.replace(/\/$/,'') + '/api/attendance/admin/occupancy?date=' + new Date().toISOString().slice(0,10), '_blank'); return false;">Open Occupancy (today)</a>
+					<a href="#" onclick="window.open($('#baseUrl').value.replace(/\/$/,'') + '/api/attendance/admin/export.pdf?date=' + new Date().toISOString().slice(0,10), '_blank'); return false;">Download PDF (today)</a>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</body>
+</html>
