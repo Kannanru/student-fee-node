@@ -1,0 +1,191 @@
+### MGDC API - REST Client examples (VS Code extension: REST Client)
+
+@host = http://localhost:5000
+@json = application/json
+@token = {{token}}
+@studentId = {{studentObjectId}}
+@feeId = {{feeId}}
+
+### Health
+GET {{host}}/api/health
+
+### Student Login (public)
+POST {{host}}/api/students/login
+Content-Type: {{json}}
+
+{
+  "email": "student@example.com",
+  "password": "Password123"
+}
+
+### Students - List (protected)
+GET {{host}}/api/students?programName=MBBS&page=1&limit=10
+Authorization: Bearer {{token}}
+
+### Create Fee Structure (protected)
+POST {{host}}/api/fees/structure
+Content-Type: {{json}}
+Authorization: Bearer {{token}}
+
+{
+  "studentId": "{{studentId}}",
+  "academicYear": "2025-2026",
+  "semester": "1",
+  "feeBreakdown": {
+    "tuitionFee": 100000,
+    "semesterFee": 25000
+  },
+  "dueDate": "2025-10-31"
+}
+
+### Get Student Fee Details (protected)
+GET {{host}}/api/fees/student/{{studentId}}?academicYear=2025-2026&semester=1
+Authorization: Bearer {{token}}
+
+### Process Payment (protected)
+POST {{host}}/api/fees/{{feeId}}/payment
+Content-Type: {{json}}
+Authorization: Bearer {{token}}
+
+{
+  "amountPaid": 50000,
+  "paymentMode": "UPI",
+  "transactionId": "TXN123456",
+  "receiptNumber": "RCP001"
+}
+
+### Penalty Config - Create (protected)
+POST {{host}}/api/penalty-config
+Content-Type: {{json}}
+Authorization: Bearer {{token}}
+
+{
+  "academicYear": "2025-2026",
+  "penaltyType": "Fixed",
+  "penaltyAmount": 5000,
+  "gracePeriodDays": 7
+}
+
+### HDFC - Initiate (protected)
+POST {{host}}/api/payments/hdfc/initiate
+Content-Type: {{json}}
+Authorization: Bearer {{token}}
+
+{
+  "studentId": "{{studentId}}",
+  "feeId": "{{feeId}}",
+  "amount": 50000,
+  "redirectUrl": "https://example.com/payment-success"
+}
+
+### HDFC - Callback (simulate)
+POST {{host}}/api/payments/hdfc/callback
+Content-Type: {{json}}
+
+{
+  "payload": {
+    "feeId": "{{feeId}}",
+    "studentId": "{{studentId}}",
+    "amount": 50000,
+    "status": "SUCCESS",
+    "gatewayTransactionId": "HDFC_TXN_123"
+  },
+  "checksum": "{{computedChecksum}}"
+}
+
+### Timetable - Create (protected)
+POST {{host}}/api/timetable
+Content-Type: {{json}}
+Authorization: Bearer {{token}}
+
+{
+  "className": "Anatomy 101",
+  "room": "A-101",
+  "programName": "MBBS",
+  "academicYear": "2025-2026",
+  "dayOfWeek": 5,
+  "startTime": "08:00",
+  "endTime": "10:00",
+  "studentIds": ["{{studentId}}"]
+}
+
+### Timetable - List (protected)
+GET {{host}}/api/timetable?programName=MBBS&academicYear=2025-2026
+Authorization: Bearer {{token}}
+
+### Timetable - For Student (protected)
+GET {{host}}/api/timetable/student/{{studentId}}
+Authorization: Bearer {{token}}
+
+### Attendance: record
+POST {{host}}/api/attendance/record
+Authorization: Bearer {{token}}
+Content-Type: {{json}}
+
+{
+  "studentId": "{{studentId}}",
+  "className": "Anatomy 101",
+  "date": "2025-09-26",
+  "classStartTime": "2025-09-26T08:00:00.000Z",
+  "classEndTime": "2025-09-26T10:00:00.000Z",
+  "timeIn": "2025-09-26T08:10:00.000Z",
+  "timeOut": "2025-09-26T10:00:00.000Z",
+  "status": "Present"
+}
+
+### Attendance: student daily
+GET {{host}}/api/attendance/student/{{studentId}}/daily?date=2025-09-26
+Authorization: Bearer {{token}}
+
+### Attendance: student summary
+GET {{host}}/api/attendance/student/{{studentId}}/summary?startDate=2025-09-20&endDate=2025-09-27
+Authorization: Bearer {{token}}
+
+### Attendance: admin daily
+GET {{host}}/api/attendance/admin/daily?date=2025-09-26
+Authorization: Bearer {{token}}
+
+### Attendance: admin summary
+GET {{host}}/api/attendance/admin/summary?startDate=2025-09-20&endDate=2025-09-27
+Authorization: Bearer {{token}}
+
+### Attendance: admin occupancy
+GET {{host}}/api/attendance/admin/occupancy?date=2025-09-26
+Authorization: Bearer {{token}}
+
+### Attendance: admin export CSV
+GET {{host}}/api/attendance/admin/export?startDate=2025-09-20&endDate=2025-09-27
+Authorization: Bearer {{token}}
+
+### Attendance: admin export PDF (daily)
+GET {{host}}/api/attendance/admin/export.pdf?date=2025-09-26
+Authorization: Bearer {{token}}
+
+### Admin Dashboard (open in browser)
+# Note: pass ?token={{token}} if you open directly in a browser without an Authorization header
+GET {{host}}/admin/dashboard?token={{token}}
+
+### Attendance: SSE stream (open in browser)
+GET {{host}}/api/attendance/stream
+
+### Razorpay: create order
+POST {{host}}/api/payments/razorpay/order
+Authorization: Bearer {{token}}
+Content-Type: {{json}}
+
+{
+  "feeId": "{{feeId}}",
+  "amount": 1000,
+  "currency": "INR"
+}
+
+### Razorpay: verify signature (simulate)
+POST {{host}}/api/payments/razorpay/verify
+Content-Type: {{json}}
+
+{
+  "razorpay_order_id": "order_ABC123",
+  "razorpay_payment_id": "pay_DEF456",
+  "razorpay_signature": "<calculated-signature>",
+  "feeId": "{{feeId}}"
+}

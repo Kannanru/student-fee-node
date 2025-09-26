@@ -1,0 +1,36 @@
+{
+  "info": {"name": "MGDC Attendance APIs", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
+  "item": [
+    {"name": "Login", "request": {"method": "POST", "header": [{"key": "Content-Type","value": "application/json"}],
+      "url": {"raw": "{{baseUrl}}/api/students/login","host": ["{{baseUrl}}"],"path": ["api","students","login"]},
+      "body": {"mode": "raw","raw": "{\n  \"email\": \"student@example.com\",\n  \"password\": \"Password123\"\n}"}
+    }},
+    {"name": "Record Attendance", "request": {"method": "POST", "header": [{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}],
+      "url": {"raw": "{{baseUrl}}/api/attendance/record","host": ["{{baseUrl}}"],"path": ["api","attendance","record"]},
+      "body": {"mode":"raw","raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"className\": \"Anatomy 101\",\n  \"date\": \"2025-09-26\",\n  \"classStartTime\": \"2025-09-26T08:00:00.000Z\",\n  \"classEndTime\": \"2025-09-26T10:00:00.000Z\",\n  \"timeIn\": \"2025-09-26T08:10:00.000Z\",\n  \"timeOut\": \"2025-09-26T10:00:00.000Z\",\n  \"status\": \"Present\"\n}"}
+    }},
+    {"name": "Student Daily", "request": {"method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}],
+      "url": {"raw": "{{baseUrl}}/api/attendance/student/{{studentId}}/daily?date=2025-09-26","host":["{{baseUrl}}"],"path":["api","attendance","student","{{studentId}}","daily"],"query":[{"key":"date","value":"2025-09-26"}]}
+    }},
+    {"name": "Student Summary", "request": {"method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}],
+      "url": {"raw": "{{baseUrl}}/api/attendance/student/{{studentId}}/summary?startDate=2025-09-20&endDate=2025-09-27","host":["{{baseUrl}}"],"path":["api","attendance","student","{{studentId}}","summary"],"query":[{"key":"startDate","value":"2025-09-20"},{"key":"endDate","value":"2025-09-27"}]}
+    }},
+    {"name": "Admin Daily Report", "request": {"method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}],
+      "url": {"raw": "{{baseUrl}}/api/attendance/admin/daily?date=2025-09-26","host":["{{baseUrl}}"],"path":["api","attendance","admin","daily"],"query":[{"key":"date","value":"2025-09-26"}]}
+    }},
+    {"name": "Admin Summary", "request": {"method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}],
+      "url": {"raw": "{{baseUrl}}/api/attendance/admin/summary?startDate=2025-09-20&endDate=2025-09-27","host":["{{baseUrl}}"],"path":["api","attendance","admin","summary"],"query":[{"key":"startDate","value":"2025-09-20"},{"key":"endDate","value":"2025-09-27"}]}
+    }},
+    {"name": "Admin Occupancy", "request": {"method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}],
+      "url": {"raw": "{{baseUrl}}/api/attendance/admin/occupancy?date=2025-09-26","host":["{{baseUrl}}"],"path":["api","attendance","admin","occupancy"],"query":[{"key":"date","value":"2025-09-26"}]}
+    }},
+    {"name": "Admin Export CSV", "request": {"method": "GET", "header": [{"key":"Authorization","value":"Bearer {{token}}"}],
+      "url": {"raw": "{{baseUrl}}/api/attendance/admin/export?startDate=2025-09-20&endDate=2025-09-27","host":["{{baseUrl}}"],"path":["api","attendance","admin","export"],"query":[{"key":"startDate","value":"2025-09-20"},{"key":"endDate","value":"2025-09-27"}]}
+    }}
+  ],
+  "variable": [
+    {"key": "baseUrl", "value": "http://localhost:5000"},
+    {"key": "token", "value": ""},
+    {"key": "studentId", "value": ""}
+  ]
+}

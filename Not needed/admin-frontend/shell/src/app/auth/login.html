@@ -1,0 +1,30 @@
+<div class="login-container">
+	<mat-card>
+		<mat-card-title>Log in</mat-card-title>
+		<form [formGroup]="loginForm" *ngIf="step === 1" (ngSubmit)="sendOtp()">
+			<mat-form-field appearance="outline" class="full-width">
+				<mat-label>Email</mat-label>
+				<input matInput formControlName="email" type="email" placeholder="Enter Email ID to Login" autocomplete="email">
+				<mat-icon matPrefix>person</mat-icon>
+				<mat-error *ngIf="loginForm.get('email')?.hasError('required')">Email is required</mat-error>
+				<mat-error *ngIf="loginForm.get('email')?.hasError('email')">Enter a valid email</mat-error>
+			</mat-form-field>
+			<button mat-raised-button color="primary" class="full-width" [disabled]="loginForm.invalid || loading">Next</button>
+			<mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+			<mat-error *ngIf="error">{{ error }}</mat-error>
+		</form>
+
+		<form [formGroup]="otpForm" *ngIf="step === 2" (ngSubmit)="verifyOtp()">
+			<mat-form-field appearance="outline" class="full-width">
+				<mat-label>OTP</mat-label>
+				<input matInput formControlName="otp" maxlength="4" placeholder="Enter 4-digit OTP" autocomplete="one-time-code">
+				<mat-icon matPrefix>lock</mat-icon>
+				<mat-error *ngIf="otpForm.get('otp')?.hasError('required')">OTP is required</mat-error>
+				<mat-error *ngIf="otpForm.get('otp')?.hasError('pattern')">Enter a valid 4-digit OTP</mat-error>
+			</mat-form-field>
+			<button mat-raised-button color="primary" class="full-width" [disabled]="otpForm.invalid || loading">Login</button>
+			<mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+			<mat-error *ngIf="error">{{ error }}</mat-error>
+		</form>
+	</mat-card>
+</div>

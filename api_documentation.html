@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            margin: 1rem;
+        }
+        .sidebar {
+            width: 25%;
+            background: #fff;
+            border-right: 1px solid #ddd;
+            padding: 1rem;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 0.5rem 0;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #333;
+            cursor: pointer;
+        }
+        .sidebar ul li a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            flex: 1;
+            padding: 1rem;
+            background: #fff;
+            border: 1px solid #ddd;
+        }
+        .api-details {
+            display: none;
+        }
+    </style>
+    <script>
+        function showDetails(apiId) {
+            const details = document.querySelectorAll('.api-details');
+            details.forEach(detail => detail.style.display = 'none');
+
+            const selectedDetail = document.getElementById(apiId);
+            if (selectedDetail) {
+                selectedDetail.style.display = 'block';
+            }
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>API Documentation</h1>
+    </header>
+    <div class="container">
+        <div class="sidebar">
+            <ul>
+                <li><a onclick="showDetails('studentLogin')">Student Login</a></li>
+                <li><a onclick="showDetails('studentCreate')">Create Student</a></li>
+                <li><a onclick="showDetails('studentUpdate')">Update Student</a></li>
+                <li><a onclick="showDetails('studentProfile')">Get Student Profile</a></li>
+                <li><a onclick="showDetails('studentList')">List Students</a></li>
+                <li><a onclick="showDetails('feeDetailsGet')">Get Student Fee Details (Mobile)</a></li>
+                <li><a onclick="showDetails('feeStructureCreate')">Create Fee Structure</a></li>
+                <li><a onclick="showDetails('paymentProcess')">Process Payment</a></li>
+                <li><a onclick="showDetails('paymentHistory')">Get Payment History</a></li>
+                <li><a onclick="showDetails('penaltyConfigCreate')">Create Penalty Configuration</a></li>
+                <li><a onclick="showDetails('penaltyConfigGet')">Get Penalty Configurations</a></li>
+                <li><a onclick="showDetails('employeeCreate')">Create Employee</a></li>
+                <li><a onclick="showDetails('employeeUpdate')">Update Employee</a></li>
+                <li><a onclick="showDetails('login')">Employee Login</a></li>
+                <li><a onclick="showDetails('listFilter')">List and Filter</a></li>
+                <li><a onclick="showDetails('importExport')">Import and Export</a></li>
+                <li><a onclick="showDetails('masterData')">Master Data</a></li>
+                <li><a onclick="showDetails('rolesResponsibilities')">Roles and Responsibilities</a></li>
+                <li><a onclick="showDetails('feeDetails')">Fee Details</a></li>
+                <li><a onclick="showDetails('paymentStatus')">Payment Status</a></li>
+                <li><a onclick="showDetails('attendance')">Attendance</a></li>
+                <li><a onclick="showDetails('adminDashboard')">Admin Dashboard</a></li>
+                <li><a onclick="showDetails('hdfcIntegration')">HDFC Payment Gateway Integration</a></li>
+            </ul>
+        </div>
+        <div class="content">
+            <div id="studentLogin" class="api-details">
+                <h2>Student Login</h2>
+                <p><strong>Purpose:</strong> Authenticate student and return complete profile information for mobile app.</p>
+                <p><strong>Endpoint:</strong> <code>POST /api/students/login</code></p>
+                <p><strong>Sample Request:</strong></p>
+                <pre>{
+    "email": "jane.smith@example.com",
+    "password": "password123"
+}</pre>
+                <p><strong>Sample Response:</strong></p>
+                <pre>{
+    "message": "Login successful",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "student": {
+        "_id": "60f7c2b5b5d6c2a5d8e4a5b6",
+        "studentId": "STU001",
+        "enrollmentNumber": "EN2025001",
+        "firstName": "Jane",
+        "lastName": "Smith",
+                            <li><a onclick="showDetails('attendance')">Attendance</a></li>
+        "dob": "2005-01-01",
+        "gender": "Female",
+        "email": "jane.smith@example.com",
+        "contactNumber": "9876543210",
+        "permanentAddress": "123 Main Street, City, State",
+        "programName": "MBBS",
+        "admissionDate": "2025-09-01",
+        "academicYear": "2025-26",
+        "gpa": 8.5,
+        "cgpa": 8.2,
+        "tuitionFeesPaid": 75000,
+        "guardianName": "John Smith",
+                        <div id="attendance" class="api-details">
+                            <h2>Attendance APIs</h2>
+                            <p>AI-powered CCTV attendance management supporting Present/Late/Absent/Early Leave with classroom logs, corrections, and reports.</p>
+                            <h3>Key Fields</h3>
+                            <ul>
+                                <li>Student: studentId, studentName, courseGroup, academicYear</li>
+                                <li>Class: className, room, date, classStartTime, classEndTime</li>
+                                <li>Tracking: timeIn, timeOut, status (Present|Late|Absent|Early Leave), lateMinutes, reasonForAbsence</li>
+                                <li>AI/Logs: cameraId/location, entryLogs (in/out timestamps), aiConfidence</li>
+                                <li>Corrections: correctionRequests (reason, status, adminNotes)</li>
+                            </ul>
+                            <h3>Endpoints</h3>
+                            <ul>
+                                <li>POST /api/attendance/record — Record or update attendance (auth)</li>
+                                <li>GET /api/attendance/student/:studentId/daily?date=YYYY-MM-DD — Student daily view (auth)</li>
+                                <li>GET /api/attendance/student/:studentId/summary?startDate&endDate — Student summary (auth)</li>
+                                <li>GET /api/attendance/admin/daily?date=YYYY-MM-DD — Admin daily report (auth)</li>
+                                <li>GET /api/attendance/admin/summary?startDate&endDate — Admin summary (auth)</li>
+                                <li>GET /api/attendance/admin/export.pdf?date=YYYY-MM-DD — PDF export (auth). Columns now include TimetableId and Capacity; extra "Occupancy Summary" page.</li>
+                                <li>GET /api/attendance/admin/occupancy?date=YYYY-MM-DD — Admin occupancy by class/room (auth). Returns: className, room, capacity, present, late, absent, earlyLeave, total</li>
+                                <li>GET /api/attendance/admin/export?startDate&endDate — CSV export (auth). Columns include TimetableId and Capacity; final rows contain OCCUPANCY summary per class/room.</li>
+                                <li>GET /api/attendance/stream — Server-Sent Events stream for attendance alerts</li>
+                                <li>POST /api/attendance/correction — Submit correction request (auth)</li>
+                                <li>POST /api/attendance/:id/correction/review — Admin review correction (auth)</li>
+                            </ul>
+                            <h3>curl</h3>
+                            <pre><code>
+            curl -X POST http://localhost:5000/api/attendance/record \
+              -H "Authorization: Bearer &lt;TOKEN&gt;" -H "Content-Type: application/json" \
+              -d '{
+                "studentId": "&lt;studentObjectId&gt;",
+                "className": "Anatomy 101",
+                "date": "2025-09-26",
+                "classStartTime": "2025-09-26T08:00:00.000Z",
+                "classEndTime": "2025-09-26T10:00:00.000Z",
+                "timeIn": "2025-09-26T08:10:00.000Z",
+                "timeOut": "2025-09-26T10:00:00.000Z",
+                "status": "Present"
+              }'
+                            </code></pre>
+                        </div>
+            <div id="adminDashboard" class="api-details">
+                <h2>Admin Attendance Dashboard</h2>
+                <p>Live web dashboard that summarizes daily attendance with auto-refresh on alerts and periodic polling.</p>
+                <p><strong>URL:</strong> <code>/admin/dashboard?token=&lt;JWT&gt;</code> (or supply the token via Authorization header).</p>
+                <ul>
+                    <li>Cards: Present, Late, Absent, Early Leave, Attendance %</li>
+                    <li>Occupancy table: className, room, capacity, present, late, absent, earlyLeave, total</li>
+                    <li>Auto-refresh using SSE at <code>/api/attendance/stream</code></li>
+                </ul>
+            </div>
+        "guardianContact": "9876543211",
+        "emergencyContactName": "Mary Smith",
+        "emergencyContactNumber": "9876543212",
+        "healthInsuranceProvider": "ABC Insurance",
+        "courseEnrollmentStatus": "enrolled",
+        "studentType": "full-time",
+        "profilePicture": "https://example.com/profile.jpg",
+        "status": "active",
+        "semester": "1",
+        "attendancePercentage": 85,
+        "bloodGroup": "B+",
+        "nationality": "Indian",
+        "languageProficiency": [
+            {"language": "English", "level": "Fluent"},
+            {"language": "Hindi", "level": "Advanced"}
+        ],
+        "feeDetails": {
+            "totalFees": 100000,
+            "paidAmount": 75000,
+            "dueAmount": 25000,
+            "lastPaymentDate": "2025-08-15"
+        }
+    }
+}</pre>
+                                <p><strong>cURL:</strong></p>
+                                <pre>curl -X POST http://localhost:5000/api/students/login ^
+    -H "Content-Type: application/json" ^
+    -d "{\"email\":\"jane.smith@example.com\",\"password\":\"password123\"}"</pre>
+            </div>
+
+            <div id="studentCreate" class="api-details">
+                <h2>Create Student</h2>
+                <p><strong>Purpose:</strong> Create a comprehensive student profile with all mandatory and optional fields.</p>
+                <p><strong>Endpoint:</strong> <code>POST /api/students</code></p>
+                <p><strong>Required Fields:</strong> studentId, enrollmentNumber, firstName, lastName, dob, gender, email, contactNumber, permanentAddress, programName, admissionDate, academicYear, guardianName, guardianContact, emergencyContactName, emergencyContactNumber, studentType, password</p>
+                <p><strong>Sample Request:</strong></p>
+                <pre>{
+    "studentId": "STU001234",
+    "enrollmentNumber": "EN2025001",
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "dob": "2005-01-01",
+    "gender": "Female",
+    "email": "jane.smith@example.com",
+    "contactNumber": "9876543210",
+    "permanentAddress": "123 Main Street, City, State, PIN-123456",
+    "programName": "MBBS",
+    "admissionDate": "2025-09-01",
+    "academicYear": "2025-2029",
+    "guardianName": "John Smith",
+    "guardianContact": "9876543211",
+    "emergencyContactName": "Mary Smith",
+    "emergencyContactNumber": "9876543212",
+    "studentType": "full-time",
+    "password": "SecurePass123",
+    "profilePicture": "https://example.com/profile.jpg",
+    "semester": "1",
+    "bloodGroup": "O+",
+    "nationality": "Indian",
+    "healthInsuranceProvider": "ABC Insurance",
+    "languageProficiency": [
+        {"language": "English", "level": "Fluent"},
+        {"language": "Hindi", "level": "Advanced"}
+    ],
+    "hobbies": ["Reading", "Sports"],
+    "achievements": [
+        {
+            "title": "Academic Excellence Award",
+            "description": "Topper in 12th Grade",
+            "date": "2024-05-15",
+            "category": "Academic"
+        }
+    ],
+    "extracurricularActivities": [
+        {
+            "activityName": "Basketball",
+            "role": "Team Captain",
+            "duration": "2 years"
+        }
+    ],
+    "feeDetails": {
+        "totalFees": 200000,
+        "paidAmount": 0,
+        "dueAmount": 200000
+    }
+}</pre>
+                <p><strong>Sample Success Response:</strong></p>
+                <pre>{
+    "success": true,
+    "message": "Student created successfully",
+    "data": {
+        "_id": "60f7c2b5b5d6c2a5d8e4a5b6",
+        "studentId": "STU001234",
+        "enrollmentNumber": "EN2025001",
+        "firstName": "Jane",
+        "lastName": "Smith",
+        "email": "jane.smith@example.com",
+        "programName": "MBBS",
+        "status": "active",
+        "createdAt": "2025-09-26T10:00:00.000Z"
+    }
+}</pre>
+                <p><strong>Sample Validation Error Response:</strong></p>
+                <pre>{
+    "success": false,
+    "message": "Validation failed",
+    "errors": [
+        {
+            "field": "contactNumber",
+            "message": "Contact number must be a valid 10-digit Indian mobile number",
+            "value": "123456"
+        },
+        {
+            "field": "email",
+            "message": "Please enter a valid email address",
+            "value": "invalid-email"
+        },
+        {
+            "field": "studentId",
+            "message": "Student ID format should be like STU001234",
+            "value": "INVALID"
+        },
+        {
+            "field": "dob",
+            "message": "Date of birth must be valid and age should be between 16-35 years",
+            "value": "2010-01-01"
+        }
+    ]
+}</pre>
+                <p><strong>Sample Duplicate Error Response:</strong></p>
+                <pre>{
+    "success": false,
+    "message": "Student with this email already exists"
+}</pre>
+            </div>
+
+            <div id="feeDetailsGet" class="api-details">
+                <h2>Get Student Fee Details (Mobile App)</h2>
+                <p><strong>Purpose:</strong> Retrieve comprehensive fee details for student mobile app with payment screen layout.</p>
+                <p><strong>Endpoint:</strong> <code>GET /api/fees/student/:studentId</code></p>
+                <p><strong>Query Parameters:</strong> academicYear, semester</p>
+                <p><strong>Sample Request:</strong></p>
+                <pre>GET /api/fees/student/60f7c2b5b5d6c2a5d8e4a5b6?academicYear=2025-2026&semester=1</pre>
+                <p><strong>Sample Success Response:</strong></p>
+                <pre>{
+    "success": true,
+    "message": "Student fee details retrieved successfully",
+    "data": [
+        {
+            "studentInfo": {
+                "studentName": "Jane Smith",
+                "studentId": "STU001234",
+                "courseGroup": "MBBS",
+                "yearBatch": "2025-2026",
+                "enrollmentNumber": "EN2025001"
+            },
+            "feeDueSection": {
+                "currentDueAmount": 155000,
+                "feeBreakdown": {
+                    "tuitionFee": 100000,
+                    "semesterFee": 25000,
+                    "hostelFee": 20000,
+                    "libraryFee": 2000,
+                    "labFee": 3000,
+                    "otherFees": 5000
+                },
+                "totalDueAmount": 155000,
+                "penaltyAmount": 5000,
+                "dueDate": "2025-10-31T00:00:00.000Z",
+                "isOverdue": true,
+                "status": "Overdue"
+            },
+            "paymentHistory": [
+                {
+                    "paymentDate": "2025-09-15T00:00:00.000Z",
+                    "amountPaid": 50000,
+                    "modeOfPayment": "UPI",
+                    "transactionId": "TXN123456789",
+                    "receiptNumber": "RCP001234",
+                    "paymentStatus": "Successful",
+                    "balanceAfterPayment": 100000
+                }
+            ],
+            "feeId": "60f7c2b5b5d6c2a5d8e4a5b7",
+            "academicYear": "2025-2026",
+            "semester": "1",
+            "lastUpdated": "2025-09-26T10:00:00.000Z"
+        }
+    ]
+}</pre>
+                <p><strong>Sample Error Response:</strong></p>
+                <pre>{
+    "success": false,
+    "message": "Student not found",
+    "error": {
+        "field": "studentId",
+        "message": "No student exists with the provided ID"
+    }
+}</pre>
+                <p><strong>Field Validations:</strong></p>
+                <ul>
+                    <li>studentId must be a valid ObjectId</li>
+                    <li>academicYear format: YYYY-YYYY (e.g., 2025-2026)</li>
+                    <li>semester must be between 1-10</li>
+                </ul>
+            </div>
+
+            <div id="feeStructureCreate" class="api-details">
+                <h2>Create Fee Structure</h2>
+                <p><strong>Purpose:</strong> Create fee structure for a student with detailed breakdown.</p>
+                <p><strong>Endpoint:</strong> <code>POST /api/fees/structure</code></p>
+                <p><strong>Required Fields:</strong> studentId, academicYear, semester, feeBreakdown, dueDate</p>
+                <p><strong>Sample Request:</strong></p>
+                <pre>{
+    "studentId": "60f7c2b5b5d6c2a5d8e4a5b6",
+    "academicYear": "2025-2026",
+    "semester": "1",
+    "feeBreakdown": {
+        "tuitionFee": 100000,
+        "semesterFee": 25000,
+        "hostelFee": 20000,
+        "libraryFee": 2000,
+        "labFee": 3000,
+        "otherFees": 5000
+    },
+    "dueDate": "2025-10-31"
+}</pre>
+                <p><strong>Sample Success Response:</strong></p>
+                <pre>{
+    "success": true,
+    "message": "Fee structure created successfully",
+    "data": {
+        "_id": "60f7c2b5b5d6c2a5d8e4a5b7",
+        "studentId": {
+            "firstName": "Jane",
+            "lastName": "Smith",
+            "studentId": "STU001234",
+            "enrollmentNumber": "EN2025001",
+            "programName": "MBBS"
+        },
+        "academicYear": "2025-2026",
+        "semester": "1",
+        "feeBreakdown": {
+            "tuitionFee": 100000,
+            "semesterFee": 25000,
+            "hostelFee": 20000,
+            "libraryFee": 2000,
+            "labFee": 3000,
+            "otherFees": 5000
+        },
+        "totalAmount": 155000,
+        "dueAmount": 155000,
+        "paidAmount": 0,
+        "dueDate": "2025-10-31T00:00:00.000Z",
+        "status": "Pending",
+        "isOverdue": false,
+        "penaltyAmount": 0
+    }
+}</pre>
+                <p><strong>Validation Errors:</strong></p>
+                <pre>{
+    "success": false,
+    "message": "Validation failed",
+    "errors": [
+        {
+            "field": "feeBreakdown.tuitionFee",
+            "message": "Tuition fee is required",
+            "value": null
+        },
+        {
+            "field": "academicYear",
+            "message": "Academic year format should be like 2025-2026",
+            "value": "2025"
+        }
+    ]
+}</pre>
+            </div>
+
+            <div id="paymentProcess" class="api-details">
+                <h2>Process Payment</h2>
+                <p><strong>Purpose:</strong> Process student fee payment and update payment history.</p>
+                <p><strong>Endpoint:</strong> <code>POST /api/fees/:feeId/payment</code></p>
+                <p><strong>Required Fields:</strong> amountPaid, paymentMode, transactionId, receiptNumber</p>
+                <p><strong>Sample Request:</strong></p>
+                <pre>{
+    "amountPaid": 50000,
+    "paymentMode": "UPI",
+    "transactionId": "TXN123456789",
+    "receiptNumber": "RCP001234",
+    "paymentGateway": "HDFC",
+    "gatewayTransactionId": "HDFC_TXN_987654321"
+}</pre>
+                <p><strong>Sample Success Response:</strong></p>
+                <pre>{
+    "success": true,
+    "message": "Payment processed successfully",
+    "data": {
+        "feeRecord": {
+            "_id": "60f7c2b5b5d6c2a5d8e4a5b7",
+            "studentId": {
+                "firstName": "Jane",
+                "lastName": "Smith",
+                "studentId": "STU001234",
+                "enrollmentNumber": "EN2025001"
+            },
+            "totalAmount": 155000,
+            "paidAmount": 50000,
+            "dueAmount": 105000,
+            "status": "Partial"
+        },
+        "paymentDetails": {
+            "paymentDate": "2025-09-26T10:00:00.000Z",
+            "amountPaid": 50000,
+            "paymentMode": "UPI",
+            "transactionId": "TXN123456789",
+            "receiptNumber": "RCP001234",
+            "paymentStatus": "Successful",
+            "balanceAfterPayment": 105000,
+            "paymentGateway": "HDFC",
+            "gatewayTransactionId": "HDFC_TXN_987654321"
+        },
+        "remainingBalance": 105000
+    }
+}</pre>
+                <p><strong>Payment Mode Options:</strong> UPI, Credit Card, Debit Card, Net Banking, Cash, Bank Transfer, Cheque, DD</p>
+                <p><strong>cURL:</strong></p>
+                <pre>curl -X POST http://localhost:5000/api/fees/FEERECORDID/payment ^
+  -H "Authorization: Bearer &lt;TOKEN&gt;" ^
+  -H "Content-Type: application/json" ^
+  -d "{\"amountPaid\":50000,\"paymentMode\":\"UPI\",\"transactionId\":\"TXN123\",\"receiptNumber\":\"RCP001\"}"</pre>
+                <p><strong>Validation Errors:</strong></p>
+                <pre>{
+    "success": false,
+    "message": "Payment amount cannot exceed due amount",
+    "error": {
+        "field": "amountPaid",
+        "message": "Maximum payable amount is 105000"
+    }
+}</pre>
+            </div>
+
+            <div id="paymentHistory" class="api-details">
+                <h2>Get Payment History</h2>
+                <p><strong>Purpose:</strong> Retrieve complete payment history for a student.</p>
+                <p><strong>Endpoint:</strong> <code>GET /api/fees/student/:studentId/payments</code></p>
+                <p><strong>Query Parameters:</strong> page, limit, academicYear</p>
+                <p><strong>Sample Request:</strong></p>
+                <pre>GET /api/fees/student/60f7c2b5b5d6c2a5d8e4a5b6/payments?page=1&limit=5&academicYear=2025-2026</pre>
+                <p><strong>Sample Response:</strong></p>
+                <pre>{
+    "success": true,
+    "message": "Payment history retrieved successfully",
+    "data": [
+        {
+            "paymentDate": "2025-09-26T10:00:00.000Z",
+            "amountPaid": 50000,
+            "paymentMode": "UPI",
+            "transactionId": "TXN123456789",
+            "receiptNumber": "RCP001234",
+            "paymentStatus": "Successful",
+            "balanceAfterPayment": 105000,
+            "paymentGateway": "HDFC",
+            "gatewayTransactionId": "HDFC_TXN_987654321",
+            "academicYear": "2025-2026",
+            "semester": "1",
+            "studentName": "Jane Smith"
+        }
+    ],
+    "pagination": {
+        "currentPage": 1,
+        "totalPages": 1,
+        "totalPayments": 1
+    }
+}</pre>
+            </div>
+
+            <div id="penaltyConfigCreate" class="api-details">
+                <h2>Create Penalty Configuration (Master Data)</h2>
+                <p><strong>Purpose:</strong> Create penalty configuration for overdue fee payments by academic year.</p>
+                <p><strong>Endpoint:</strong> <code>POST /api/penalty-config</code></p>
+                <p><strong>Required Fields:</strong> academicYear, penaltyType</p>
+                <p><strong>Penalty Types:</strong> Fixed, Percentage, Daily</p>
+                <p><strong>Sample Request (Fixed Penalty):</strong></p>
+                <pre>{
+    "academicYear": "2025-2026",
+    "penaltyType": "Fixed",
+    "penaltyAmount": 5000,
+    "gracePeriodDays": 7,
+    "maxPenaltyAmount": 20000,
+    "description": "Fixed penalty of Rs. 5000 after 7 days grace period"
+}</pre>
+                <p><strong>Sample Request (Percentage Penalty):</strong></p>
+                <pre>{
+    "academicYear": "2026-2027",
+    "penaltyType": "Percentage",
+    "penaltyPercentage": 5,
+    "gracePeriodDays": 5,
+    "maxPenaltyAmount": 15000,
+    "description": "5% penalty on due amount after 5 days grace period"
+}</pre>
+                <p><strong>Sample Request (Daily Penalty):</strong></p>
+                <pre>{
+    "academicYear": "2027-2028",
+    "penaltyType": "Daily",
+    "penaltyAmount": 100,
+    "gracePeriodDays": 10,
+    "maxPenaltyAmount": 10000,
+    "description": "Rs. 100 per day penalty after 10 days grace period"
+}</pre>
+                <p><strong>Sample Success Response:</strong></p>
+                <pre>{
+    "success": true,
+    "message": "Penalty configuration created successfully",
+    "data": {
+        "_id": "60f7c2b5b5d6c2a5d8e4a5b8",
+        "academicYear": "2025-2026",
+        "penaltyType": "Fixed",
+        "penaltyAmount": 5000,
+        "gracePeriodDays": 7,
+        "maxPenaltyAmount": 20000,
+        "description": "Fixed penalty of Rs. 5000 after 7 days grace period",
+        "isActive": true,
+        "createdAt": "2025-09-26T10:00:00.000Z"
+    }
+}</pre>
+            </div>
+
+            <div id="penaltyConfigGet" class="api-details">
+                <h2>Get Penalty Configurations</h2>
+                <p><strong>Purpose:</strong> Retrieve penalty configurations with filtering options.</p>
+                <p><strong>Endpoint:</strong> <code>GET /api/penalty-config</code></p>
+                <p><strong>Query Parameters:</strong> page, limit, isActive</p>
+                <p><strong>Sample Request:</strong></p>
+                <pre>GET /api/penalty-config?page=1&limit=10&isActive=true</pre>
+                <p><strong>Sample Response:</strong></p>
+                <pre>{
+    "success": true,
+    "message": "Penalty configurations retrieved successfully",
+    "data": [
+        {
+            "_id": "60f7c2b5b5d6c2a5d8e4a5b8",
+            "academicYear": "2025-2026",
+            "penaltyType": "Fixed",
+            "penaltyAmount": 5000,
+            "gracePeriodDays": 7,
+            "maxPenaltyAmount": 20000,
+            "description": "Fixed penalty of Rs. 5000 after 7 days grace period",
+            "isActive": true
+        }
+    ],
+    "pagination": {
+        "currentPage": 1,
+        "totalPages": 1,
+        "totalConfigs": 1
+    }
+}</pre>
+                <p><strong>Get by Academic Year:</strong></p>
+                <pre>GET /api/penalty-config/year/2025-2026</pre>
+            </div>
+
+            <div id="studentUpdate" class="api-details">
+                <h2>Update Student</h2>
+                <p><strong>Purpose:</strong> Update student profile information.</p>
+                <p><strong>Endpoint:</strong> <code>PUT /api/students/:id</code></p>
+                <p><strong>Sample Request:</strong></p>
+                <pre>{
+    "semester": "2",
+    "gpa": 8.7,
+    "cgpa": 8.5,
+    "attendancePercentage": 90,
+    "tuitionFeesPaid": 100000,
+    "feeDetails": {
+        "paidAmount": 100000,
+        "dueAmount": 0,
+        "lastPaymentDate": "2025-12-15"
+    }
+}</pre>
+            </div>
+
+            <div id="studentProfile" class="api-details">
+                <h2>Get Student Profile</h2>
+                <p><strong>Purpose:</strong> Retrieve complete student profile information.</p>
+                <p><strong>Endpoint:</strong> <code>GET /api/students/profile/:id</code></p>
+                <p><strong>Sample Response:</strong></p>
+                <pre>{
+    "_id": "60f7c2b5b5d6c2a5d8e4a5b6",
+    "studentId": "STU001",
+    "enrollmentNumber": "EN2025001",
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "profilePicture": "https://example.com/profile.jpg",
+    "programName": "MBBS",
+    "semester": "2",
+    "gpa": 8.7,
+    "cgpa": 8.5,
+    "attendancePercentage": 90,
+    "feeDetails": {
+        "totalFees": 100000,
+        "paidAmount": 100000,
+        "dueAmount": 0
+    }
+}</pre>
+            </div>
+
+            <div id="studentList" class="api-details">
+                <h2>List Students</h2>
+                <p><strong>Purpose:</strong> Retrieve filtered list of students with pagination.</p>
+                <p><strong>Endpoint:</strong> <code>GET /api/students</code></p>
+                <p><strong>Query Parameters:</strong> program, academicYear, semester, status, studentType, page, limit</p>
+                <p><strong>Sample Request:</strong></p>
+                <pre>GET /api/students?program=MBBS&academicYear=2025-26&page=1&limit=10</pre>
+                <p><strong>Sample Response:</strong></p>
+                <pre>{
+    "students": [...],
+    "totalPages": 5,
+    "currentPage": 1,
+    "total": 45
+}</pre>
+            </div>
+            <div id="employeeCreate" class="api-details">
+                <h2>Create Employee</h2>
+                <p><strong>Purpose:</strong> Create a new employee record.</p>
+                <p><strong>Endpoint:</strong> <code>POST /api/employees</code></p>
+                <p><strong>Sample Request:</strong></p>
+                <pre>{
+    "name": "John Doe",
+    "employeeId": "EMP001",
+    "mobile": "1234567890",
+    "email": "john.doe@example.com",
+    "role": "Admin",
+    "status": "active",
+    "department": "HR",
+    "dob": "1990-01-01",
+    "joiningDate": "2025-01-01",
+    "maritalStatus": "Single",
+    "nationality": "Indian",
+    "languages": ["English", "Hindi"],
+    "bankDetails": {
+        "accountNumber": "123456789",
+        "ifscCode": "HDFC0001234",
+        "bankName": "HDFC Bank"
+    },
+    "documents": {
+        "aadhar": "1234-5678-9012",
+        "pan": "ABCDE1234F",
+        "passport": "A1234567"
+    }
+}</pre>
+                <p><strong>Sample Response:</strong></p>
+                <pre>{
+    "_id": "60f7c2b5b5d6c2a5d8e4a5b5",
+    "name": "John Doe",
+    "employeeId": "EMP001",
+    "mobile": "1234567890",
+    "email": "john.doe@example.com",
+    "role": "Admin",
+    "status": "active",
+    "department": "HR",
+    "dob": "1990-01-01",
+    "joiningDate": "2025-01-01",
+    "maritalStatus": "Single",
+    "nationality": "Indian",
+    "languages": ["English", "Hindi"],
+    "bankDetails": {
+        "accountNumber": "123456789",
+        "ifscCode": "HDFC0001234",
+        "bankName": "HDFC Bank"
+    },
+    "documents": {
+        "aadhar": "1234-5678-9012",
+        "pan": "ABCDE1234F",
+        "passport": "A1234567"
+    },
+    "createdAt": "2025-09-25T10:00:00.000Z",
+    "updatedAt": "2025-09-25T10:00:00.000Z"
+}</pre>
+            </div>
+            <div id="employeeUpdate" class="api-details">
+                <h2>Update Employee</h2>
+                <p><strong>Purpose:</strong> Update an existing employee record.</p>
+                <p><strong>Endpoint:</strong> <code>PUT /api/employees/:id</code></p>
+                <p><strong>Sample Request:</strong></p>
+                <pre>{
+    "name": "John Doe",
+    "mobile": "9876543210",
+    "department": "Finance"
+}</pre>
+                <p><strong>Sample Response:</strong></p>
+                <pre>{
+    "_id": "60f7c2b5b5d6c2a5d8e4a5b5",
+    "name": "John Doe",
+    "employeeId": "EMP001",
+    "mobile": "9876543210",
+    "email": "john.doe@example.com",
+    "role": "Admin",
+    "status": "active",
+    "department": "Finance",
+    "dob": "1990-01-01",
+    "joiningDate": "2025-01-01",
+    "maritalStatus": "Single",
+    "nationality": "Indian",
+    "languages": ["English", "Hindi"],
+    "bankDetails": {
+        "accountNumber": "123456789",
+        "ifscCode": "HDFC0001234",
+        "bankName": "HDFC Bank"
+    },
+    "documents": {
+        "aadhar": "1234-5678-9012",
+        "pan": "ABCDE1234F",
+        "passport": "A1234567"
+    },
+    "createdAt": "2025-09-25T10:00:00.000Z",
+    "updatedAt": "2025-09-25T10:05:00.000Z"
+}</pre>
+            </div>
+            <div id="login" class="api-details">
+                <h2>Login</h2>
+                <p><strong>Purpose:</strong> Authenticate users and provide access tokens.</p>
+                <p><strong>Endpoint:</strong> <code>POST /api/auth/login</code></p>
+                <p><strong>Sample Request:</strong></p>
+                <pre>{
+    "email": "user@example.com",
+    "password": "password123"
+}</pre>
+                <p><strong>Sample Response:</strong></p>
+                <pre>{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+        "id": "12345",
+        "name": "John Doe",
+        "role": "Admin"
+    }
+}</pre>
+            </div>
+            <div id="listFilter" class="api-details">
+                <h2>List and Filter</h2>
+                <p><strong>Purpose:</strong> Retrieve and filter data based on query parameters.</p>
+                <p><strong>Endpoint:</strong> <code>GET /api/employees</code></p>
+                <p><strong>Sample Request:</strong></p>
+                <pre>GET /api/employees?status=active&department=HR</pre>
+                <p><strong>Sample Response:</strong></p>
+                <pre>[{
+    "id": "EMP001",
+    "name": "John Doe",
+    "status": "active",
+    "department": "HR"
+}]</pre>
+            </div>
+            <div id="importExport" class="api-details">
+                <h2>Import and Export</h2>
+                <p><strong>Purpose:</strong> Import and export data in bulk.</p>
+                <p><strong>Endpoint:</strong> <code>POST /api/employees/import</code> and <code>GET /api/employees/export</code></p>
+                <p><strong>Sample Request (Import):</strong></p>
+                <pre>POST /api/employees/import
+Content-Type: multipart/form-data
+File: employees.csv</pre>
+                <p><strong>Sample Response (Export):</strong></p>
+                <pre>File download initiated...</pre>
+            </div>
+            <div id="masterData" class="api-details">
+                <h2>Master Data</h2>
+                <p><strong>Purpose:</strong> Retrieve master data for dropdowns and other UI elements.</p>
+                <p><strong>Endpoint:</strong> <code>GET /api/master-data</code></p>
+                <p><strong>Sample Response:</strong></p>
+                <pre>{
+    "departments": ["HR", "Finance", "IT"],
+    "roles": ["Admin", "Manager", "Employee"]
+}</pre>
+            </div>
+            <div id="rolesResponsibilities" class="api-details">
+                <h2>Roles and Responsibilities</h2>
+                <p><strong>Purpose:</strong> Manage roles and their associated permissions.</p>
+                <p><strong>Endpoint:</strong> <code>POST /api/roles</code> and <code>GET /api/roles</code></p>
+                <p><strong>Sample Request:</strong></p>
+                <pre>{
+    "role": "Manager",
+    "permissions": ["view_reports", "manage_team"]
+}</pre>
+                <p><strong>Sample Response:</strong></p>
+                <pre>{
+    "id": "ROLE001",
+    "role": "Manager",
+    "permissions": ["view_reports", "manage_team"]
+}</pre>
+            </div>
+            <div id="feeDetails" class="api-details">
+                <h2>Fee Details</h2>
+                <p><strong>Purpose:</strong> Retrieve fee details for students.</p>
+                <p><strong>Endpoint:</strong> <code>GET /api/fees/:studentId</code></p>
+                <p><strong>Sample Response:</strong></p>
+                <pre>{
+    "studentId": "STU001",
+    "totalFees": 50000,
+    "paid": 30000,
+    "due": 20000
+}</pre>
+            </div>
+            <div id="paymentStatus" class="api-details">
+                <h2>Payment Status</h2>
+                <p><strong>Purpose:</strong> Check the payment status of a transaction.</p>
+                <p><strong>Endpoint:</strong> <code>GET /api/payments/status/:transactionId</code></p>
+                <p><strong>Sample Response:</strong></p>
+                <pre>{
+    "transactionId": "TXN12345",
+    "status": "Success",
+    "amount": 10000,
+    "date": "2025-09-25"
+}</pre>
+            </div>
+            <div id="hdfcIntegration" class="api-details">
+                                <h2>HDFC Payment Gateway Integration</h2>
+                                <p><strong>Purpose:</strong> Initiate HDFC payment and process callback to update fee records.</p>
+                                <p><strong>Initiate Endpoint:</strong> <code>POST /api/payments/hdfc/initiate</code></p>
+                                <p><strong>Sample Request:</strong></p>
+                                <pre>{
+        "studentId": "<ObjectId>",
+        "feeId": "<ObjectId>",
+        "amount": 50000,
+        "redirectUrl": "https://example.com/payment-success"
+}</pre>
+                                <p><strong>Sample Response:</strong></p>
+                                <pre>{
+    "success": true,
+    "message": "HDFC payment initiated",
+    "data": {
+        "paymentUrl": "https://hdfc.example.com/pay",
+        "payload": {
+            "merchantId": "DEMO_MID",
+            "orderId": "ORD_FEExxx_1695700000000",
+            "amount": 50000,
+            "currency": "INR",
+            "customerEmail": "jane.smith@example.com",
+            "customerPhone": "9876543210",
+            "redirectUrl": "https://example.com/payment-success",
+            "feeId": "<ObjectId>",
+            "studentId": "<ObjectId>"
+        },
+        "checksum": "<sha256-hmac>"
+    }
+}</pre>
+                                <p><strong>cURL (Initiate):</strong></p>
+                                <pre>curl -X POST http://localhost:5000/api/payments/hdfc/initiate ^
+    -H "Authorization: Bearer &lt;TOKEN&gt;" ^
+    -H "Content-Type: application/json" ^
+    -d "{\"studentId\":\"<ObjectId>\",\"feeId\":\"<ObjectId>\",\"amount\":50000,\"redirectUrl\":\"https://example.com/payment-success\"}"</pre>
+                                <p><strong>Callback Endpoint:</strong> <code>POST /api/payments/hdfc/callback</code></p>
+                                <p><strong>Sample Callback (from gateway):</strong></p>
+                                <pre>{
+    "payload": {
+        "feeId": "<ObjectId>",
+        "studentId": "<ObjectId>",
+        "amount": 50000,
+        "status": "SUCCESS",
+        "gatewayTransactionId": "HDFC_TXN_123"
+    },
+    "checksum": "<sha256-hmac>"
+}</pre>
+                                <p><strong>Response:</strong> {"success": true, "message": "Callback processed"}</p>
+            </div>
+            <div id="liveExamples" class="api-details">
+                <h2>Live Examples (auto-generated)</h2>
+                <p>These examples can be updated by running the generator script while the backend is running.</p>
+                <!-- LIVE-EXAMPLES-START -->
+                <pre>{
+  "info": "Run node .\\scripts\\generate_api_examples.js to populate live examples here."
+}</pre>
+                <!-- LIVE-EXAMPLES-END -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>

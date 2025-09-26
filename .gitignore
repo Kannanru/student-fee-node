@@ -1,0 +1,35 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+*.code-workspace
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dist / Coverage
+dist/
+build/
+coverage/
+
+# Node
+backend/node_modules/
+backend/.npmrc
+backend/package-lock.json
+backend/pnpm-lock.yaml
+backend/yarn.lock
+
+# Environment / secrets
+backend/.env
+backend/.env.*
+backend/firebase-service-account.json
+
+# Misc
+*.pem
+*.pfx
+*.crt
+*.key
