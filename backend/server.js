@@ -44,6 +44,7 @@ const timetableRoutes = require('./routes/timetable');
 const hdfcRoutes = require('./routes/hdfc');
 const razorpayRoutes = require('./routes/razorpay');
 const adminRoutes = require('./routes/admin');
+const employeeRoutes = require('./routes/employee');
 
 // Use routes
 app.use('/api/auth', authRoutes);
@@ -67,6 +68,7 @@ app.use('/api/timetable', timetableRoutes);
 app.use('/api/payments/hdfc', hdfcRoutes);
 app.use('/api/payments/razorpay', razorpayRoutes);
 app.use('/admin', adminRoutes);
+app.use('/api/employees', employeeRoutes);
 
 // Error handling middleware
 const errorHandler = require('./middleware/errorHandler');

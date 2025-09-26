@@ -57,6 +57,7 @@
       <a href="#" onclick="to('overview');return false;">Overview & Auth</a>
       <a href="#" onclick="to('flow');return false;">Functional Flow</a>
       <a href="#" onclick="to('students');return false;">Students</a>
+  <a href="#" onclick="to('employees');return false;">Employees</a>
       <a href="#" onclick="to('fees');return false;">Fees & Payments</a>
       <a href="#" onclick="to('attendance');return false;">Attendance</a>
       <a href="#" onclick="to('timetable');return false;">Timetable</a>
@@ -109,6 +110,17 @@
           <tr><td class="post">POST</td><td><code>/api/students/login</code></td><td>Student login (returns token + profile)</td></tr>
           <tr><td class="get">GET</td><td><code>/api/students/:id</code></td><td>Get student by ID</td></tr>
           <tr><td class="put">PUT</td><td><code>/api/students/:id</code></td><td>Update student (rehashes password if changed)</td></tr>
+        </table>
+      </section>
+
+      <section id="employees">
+        <h2>Employees</h2>
+        <table>
+          <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+          <tr><td class="get">GET</td><td><code>/api/employees?q=&role=&status=&page=&limit=</code></td><td>List employees (search & filters)</td></tr>
+          <tr><td class="post">POST</td><td><code>/api/employees</code></td><td>Create employee</td></tr>
+          <tr><td class="get">GET</td><td><code>/api/employees/:id</code></td><td>Get employee</td></tr>
+          <tr><td class="put">PUT</td><td><code>/api/employees/:id</code></td><td>Update employee</td></tr>
         </table>
       </section>
 

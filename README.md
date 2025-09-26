@@ -2,6 +2,8 @@
 
 A backend for managing students, fees, payments (Razorpay), attendance (AI/admin), timetable, and admin dashboard with real-time alerts (SSE) and exports (CSV/PDF).
 
+Canonical backend: `C:\MGC\backend` (all APIs and node modules live here). Legacy duplicate folders at the repo root (like `routes/`, `controllers/`, `models/`) are deprecated and will be removed.
+
 ## Structure
 - `backend/` Express app, Mongoose models, controllers, routes
 - `mgdc_home.html` Quick-launch home page
@@ -30,6 +32,15 @@ $env:PORT="5000" ; node server.js
 - Home: http://localhost:5000/admin/home
 - Docs: http://localhost:5000/admin/docs
 - Dashboard: http://localhost:5000/admin/dashboard?token=YOUR_JWT
+
+## API Surface
+- Students: `/api/students/*`
+- Employees: `/api/employees/*`
+- Fees: `/api/fees/*`
+- Penalty Config: `/api/penalty-config/*`
+- Attendance: `/api/attendance/*`
+- Timetable: `/api/timetable/*`
+- Payments (Razorpay/HDFC): `/api/payments/*`
 
 ## Notes
 - Use Postman collection at `backend/docs/postman_collection.json`
