@@ -1,0 +1,314 @@
+<div class="employee-form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>{{ isEditMode ? 'edit' : 'person_add' }}</mat-icon>
+        {{ isEditMode ? 'Edit Employee' : 'Add New Employee' }}
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading employee data...</p>
+      </div>
+
+      <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+        <mat-stepper #stepper linear>
+          <!-- Step 1: Basic Information -->
+          <mat-step label="Basic Information">
+            <div class="form-section">
+              <h3>Personal Details</h3>
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Employee ID</mat-label>
+                  <input matInput formControlName="employeeId" placeholder="EMP001" [readonly]="isEditMode">
+                  <mat-icon matPrefix>badge</mat-icon>
+                  <mat-error *ngIf="hasError('employeeId')">
+                    {{ validationErrors['employeeId'] || 'Employee ID is required (uppercase letters and numbers)' }}
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>First Name</mat-label>
+                  <input matInput formControlName="firstName" placeholder="John">
+                  <mat-icon matPrefix>person</mat-icon>
+                  <mat-error *ngIf="hasError('firstName')">
+                    {{ validationErrors['firstName'] || 'First name is required' }}
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Last Name</mat-label>
+                  <input matInput formControlName="lastName" placeholder="Doe">
+                  <mat-icon matPrefix>person</mat-icon>
+                  <mat-error *ngIf="hasError('lastName')">
+                    {{ validationErrors['lastName'] || 'Last name is required' }}
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Email</mat-label>
+                  <input matInput type="email" formControlName="email" placeholder="john.doe@example.com">
+                  <mat-icon matPrefix>email</mat-icon>
+                  <mat-error *ngIf="hasError('email')">
+                    {{ validationErrors['email'] || 'Valid email is required' }}
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Phone Number</mat-label>
+                  <input matInput formControlName="phone" placeholder="9876543210" maxlength="10">
+                  <mat-icon matPrefix>phone</mat-icon>
+                  <mat-error *ngIf="hasError('phone')">
+                    {{ validationErrors['phone'] || 'Valid 10-digit phone number is required' }}
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Date of Birth</mat-label>
+                  <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth">
+                  <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #dobPicker></mat-datepicker>
+                  <mat-error *ngIf="hasError('dateOfBirth')">
+                    Date of birth is required
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Gender</mat-label>
+                  <mat-select formControlName="gender">
+                    <mat-option *ngFor="let gender of genders" [value]="gender.value">
+                      {{ gender.label }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matPrefix>wc</mat-icon>
+                  <mat-error *ngIf="hasError('gender')">
+                    Gender is required
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Blood Group</mat-label>
+                  <mat-select formControlName="bloodGroup">
+                    <mat-option *ngFor="let bg of bloodGroups" [value]="bg">
+                      {{ bg }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matPrefix>bloodtype</mat-icon>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button mat-raised-button matStepperNext color="primary" type="button">
+                Next <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </mat-step>
+
+          <!-- Step 2: Professional Information -->
+          <mat-step label="Professional Details">
+            <div class="form-section">
+              <h3>Employment Information</h3>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Joining Date</mat-label>
+                  <input matInput [matDatepicker]="joiningPicker" formControlName="joiningDate">
+                  <mat-datepicker-toggle matSuffix [for]="joiningPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #joiningPicker></mat-datepicker>
+                  <mat-error *ngIf="hasError('joiningDate')">
+                    Joining date is required
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Status</mat-label>
+                  <mat-select formControlName="status">
+                    <mat-option *ngFor="let status of statuses" [value]="status.value">
+                      {{ status.label }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matPrefix>toggle_on</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Department</mat-label>
+                  <mat-select formControlName="department">
+                    <mat-option *ngFor="let dept of departments" [value]="dept">
+                      {{ dept }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matPrefix>business</mat-icon>
+                  <mat-error *ngIf="hasError('department')">
+                    Department is required
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Designation</mat-label>
+                  <mat-select formControlName="designation">
+                    <mat-option *ngFor="let desig of designations" [value]="desig">
+                      {{ desig }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matPrefix>work</mat-icon>
+                  <mat-error *ngIf="hasError('designation')">
+                    Designation is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Category</mat-label>
+                  <mat-select formControlName="category">
+                    <mat-option *ngFor="let cat of categories" [value]="cat.value">
+                      {{ cat.label }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matPrefix>category</mat-icon>
+                  <mat-error *ngIf="hasError('category')">
+                    Category is required
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Qualification</mat-label>
+                  <input matInput formControlName="qualification" placeholder="B.Tech, M.Tech, PhD">
+                  <mat-icon matPrefix>school</mat-icon>
+                  <mat-error *ngIf="hasError('qualification')">
+                    Qualification is required
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Experience (Years)</mat-label>
+                  <input matInput type="number" formControlName="experience" min="0">
+                  <mat-icon matPrefix>timeline</mat-icon>
+                  <mat-error *ngIf="hasError('experience')">
+                    Valid experience is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button mat-button matStepperPrevious type="button">
+                <mat-icon>arrow_back</mat-icon> Back
+              </button>
+              <button mat-raised-button matStepperNext color="primary" type="button">
+                Next <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </mat-step>
+
+          <!-- Step 3: Address & Emergency Contact -->
+          <mat-step label="Contact Details">
+            <div class="form-section">
+              <h3>Address Information</h3>
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Street Address</mat-label>
+                  <input matInput formControlName="street" placeholder="123 Main Street">
+                  <mat-icon matPrefix>home</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>City</mat-label>
+                  <input matInput formControlName="city" placeholder="Mumbai">
+                  <mat-icon matPrefix>location_city</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>State</mat-label>
+                  <input matInput formControlName="state" placeholder="Maharashtra">
+                  <mat-icon matPrefix>map</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Pincode</mat-label>
+                  <input matInput formControlName="pincode" placeholder="400001" maxlength="6">
+                  <mat-icon matPrefix>pin_drop</mat-icon>
+                  <mat-error *ngIf="hasError('pincode')">
+                    Valid 6-digit pincode required
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Country</mat-label>
+                  <input matInput formControlName="country" placeholder="India">
+                  <mat-icon matPrefix>public</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <h3>Emergency Contact</h3>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Contact Name</mat-label>
+                  <input matInput formControlName="emergencyContactName" placeholder="Jane Doe">
+                  <mat-icon matPrefix>contact_emergency</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Relation</mat-label>
+                  <input matInput formControlName="emergencyContactRelation" placeholder="Spouse">
+                  <mat-icon matPrefix>family_restroom</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Contact Phone</mat-label>
+                  <input matInput formControlName="emergencyContactPhone" placeholder="9876543210" maxlength="10">
+                  <mat-icon matPrefix>phone</mat-icon>
+                  <mat-error *ngIf="hasError('emergencyContactPhone')">
+                    Valid 10-digit phone number required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button mat-button matStepperPrevious type="button">
+                <mat-icon>arrow_back</mat-icon> Back
+              </button>
+            </div>
+          </mat-step>
+        </mat-stepper>
+
+        <!-- Form Actions -->
+        <div class="form-actions final-actions">
+          <button mat-button type="button" (click)="cancel()" [disabled]="submitting">
+            <mat-icon>cancel</mat-icon> Cancel
+          </button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="submitting">
+            <mat-spinner diameter="20" *ngIf="submitting" class="button-spinner"></mat-spinner>
+            <mat-icon *ngIf="!submitting">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+            {{ submitting ? 'Saving...' : (isEditMode ? 'Update Employee' : 'Create Employee') }}
+          </button>
+        </div>
+
+        <!-- Validation Summary -->
+        <div class="validation-summary" *ngIf="Object.keys(validationErrors).length > 0">
+          <h4><mat-icon>error</mat-icon> Please fix the following errors:</h4>
+          <ul>
+            <li *ngFor="let error of validationErrors | keyvalue">
+              {{ error.value }}
+            </li>
+          </ul>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,581 @@
+<div class="reports-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>assessment</mat-icon>
+        Attendance Reports & Analytics
+      </mat-card-title>
+    </mat-card-header>
+  </mat-card>
+
+  <mat-tab-group class="reports-tabs">
+    <!-- Daily Attendance Report -->
+    <mat-tab label="Daily Report">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-content>
+            <form [formGroup]="dailyReportForm" class="filter-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Date</mat-label>
+                <input matInput [matDatepicker]="dailyPicker" formControlName="date">
+                <mat-datepicker-toggle matSuffix [for]="dailyPicker"></mat-datepicker-toggle>
+                <mat-datepicker #dailyPicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Program (Optional)</mat-label>
+                <mat-select formControlName="program">
+                  <mat-option value="">All Programs</mat-option>
+                  <mat-option *ngFor="let program of programs" [value]="program">{{ program }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Year (Optional)</mat-label>
+                <mat-select formControlName="year">
+                  <mat-option [value]="null">All Years</mat-option>
+                  <mat-option *ngFor="let year of years" [value]="year">Year {{ year }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Semester (Optional)</mat-label>
+                <mat-select formControlName="semester">
+                  <mat-option [value]="null">All Semesters</mat-option>
+                  <mat-option *ngFor="let sem of semesters" [value]="sem">Semester {{ sem }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" (click)="generateDailyReport()" [disabled]="loading">
+                <mat-icon>play_arrow</mat-icon> Generate Report
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="currentReportType === 'daily' && reportData.length > 0" class="results-card">
+          <mat-card-content>
+            <div class="export-actions">
+              <button mat-button (click)="exportToCSV()"><mat-icon>download</mat-icon> CSV</button>
+              <button mat-button (click)="exportToExcel()"><mat-icon>download</mat-icon> Excel</button>
+              <button mat-button (click)="exportToPDF()"><mat-icon>picture_as_pdf</mat-icon> PDF</button>
+            </div>
+            
+            <table mat-table [dataSource]="reportData" class="report-table">
+              <ng-container matColumnDef="studentName">
+                <th mat-header-cell *matHeaderCellDef>Student Name</th>
+                <td mat-cell *matCellDef="let row">{{ row.studentName }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="studentId">
+                <th mat-header-cell *matHeaderCellDef>Student ID</th>
+                <td mat-cell *matCellDef="let row">{{ row.studentId }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="subject">
+                <th mat-header-cell *matHeaderCellDef>Subject</th>
+                <td mat-cell *matCellDef="let row">{{ row.subject }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="hall">
+                <th mat-header-cell *matHeaderCellDef>Hall</th>
+                <td mat-cell *matCellDef="let row">{{ row.hall }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="timeIn">
+                <th mat-header-cell *matHeaderCellDef>Time In</th>
+                <td mat-cell *matCellDef="let row">{{ row.timeIn | date:'shortTime' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="timeOut">
+                <th mat-header-cell *matHeaderCellDef>Time Out</th>
+                <td mat-cell *matCellDef="let row">{{ row.timeOut ? (row.timeOut | date:'shortTime') : 'N/A' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="duration">
+                <th mat-header-cell *matHeaderCellDef>Duration (min)</th>
+                <td mat-cell *matCellDef="let row">{{ row.duration }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let row">
+                  <span [class]="'status-badge status-' + row.status.toLowerCase()">{{ row.status }}</span>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="dailyColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: dailyColumns;"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Student Attendance Report -->
+    <mat-tab label="Student Report">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-content>
+            <form [formGroup]="studentReportForm" class="filter-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Student ID</mat-label>
+                <input matInput formControlName="studentId" placeholder="e.g., STU001">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Start Date</mat-label>
+                <input matInput [matDatepicker]="studentStartPicker" formControlName="startDate">
+                <mat-datepicker-toggle matSuffix [for]="studentStartPicker"></mat-datepicker-toggle>
+                <mat-datepicker #studentStartPicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>End Date</mat-label>
+                <input matInput [matDatepicker]="studentEndPicker" formControlName="endDate">
+                <mat-datepicker-toggle matSuffix [for]="studentEndPicker"></mat-datepicker-toggle>
+                <mat-datepicker #studentEndPicker></mat-datepicker>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" (click)="generateStudentReport()" [disabled]="loading">
+                <mat-icon>play_arrow</mat-icon> Generate Report
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="currentReportType === 'student' && reportData.length > 0" class="results-card">
+          <mat-card-content>
+            <div class="export-actions">
+              <button mat-button (click)="exportToCSV()"><mat-icon>download</mat-icon> CSV</button>
+              <button mat-button (click)="exportToExcel()"><mat-icon>download</mat-icon> Excel</button>
+              <button mat-button (click)="exportToPDF()"><mat-icon>picture_as_pdf</mat-icon> PDF</button>
+            </div>
+            
+            <table mat-table [dataSource]="reportData" class="report-table">
+              <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef>Date</th>
+                <td mat-cell *matCellDef="let row">{{ row.date | date:'mediumDate' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="subject">
+                <th mat-header-cell *matHeaderCellDef>Subject</th>
+                <td mat-cell *matCellDef="let row">{{ row.subject }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="hall">
+                <th mat-header-cell *matHeaderCellDef>Hall</th>
+                <td mat-cell *matCellDef="let row">{{ row.hall }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="timeIn">
+                <th mat-header-cell *matHeaderCellDef>Time In</th>
+                <td mat-cell *matCellDef="let row">{{ row.timeIn | date:'shortTime' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="timeOut">
+                <th mat-header-cell *matHeaderCellDef>Time Out</th>
+                <td mat-cell *matCellDef="let row">{{ row.timeOut ? (row.timeOut | date:'shortTime') : 'N/A' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="duration">
+                <th mat-header-cell *matHeaderCellDef>Duration (min)</th>
+                <td mat-cell *matCellDef="let row">{{ row.duration }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let row">
+                  <span [class]="'status-badge status-' + row.status.toLowerCase()">{{ row.status }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="billNumber">
+                <th mat-header-cell *matHeaderCellDef>Bill Number</th>
+                <td mat-cell *matCellDef="let row">{{ row.billNumber || 'N/A' }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="studentColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: studentColumns;"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Department-wise Report -->
+    <mat-tab label="Department Report">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-content>
+            <form [formGroup]="departmentReportForm" class="filter-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Program</mat-label>
+                <mat-select formControlName="program">
+                  <mat-option *ngFor="let program of programs" [value]="program">{{ program }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Year</mat-label>
+                <mat-select formControlName="year">
+                  <mat-option *ngFor="let year of years" [value]="year">Year {{ year }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Semester</mat-label>
+                <mat-select formControlName="semester">
+                  <mat-option *ngFor="let sem of semesters" [value]="sem">Semester {{ sem }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Start Date</mat-label>
+                <input matInput [matDatepicker]="deptStartPicker" formControlName="startDate">
+                <mat-datepicker-toggle matSuffix [for]="deptStartPicker"></mat-datepicker-toggle>
+                <mat-datepicker #deptStartPicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>End Date</mat-label>
+                <input matInput [matDatepicker]="deptEndPicker" formControlName="endDate">
+                <mat-datepicker-toggle matSuffix [for]="deptEndPicker"></mat-datepicker-toggle>
+                <mat-datepicker #deptEndPicker></mat-datepicker>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" (click)="generateDepartmentReport()" [disabled]="loading">
+                <mat-icon>play_arrow</mat-icon> Generate Report
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="currentReportType === 'department' && reportData.length > 0" class="results-card">
+          <mat-card-content>
+            <div class="export-actions">
+              <button mat-button (click)="exportToCSV()"><mat-icon>download</mat-icon> CSV</button>
+              <button mat-button (click)="exportToExcel()"><mat-icon>download</mat-icon> Excel</button>
+              <button mat-button (click)="exportToPDF()"><mat-icon>picture_as_pdf</mat-icon> PDF</button>
+            </div>
+            
+            <table mat-table [dataSource]="reportData" class="report-table">
+              <ng-container matColumnDef="program">
+                <th mat-header-cell *matHeaderCellDef>Program</th>
+                <td mat-cell *matCellDef="let row">{{ row.program }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="year">
+                <th mat-header-cell *matHeaderCellDef>Year</th>
+                <td mat-cell *matCellDef="let row">{{ row.year }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="semester">
+                <th mat-header-cell *matHeaderCellDef>Semester</th>
+                <td mat-cell *matCellDef="let row">{{ row.semester }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="totalStudents">
+                <th mat-header-cell *matHeaderCellDef>Total Students</th>
+                <td mat-cell *matCellDef="let row">{{ row.totalStudents }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="present">
+                <th mat-header-cell *matHeaderCellDef>Present</th>
+                <td mat-cell *matCellDef="let row">{{ row.present }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="late">
+                <th mat-header-cell *matHeaderCellDef>Late</th>
+                <td mat-cell *matCellDef="let row">{{ row.late }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="absent">
+                <th mat-header-cell *matHeaderCellDef>Absent</th>
+                <td mat-cell *matCellDef="let row">{{ row.absent }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="percentage">
+                <th mat-header-cell *matHeaderCellDef>Attendance %</th>
+                <td mat-cell *matCellDef="let row">{{ row.percentage }}%</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="departmentColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: departmentColumns;"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Period-wise Report -->
+    <mat-tab label="Period Report">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-content>
+            <form [formGroup]="periodReportForm" class="filter-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Date</mat-label>
+                <input matInput [matDatepicker]="periodPicker" formControlName="date">
+                <mat-datepicker-toggle matSuffix [for]="periodPicker"></mat-datepicker-toggle>
+                <mat-datepicker #periodPicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Program (Optional)</mat-label>
+                <mat-select formControlName="program">
+                  <mat-option value="">All Programs</mat-option>
+                  <mat-option *ngFor="let program of programs" [value]="program">{{ program }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Hall (Optional)</mat-label>
+                <input matInput formControlName="hallId" placeholder="e.g., HALL_01">
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" (click)="generatePeriodReport()" [disabled]="loading">
+                <mat-icon>play_arrow</mat-icon> Generate Report
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="currentReportType === 'period' && reportData.length > 0" class="results-card">
+          <mat-card-content>
+            <div class="export-actions">
+              <button mat-button (click)="exportToCSV()"><mat-icon>download</mat-icon> CSV</button>
+              <button mat-button (click)="exportToExcel()"><mat-icon>download</mat-icon> Excel</button>
+              <button mat-button (click)="exportToPDF()"><mat-icon>picture_as_pdf</mat-icon> PDF</button>
+            </div>
+            
+            <table mat-table [dataSource]="reportData" class="report-table">
+              <ng-container matColumnDef="periodNumber">
+                <th mat-header-cell *matHeaderCellDef>Period</th>
+                <td mat-cell *matCellDef="let row">{{ row.periodNumber }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="subject">
+                <th mat-header-cell *matHeaderCellDef>Subject</th>
+                <td mat-cell *matCellDef="let row">{{ row.subject }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="hall">
+                <th mat-header-cell *matHeaderCellDef>Hall</th>
+                <td mat-cell *matCellDef="let row">{{ row.hall }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="faculty">
+                <th mat-header-cell *matHeaderCellDef>Faculty</th>
+                <td mat-cell *matCellDef="let row">{{ row.faculty }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="totalExpected">
+                <th mat-header-cell *matHeaderCellDef>Expected</th>
+                <td mat-cell *matCellDef="let row">{{ row.totalExpected }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="present">
+                <th mat-header-cell *matHeaderCellDef>Present</th>
+                <td mat-cell *matCellDef="let row">{{ row.present }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="late">
+                <th mat-header-cell *matHeaderCellDef>Late</th>
+                <td mat-cell *matCellDef="let row">{{ row.late }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="absent">
+                <th mat-header-cell *matHeaderCellDef>Absent</th>
+                <td mat-cell *matCellDef="let row">{{ row.absent }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="percentage">
+                <th mat-header-cell *matHeaderCellDef>Attendance %</th>
+                <td mat-cell *matCellDef="let row">{{ row.percentage }}%</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="periodColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: periodColumns;"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Exception Report -->
+    <mat-tab label="Exception Report">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-content>
+            <form [formGroup]="exceptionReportForm" class="filter-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Start Date</mat-label>
+                <input matInput [matDatepicker]="exStartPicker" formControlName="startDate">
+                <mat-datepicker-toggle matSuffix [for]="exStartPicker"></mat-datepicker-toggle>
+                <mat-datepicker #exStartPicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>End Date</mat-label>
+                <input matInput [matDatepicker]="exEndPicker" formControlName="endDate">
+                <mat-datepicker-toggle matSuffix [for]="exEndPicker"></mat-datepicker-toggle>
+                <mat-datepicker #exEndPicker></mat-datepicker>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" (click)="generateExceptionReport()" [disabled]="loading">
+                <mat-icon>play_arrow</mat-icon> Generate Report
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="currentReportType === 'exception' && reportData.length > 0" class="results-card">
+          <mat-card-content>
+            <div class="export-actions">
+              <button mat-button (click)="exportToCSV()"><mat-icon>download</mat-icon> CSV</button>
+              <button mat-button (click)="exportToExcel()"><mat-icon>download</mat-icon> Excel</button>
+              <button mat-button (click)="exportToPDF()"><mat-icon>picture_as_pdf</mat-icon> PDF</button>
+            </div>
+            
+            <table mat-table [dataSource]="reportData" class="report-table">
+              <ng-container matColumnDef="timestamp">
+                <th mat-header-cell *matHeaderCellDef>Timestamp</th>
+                <td mat-cell *matCellDef="let row">{{ row.timestamp | date:'medium' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="studentId">
+                <th mat-header-cell *matHeaderCellDef>Student ID</th>
+                <td mat-cell *matCellDef="let row">{{ row.studentId }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="hall">
+                <th mat-header-cell *matHeaderCellDef>Hall</th>
+                <td mat-cell *matCellDef="let row">{{ row.hall }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="direction">
+                <th mat-header-cell *matHeaderCellDef>Direction</th>
+                <td mat-cell *matCellDef="let row">{{ row.direction }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="confidence">
+                <th mat-header-cell *matHeaderCellDef>Confidence</th>
+                <td mat-cell *matCellDef="let row">{{ row.confidence | number:'1.2-2' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="spoofScore">
+                <th mat-header-cell *matHeaderCellDef>Spoof Score</th>
+                <td mat-cell *matCellDef="let row">{{ row.spoofScore | number:'1.2-2' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let row">
+                  <span [class]="'status-badge status-' + row.status.toLowerCase()">{{ row.status }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="reason">
+                <th mat-header-cell *matHeaderCellDef>Reason</th>
+                <td mat-cell *matCellDef="let row">{{ row.reason }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="exceptionColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: exceptionColumns;"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Logs Report -->
+    <mat-tab label="Event Logs">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-content>
+            <form [formGroup]="logsReportForm" class="filter-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Date</mat-label>
+                <input matInput [matDatepicker]="logsPicker" formControlName="date">
+                <mat-datepicker-toggle matSuffix [for]="logsPicker"></mat-datepicker-toggle>
+                <mat-datepicker #logsPicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Student ID (Optional)</mat-label>
+                <input matInput formControlName="studentId" placeholder="e.g., STU001">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Hall ID (Optional)</mat-label>
+                <input matInput formControlName="hallId" placeholder="e.g., HALL_01">
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" (click)="generateLogsReport()" [disabled]="loading">
+                <mat-icon>play_arrow</mat-icon> Generate Report
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="currentReportType === 'logs' && reportData.length > 0" class="results-card">
+          <mat-card-content>
+            <div class="export-actions">
+              <button mat-button (click)="exportToCSV()"><mat-icon>download</mat-icon> CSV</button>
+              <button mat-button (click)="exportToExcel()"><mat-icon>download</mat-icon> Excel</button>
+              <button mat-button (click)="exportToPDF()"><mat-icon>picture_as_pdf</mat-icon> PDF</button>
+            </div>
+            
+            <table mat-table [dataSource]="reportData" class="report-table">
+              <ng-container matColumnDef="timestamp">
+                <th mat-header-cell *matHeaderCellDef>Timestamp</th>
+                <td mat-cell *matCellDef="let row">{{ row.timestamp | date:'medium' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="studentName">
+                <th mat-header-cell *matHeaderCellDef>Student Name</th>
+                <td mat-cell *matCellDef="let row">{{ row.studentName }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="studentId">
+                <th mat-header-cell *matHeaderCellDef>Student ID</th>
+                <td mat-cell *matCellDef="let row">{{ row.studentId }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="hall">
+                <th mat-header-cell *matHeaderCellDef>Hall</th>
+                <td mat-cell *matCellDef="let row">{{ row.hall }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="direction">
+                <th mat-header-cell *matHeaderCellDef>Direction</th>
+                <td mat-cell *matCellDef="let row">
+                  <span [class]="'direction-badge direction-' + row.direction.toLowerCase()">{{ row.direction }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="confidence">
+                <th mat-header-cell *matHeaderCellDef>Confidence</th>
+                <td mat-cell *matCellDef="let row">{{ row.confidence | number:'1.2-2' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="cameraId">
+                <th mat-header-cell *matHeaderCellDef>Camera ID</th>
+                <td mat-cell *matCellDef="let row">{{ row.cameraId }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="logsColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: logsColumns;"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner></mat-spinner>
+    <p>Generating report...</p>
+  </div>
+</div>

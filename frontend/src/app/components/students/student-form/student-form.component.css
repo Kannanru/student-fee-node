@@ -1,0 +1,577 @@
+/* src/app/components/students/student-form/student-form.component.css */
+
+.student-form-container {
+  padding: 24px;
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  min-height: calc(100vh - 120px);
+  position: relative;
+}
+
+.student-form-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Header Section - Enhanced */
+.header-section {
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.title-section h1 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0;
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.title-section h1 mat-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  color: #64748b;
+  margin: 12px 0 0 52px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.header-actions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Loading Container */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-container p {
+  margin-top: 16px;
+  color: #666;
+}
+
+/* ========================================
+   VALIDATION SUMMARY PANEL
+   ======================================== */
+.validation-summary {
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+  border: 2px solid #ff5252;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(255, 82, 82, 0.2);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.validation-summary mat-card-content {
+  padding: 20px;
+}
+
+.validation-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.validation-header mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: #f44336;
+}
+
+.validation-header h3 {
+  margin: 0;
+  color: #d32f2f;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.validation-stats {
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+}
+
+.stat-label {
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f44336;
+}
+
+.validation-stats mat-progress-bar {
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.validation-stats mat-progress-bar ::ng-deep .mdc-linear-progress__bar-inner {
+  border-color: #f44336 !important;
+}
+
+.validation-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.section-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.section-status mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.section-status span {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.section-status.valid {
+  border-color: #4caf50;
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+}
+
+.section-status.valid mat-icon {
+  color: #4caf50;
+}
+
+.section-status.valid span {
+  color: #2e7d32;
+}
+
+.section-status:not(.valid) {
+  border-color: #f44336;
+}
+
+.section-status:not(.valid) mat-icon {
+  color: #f44336;
+}
+
+.section-status:not(.valid) span {
+  color: #c62828;
+}
+
+.invalid-fields {
+  margin-top: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+}
+
+.invalid-fields h4 {
+  margin: 0 0 12px 0;
+  color: #d32f2f;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.invalid-fields h4::before {
+  content: '⚠';
+  font-size: 20px;
+}
+
+.invalid-fields mat-chip-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.invalid-fields mat-chip {
+  background-color: #ffebee !important;
+  color: #c62828 !important;
+  border: 1px solid #ef9a9a;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+}
+
+.invalid-fields mat-chip mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #f44336;
+}
+
+.validation-summary button {
+  margin-top: 16px;
+  width: 100%;
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  color: white;
+  font-weight: 600;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.validation-summary button mat-icon {
+  margin-right: 8px;
+}
+
+/* ======================================== */
+
+/* Form Container - Enhanced */
+.form-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* Form Card - Medical Theme */
+.form-card {
+  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  position: relative;
+}
+
+.form-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #2196f3 0%, #1976d2 100%);
+}
+
+.form-card mat-card-header {
+  margin-bottom: 20px;
+  padding: 24px 24px 0;
+}
+
+.form-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.form-card mat-card-subtitle {
+  color: #64748b;
+  margin-top: 8px;
+  font-size: 14px;
+  margin-left: 32px;
+}
+
+/* Form Layout */
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.form-row.two-columns > mat-form-field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.form-row.three-columns > mat-form-field {
+  flex: 1;
+  min-width: 150px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Form Fields */
+mat-form-field {
+  width: 100%;
+}
+
+mat-form-field.full-width {
+  flex: 1 1 100%;
+}
+
+/* Parent Information Section */
+.parent-section {
+  margin-bottom: 32px;
+  padding: 16px;
+  background-color: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.section-title mat-icon {
+  color: #1976d2;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 32px;
+  padding: 24px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.form-actions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+  height: 44px;
+}
+
+/* Button Spinner */
+.button-spinner {
+  margin-right: 8px;
+}
+
+/* Form Validation */
+mat-form-field.mat-form-field-invalid .mat-form-field-outline-thick {
+  color: #1565c0;
+}
+
+mat-error {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Step Icons */
+.mat-step-icon {
+  background-color: #1976d2;
+}
+
+.mat-step-icon-selected {
+  background-color: #1976d2;
+}
+
+.mat-step-icon-state-done {
+  background-color: #42a5f5;
+}
+
+.mat-step-icon-state-edit {
+  background-color: #64b5f6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .student-form-container {
+    padding: 16px;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .header-actions {
+    justify-content: center;
+    order: -1;
+  }
+  
+  .title-section h1 {
+    font-size: 24px;
+    text-align: center;
+  }
+  
+  .subtitle {
+    text-align: center;
+    margin-left: 0;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .form-row.two-columns > mat-form-field,
+  .form-row.three-columns > mat-form-field {
+    min-width: unset;
+  }
+  
+  .parent-section {
+    padding: 12px;
+    margin-bottom: 24px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .form-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .student-form-container {
+    padding: 12px;
+  }
+  
+  .form-card {
+    margin-bottom: 16px;
+  }
+  
+  .form-container {
+    max-width: 100%;
+  }
+  
+  .header-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Stepper Mobile Optimization */
+@media (max-width: 768px) {
+  mat-stepper {
+    display: block;
+  }
+  
+  .mat-horizontal-stepper-header-container {
+    display: none;
+  }
+  
+  .mat-horizontal-content-container {
+    padding: 0;
+  }
+  
+  .mat-horizontal-stepper-content {
+    padding: 0;
+  }
+}
+
+/* Custom Datepicker */
+.mat-datepicker-toggle {
+  color: #1976d2;
+}
+
+/* Textarea Styling */
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Select Styling */
+.mat-select-panel {
+  max-height: 300px;
+}
+
+/* Focus States */
+mat-form-field.mat-focused .mat-form-field-outline-thick {
+  color: #1976d2;
+}
+
+mat-form-field.mat-focused .mat-form-field-label {
+  color: #1976d2;
+}

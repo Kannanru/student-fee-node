@@ -1,0 +1,335 @@
+<div class="reports-container">
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading report data...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error() && !loading()" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <h3>{{ error() }}</h3>
+    <button mat-raised-button color="primary" (click)="loadReportData()">
+      <mat-icon>refresh</mat-icon>
+      Retry
+    </button>
+  </div>
+
+  <!-- Report Content -->
+  <div *ngIf="!loading() && !error() && reportData()" class="content">
+    <!-- Actions Header (No Print) -->
+    <div class="actions-header no-print">
+      <button mat-icon-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h2>Fee Reports</h2>
+      <div class="action-buttons">
+        <mat-form-field appearance="outline" class="report-type-select">
+          <mat-label>Report Type</mat-label>
+          <mat-select [(value)]="selectedReportType">
+            <mat-option *ngFor="let type of reportTypes" [value]="type.value">
+              {{ type.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="downloadPDF()" [disabled]="downloading()">
+          <mat-icon>picture_as_pdf</mat-icon>
+          Download PDF
+        </button>
+        <button mat-raised-button (click)="downloadExcel()" [disabled]="downloading()">
+          <mat-icon>table_chart</mat-icon>
+          Export Excel
+        </button>
+        <button mat-raised-button (click)="printReport()">
+          <mat-icon>print</mat-icon>
+          Print
+        </button>
+      </div>
+    </div>
+
+    <!-- Report Content (Printable) -->
+    <div id="report-content" class="report-content">
+      <!-- Report Header -->
+      <div class="report-header">
+        <div class="college-info">
+          <h1>MGDC Medical College</h1>
+          <p>Fee Report</p>
+        </div>
+        <div class="report-date">
+          <p>Report Generated: {{ formatDate(currentDate) }}</p>
+        </div>
+      </div>
+
+      <!-- Student Information -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>Student Information</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Name:</span>
+              <span class="value">{{ safeStudent.name }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Register Number:</span>
+              <span class="value">{{ safeStudent.registerNumber }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Class:</span>
+              <span class="value">{{ safeStudent.class }} - {{ safeStudent.section }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Bill Number:</span>
+              <span class="value">{{ safeBill.billNumber }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Academic Year:</span>
+              <span class="value">{{ safeBill.academicYear }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Fee Summary Report -->
+      <mat-card class="report-card" *ngIf="selectedReportType === 'summary'">
+        <mat-card-header>
+          <mat-card-title>Fee Summary</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="summary-section">
+            <div class="summary-row total-row">
+              <span class="label">Total Fee Amount:</span>
+              <span class="value">{{ formatCurrency(safeBill.totalAmount) }}</span>
+            </div>
+            <div class="summary-row paid-row">
+              <span class="label">Total Paid:</span>
+              <span class="value">{{ formatCurrency(safeBill.paidAmount) }}</span>
+            </div>
+            <div class="summary-row pending-row">
+              <span class="label">Total Pending:</span>
+              <span class="value">{{ formatCurrency(safeBill.pendingAmount) }}</span>
+            </div>
+            <div class="summary-row progress-row">
+              <span class="label">Payment Progress:</span>
+              <div class="progress-wrapper">
+                <div class="progress-bar">
+                  <div class="progress-fill" [style.width.%]="getTotalPaidPercentage()"></div>
+                </div>
+                <span class="percentage">{{ getTotalPaidPercentage().toFixed(1) }}%</span>
+              </div>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <h3>Fee Breakdown by Head</h3>
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>Fee Head</th>
+                <th>Total Amount</th>
+                <th>Paid</th>
+                <th>Pending</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let head of reportData()?.feeHeads">
+                <td>{{ head.name }}</td>
+                <td>{{ formatCurrency(head.amount) }}</td>
+                <td class="paid">{{ formatCurrency(head.paid) }}</td>
+                <td class="pending">{{ formatCurrency(head.pending) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Payment History Report -->
+      <mat-card class="report-card" *ngIf="selectedReportType === 'payment-history'">
+        <mat-card-header>
+          <mat-card-title>Payment History</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Receipt Number</th>
+                <th>Amount</th>
+                <th>Payment Mode</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let payment of reportData()?.payments">
+                <td>{{ formatDate(payment.date) }}</td>
+                <td>{{ payment.receiptNumber }}</td>
+                <td class="paid">{{ formatCurrency(payment.amount) }}</td>
+                <td>{{ payment.mode | titlecase }}</td>
+              </tr>
+              <tr *ngIf="safePayments.length === 0">
+                <td colspan="4" class="no-data">No payment history available</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="2"><strong>Total Paid:</strong></td>
+                <td class="paid"><strong>{{ formatCurrency(safeBill.paidAmount) }}</strong></td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Installment Schedule Report -->
+      <mat-card class="report-card" *ngIf="selectedReportType === 'installment'">
+        <mat-card-header>
+          <mat-card-title>Installment Schedule</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>Installment</th>
+                <th>Due Date</th>
+                <th>Amount</th>
+                <th>Paid Amount</th>
+                <th>Pending</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let inst of reportData()?.installments">
+                <td>#{{ inst.installmentNumber }}</td>
+                <td>{{ formatDate(inst.dueDate) }}</td>
+                <td>{{ formatCurrency(inst.amount) }}</td>
+                <td class="paid">{{ formatCurrency(inst.paidAmount) }}</td>
+                <td class="pending">{{ formatCurrency(inst.amount - inst.paidAmount) }}</td>
+                <td>
+                  <span class="status-badge" [style.background-color]="getStatusColor(inst.status)">
+                    {{ inst.status | titlecase }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Detailed Report -->
+      <mat-card class="report-card" *ngIf="selectedReportType === 'detailed'">
+        <mat-card-header>
+          <mat-card-title>Detailed Fee Report</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <!-- Fee Summary -->
+          <div class="detailed-section">
+            <h3>Overall Summary</h3>
+            <div class="summary-grid">
+              <div class="summary-item">
+                <span class="label">Total Fee:</span>
+                <span class="value">{{ formatCurrency(safeBill.totalAmount) }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">Amount Paid:</span>
+                <span class="value paid">{{ formatCurrency(safeBill.paidAmount) }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">Amount Pending:</span>
+                <span class="value pending">{{ formatCurrency(safeBill.pendingAmount) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Fee Heads -->
+          <div class="detailed-section">
+            <h3>Fee Head Breakdown</h3>
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Fee Head</th>
+                  <th>Amount</th>
+                  <th>Paid</th>
+                  <th>Pending</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let head of reportData()?.feeHeads">
+                  <td>{{ head.name }}</td>
+                  <td>{{ formatCurrency(head.amount) }}</td>
+                  <td class="paid">{{ formatCurrency(head.paid) }}</td>
+                  <td class="pending">{{ formatCurrency(head.pending) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Payment History -->
+          <div class="detailed-section">
+            <h3>Payment History ({{ safePayments.length }} transactions)</h3>
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Receipt No.</th>
+                  <th>Amount</th>
+                  <th>Mode</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let payment of reportData()?.payments">
+                  <td>{{ formatDate(payment.date) }}</td>
+                  <td>{{ payment.receiptNumber }}</td>
+                  <td class="paid">{{ formatCurrency(payment.amount) }}</td>
+                  <td>{{ payment.mode | titlecase }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Installments -->
+          <div class="detailed-section">
+            <h3>Installment Schedule</h3>
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Installment</th>
+                  <th>Due Date</th>
+                  <th>Amount</th>
+                  <th>Paid</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let inst of reportData()?.installments">
+                  <td>#{{ inst.installmentNumber }}</td>
+                  <td>{{ formatDate(inst.dueDate) }}</td>
+                  <td>{{ formatCurrency(inst.amount) }}</td>
+                  <td class="paid">{{ formatCurrency(inst.paidAmount) }}</td>
+                  <td>
+                    <span class="status-badge" [style.background-color]="getStatusColor(inst.status)">
+                      {{ inst.status | titlecase }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Report Footer -->
+      <div class="report-footer">
+        <p>This is a computer-generated report. No signature required.</p>
+        <p>Generated on: {{ formatDate(currentDate) }}</p>
+      </div>
+    </div>
+  </div>
+</div>

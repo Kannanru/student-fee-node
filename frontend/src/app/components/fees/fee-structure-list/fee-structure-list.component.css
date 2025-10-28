@@ -1,0 +1,521 @@
+.fee-structure-list-container {
+  padding: 20px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Header Card */
+.header-card {
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  color: white;
+}
+
+.header-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.header-card mat-card-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 8px;
+}
+
+.header-card mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.header-card mat-card-actions button {
+  color: white;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  padding: 20px;
+  border-left: 4px solid;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card.total {
+  border-color: #1976d2;
+  background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+}
+
+.stat-card.active {
+  border-color: #4caf50;
+  background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
+}
+
+.stat-card.inactive {
+  border-color: #f44336;
+  background: linear-gradient(135deg, #ffebee 0%, #ffffff 100%);
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-content mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+}
+
+.stat-card.total mat-icon {
+  color: #1976d2;
+}
+
+.stat-card.active mat-icon {
+  color: #4caf50;
+}
+
+.stat-card.inactive mat-icon {
+  color: #f44336;
+}
+
+.stat-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Filters Card */
+.filters-card {
+  margin-bottom: 24px;
+}
+
+.filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.filters-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: #1976d2;
+  font-size: 18px;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+/* Table Card */
+.table-card {
+  overflow: hidden;
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.error-container mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #f44336;
+}
+
+/* Table */
+.table-container {
+  overflow-x: auto;
+}
+
+.fee-structures-table {
+  width: 100%;
+}
+
+.fee-structures-table th {
+  background-color: #f5f5f5;
+  color: #1976d2;
+  font-weight: 600;
+  padding: 16px 12px;
+}
+
+.fee-structures-table td {
+  padding: 12px;
+}
+
+.element-row {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.element-row:hover {
+  background-color: #f5f5f5;
+}
+
+.element-row.expanded-row {
+  background-color: #e3f2fd;
+}
+
+.detail-row {
+  height: 0;
+}
+
+/* Table Cell Styles */
+.code-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.code-icon {
+  color: #1976d2;
+  font-size: 20px;
+}
+
+.code-text {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #333;
+}
+
+.name-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.name-cell strong {
+  color: #333;
+  font-size: 14px;
+}
+
+.name-cell small {
+  color: #666;
+  font-size: 12px;
+}
+
+.program-chip {
+  background-color: #1976d2 !important;
+  color: white !important;
+  font-weight: 500;
+}
+
+.year-cell {
+  display: flex;
+  gap: 8px;
+}
+
+.year-badge,
+.semester-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.year-badge {
+  background-color: #4caf50;
+  color: white;
+}
+
+.semester-badge {
+  background-color: #ff9800;
+  color: white;
+}
+
+.quota-chip {
+  color: white !important;
+  font-weight: 500;
+}
+
+.amount-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.amount-cell strong {
+  color: #1976d2;
+  font-size: 15px;
+}
+
+.usd-amount {
+  color: #4caf50;
+  font-size: 12px;
+}
+
+.heads-chip {
+  background-color: #f5f5f5 !important;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.active-status {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+.inactive-status {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+.active-status mat-icon,
+.inactive-status mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+/* Menu */
+.delete-action {
+  color: #f44336;
+}
+
+/* Expanded Content */
+.element-detail {
+  overflow: hidden;
+  background-color: #fafafa;
+}
+
+.expanded-content {
+  padding: 24px;
+}
+
+.expanded-content h4 {
+  margin: 0 0 20px 0;
+  color: #1976d2;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.fee-heads-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.fee-head-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  transition: box-shadow 0.3s ease;
+}
+
+.fee-head-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.fee-head-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.fee-head-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.category-mini-chip {
+  font-size: 10px;
+  color: white !important;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  height: auto;
+}
+
+.fee-head-amounts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.amount-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.amount-row .label {
+  color: #666;
+}
+
+.amount-row .value {
+  font-weight: 600;
+  color: #333;
+}
+
+.amount-row.tax-row .value {
+  color: #f57c00;
+}
+
+.amount-row.total-row {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e0e0e0;
+  font-size: 14px;
+}
+
+.amount-row.total-row .label {
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.amount-row.total-row .value {
+  color: #1976d2;
+  font-weight: 700;
+}
+
+.expanded-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 2px solid #e0e0e0;
+}
+
+.metadata {
+  display: flex;
+  gap: 24px;
+}
+
+.metadata small {
+  color: #666;
+  font-size: 12px;
+}
+
+.expanded-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Pagination */
+::ng-deep .mat-mdc-paginator {
+  background-color: #f5f5f5;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .filters-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .fee-heads-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .fee-structure-list-container {
+    padding: 12px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fee-heads-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fee-structures-table {
+    font-size: 12px;
+  }
+
+  .fee-structures-table th,
+  .fee-structures-table td {
+    padding: 8px 6px;
+  }
+
+  .expanded-footer {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .metadata {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-card,
+.filters-card,
+.table-card {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Print Styles */
+@media print {
+  .header-card mat-card-actions,
+  .filters-card,
+  .stat-card,
+  .fee-structures-table th:last-child,
+  .fee-structures-table td:last-child {
+    display: none !important;
+  }
+
+  .table-card {
+    box-shadow: none;
+  }
+}

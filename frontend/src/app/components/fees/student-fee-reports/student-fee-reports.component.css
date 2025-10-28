@@ -1,0 +1,409 @@
+.reports-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #f5f5f5;
+}
+
+/* Loading and Error States */
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.error-container mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+}
+
+/* Actions Header */
+.actions-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  background: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.actions-header h2 {
+  margin: 0;
+  flex: 1;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.report-type-select {
+  width: 250px;
+  margin-bottom: -1.25em;
+}
+
+.action-buttons button mat-icon {
+  margin-right: 8px;
+}
+
+/* Report Content */
+.report-content {
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Report Header */
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #2196F3;
+}
+
+.college-info h1 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  color: #2196F3;
+}
+
+.college-info p {
+  margin: 0;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.report-date p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Info Card */
+.info-card {
+  margin-bottom: 24px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-item .label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-item .value {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+/* Report Card */
+.report-card {
+  margin-bottom: 24px;
+  page-break-inside: avoid;
+}
+
+.report-card h3 {
+  margin: 24px 0 16px 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+/* Summary Section */
+.summary-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.summary-row .label {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.summary-row .value {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.total-row .value {
+  color: #2196F3;
+}
+
+.paid-row .value {
+  color: #4CAF50;
+}
+
+.pending-row .value {
+  color: #FF9800;
+}
+
+.progress-row {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.progress-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 24px;
+  background: #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2196F3 0%, #4CAF50 100%);
+  transition: width 0.3s ease;
+}
+
+.percentage {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2196F3;
+  min-width: 60px;
+  text-align: right;
+}
+
+/* Tables */
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.report-table th,
+.report-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.report-table thead th {
+  background: #f5f5f5;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+  border-bottom: 2px solid #2196F3;
+}
+
+.report-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.report-table .paid {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.report-table .pending {
+  color: #FF9800;
+  font-weight: 600;
+}
+
+.report-table .no-data {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.4);
+  font-style: italic;
+  padding: 24px;
+}
+
+.report-table tfoot {
+  border-top: 2px solid #2196F3;
+}
+
+.report-table tfoot tr {
+  background: #f5f5f5;
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Detailed Section */
+.detailed-section {
+  margin-bottom: 32px;
+  page-break-inside: avoid;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.summary-item .label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: uppercase;
+}
+
+.summary-item .value {
+  font-size: 20px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.summary-item .value.paid {
+  color: #4CAF50;
+}
+
+.summary-item .value.pending {
+  color: #FF9800;
+}
+
+/* Report Footer */
+.report-footer {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+}
+
+.report-footer p {
+  margin: 4px 0;
+}
+
+/* Print Styles */
+@media print {
+  .reports-container {
+    padding: 0;
+    background: white;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .report-content {
+    box-shadow: none;
+    padding: 20px;
+  }
+
+  .report-card {
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+
+  .report-table thead {
+    display: table-header-group;
+  }
+
+  .report-table {
+    page-break-inside: avoid;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reports-container {
+    padding: 16px;
+  }
+
+  .actions-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .report-type-select {
+    width: 100%;
+  }
+
+  .action-buttons button {
+    width: 100%;
+  }
+
+  .report-content {
+    padding: 20px;
+  }
+
+  .report-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-table {
+    font-size: 12px;
+  }
+
+  .report-table th,
+  .report-table td {
+    padding: 8px;
+  }
+}

@@ -1,0 +1,1606 @@
+/* src/app/components/students/student-detail/student-detail.component.css */
+
+.student-detail-container {
+  padding: 24px;
+  background-color: #f5f7fa;
+  min-height: calc(100vh - 120px);
+}
+
+/* Loading Container */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-container p {
+  margin-top: 16px;
+  color: #666;
+}
+
+/* Header Section */
+.header-section {
+  margin-bottom: 24px;
+}
+
+.header-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.back-button {
+  margin-top: 8px;
+  color: #1976d2;
+}
+
+.title-section {
+  flex: 1;
+}
+
+.title-section h1 {
+  margin: 0;
+  color: #1976d2;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.subtitle {
+  color: #666;
+  margin: 8px 0 0 0;
+  font-size: 14px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.header-actions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Overview Card */
+.overview-card {
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+.student-overview {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 8px;
+}
+
+.student-avatar {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #1976d2, #42a5f5);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.student-avatar mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.student-info {
+  flex: 1;
+}
+
+.student-info h2 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.info-chips {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.info-chips mat-chip {
+  font-size: 12px;
+  min-height: 28px;
+  border-radius: 14px;
+}
+
+.contact-info {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 14px;
+}
+
+.info-item mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #1976d2;
+}
+
+.student-id {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 120px;
+}
+
+.id-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.id-value {
+  font-family: 'Courier New', monospace;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Tabs Card */
+.tabs-card {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+.tab-content {
+  padding: 24px;
+}
+
+/* Info Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
+}
+
+.info-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px 0;
+  color: #1976d2;
+  font-size: 16px;
+  font-weight: 500;
+  border-bottom: 2px solid #e3f2fd;
+  padding-bottom: 8px;
+}
+
+.info-section h3 mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.info-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-row .label {
+  font-weight: 500;
+  color: #666;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.info-row .value {
+  color: #333;
+  text-align: right;
+  flex: 1;
+}
+
+.info-row .value.address {
+  text-align: left;
+  margin-left: 16px;
+  line-height: 1.4;
+}
+
+.student-id-text {
+  font-family: 'Courier New', monospace;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-chip-small {
+  font-size: 11px;
+  min-height: 24px;
+  border-radius: 12px;
+}
+
+/* Fee Summary */
+.fee-summary {
+  display: flex;
+  gap: 24px;
+  justify-content: space-around;
+  padding: 16px 0;
+}
+
+.fee-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.fee-amount {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.fee-amount.total {
+  color: #1976d2;
+}
+
+.fee-amount.paid {
+  color: #42a5f5;
+}
+
+.fee-amount.pending {
+  color: #1976d2;
+}
+
+.fee-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Fee Records */
+.fee-records {
+  display: grid;
+  gap: 16px;
+}
+
+.fee-record-card mat-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.fee-record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.fee-record-header h4 {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.fee-record-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.fee-amount-info {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.amount-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.fee-dates {
+  color: #666;
+  font-size: 14px;
+}
+
+/* No Data */
+.no-data {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.no-data-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #ccc;
+  margin-bottom: 16px;
+}
+
+.no-data h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.no-data p {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+/* Error Container */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #1976d2;
+  margin-bottom: 16px;
+}
+
+.error-container h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.error-container p {
+  margin: 8px 0 24px 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Leave Records Tab Styles */
+.leave-records-tab {
+  padding: 20px;
+}
+
+.leave-records-header {
+  margin-bottom: 24px;
+}
+
+.leave-records-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 20px;
+}
+
+.leave-records-header .subtitle {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.leave-records-container {
+  margin-top: 20px;
+}
+
+.leave-table {
+  width: 100%;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.leave-table th {
+  background: #fafafa;
+  font-weight: 600;
+  color: #333;
+  padding: 15px 12px;
+  font-size: 14px;
+}
+
+.leave-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.leave-table tr:hover {
+  background: #f5f9ff;
+}
+
+/* Date Range */
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #555;
+}
+
+.date-range mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #1976d2;
+}
+
+/* Days Chip */
+.days-chip {
+  background: #e3f2fd !important;
+  color: #1976d2 !important;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+/* Leave Type Badge */
+.leave-type-badge {
+  display: inline-block;
+  background: #f0f0f0;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+}
+
+/* Reason Cell */
+.reason-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.reason-text {
+  margin: 0;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.remarks-text {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Status Chips */
+.status-pending {
+  background: #fff3e0 !important;
+  color: #f57c00 !important;
+}
+
+.status-approved {
+  background: #e8f5e9 !important;
+  color: #2e7d32 !important;
+}
+
+.status-rejected {
+  background: #ffebee !important;
+  color: #c62828 !important;
+}
+
+/* Action Info */
+.action-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.action-by {
+  font-size: 13px;
+  color: #333;
+  font-weight: 500;
+}
+
+.action-date {
+  font-size: 11px;
+  color: #666;
+  font-style: italic;
+}
+
+.rejection-reason {
+  font-size: 12px;
+  color: #c62828;
+  font-style: italic;
+  margin-top: 2px;
+}
+
+.pending-text {
+  font-size: 12px;
+  color: #999;
+  font-style: italic;
+}
+
+/* Attendance Records Tab Styles */
+.attendance-records-tab {
+  padding: 20px;
+}
+
+.attendance-records-header {
+  margin-bottom: 24px;
+}
+
+.attendance-records-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 20px;
+}
+
+.attendance-records-header .subtitle {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.date-selector {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.date-selector mat-form-field {
+  flex: 1;
+  min-width: 250px;
+}
+
+.date-selector button {
+  height: 56px;
+  padding: 0 24px;
+}
+
+.date-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.date-display mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.attendance-records-container {
+  margin-top: 20px;
+}
+
+.attendance-table {
+  width: 100%;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-table th {
+  background: #fafafa;
+  font-weight: 600;
+  color: #333;
+  padding: 15px 12px;
+  font-size: 14px;
+}
+
+.attendance-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.attendance-table tr:hover {
+  background: #f5f9ff;
+}
+
+/* Period Cell */
+.period-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.period-cell mat-icon {
+  color: #1976d2;
+  font-size: 20px;
+}
+
+.period-number {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Subject Cell */
+.subject-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.subject-cell strong {
+  color: #333;
+  font-size: 14px;
+}
+
+.faculty-name {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Hall Chip */
+.hall-chip {
+  background: #e3f2fd !important;
+  color: #1976d2 !important;
+  font-size: 12px;
+}
+
+/* Status Chips */
+.status-present {
+  background: #e8f5e9 !important;
+  color: #2e7d32 !important;
+}
+
+.status-absent {
+  background: #ffebee !important;
+  color: #c62828 !important;
+}
+
+.status-leave {
+  background: #fff3e0 !important;
+  color: #f57c00 !important;
+}
+
+.status-late {
+  background: #fff9c4 !important;
+  color: #f57f17 !important;
+}
+
+.status-not-marked {
+  background: #f5f5f5 !important;
+  color: #757575 !important;
+}
+
+.status-pending {
+  background: #2196F3 !important;
+  color: white !important;
+}
+
+.remarks-text {
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+}
+
+.no-remarks {
+  color: #999;
+}
+
+/* Attendance Summary */
+.attendance-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+  padding: 20px;
+  background: #f5f7fa;
+  border-radius: 8px;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card mat-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+}
+
+.summary-card.present mat-icon {
+  color: #4caf50;
+}
+
+.summary-card.absent mat-icon {
+  color: #f44336;
+}
+
+.summary-card.leave mat-icon {
+  color: #ff9800;
+}
+
+.summary-card.late mat-icon {
+  color: #ffc107;
+}
+
+.summary-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-count {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+}
+
+.summary-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .student-detail-container {
+    padding: 16px;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .back-button {
+    align-self: flex-start;
+    margin-top: 0;
+  }
+  
+  .title-section h1 {
+    font-size: 24px;
+  }
+  
+  .header-actions {
+    justify-content: center;
+    margin-top: 16px;
+  }
+  
+  .student-overview {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+  
+  .student-info {
+    text-align: center;
+  }
+  
+  .contact-info {
+    justify-content: center;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .info-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  
+  .info-row .value {
+    text-align: left;
+    margin-left: 0;
+  }
+  
+  .fee-summary {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .fee-record-details {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .fee-amount-info {
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 480px) {
+  .student-detail-container {
+    padding: 12px;
+  }
+  
+  .tab-content {
+    padding: 16px;
+  }
+  
+  .info-chips mat-chip {
+    font-size: 11px;
+    min-height: 24px;
+  }
+  
+  .contact-info {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .header-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Tab Customization */
+.mat-tab-group {
+  background: white;
+}
+
+.mat-tab-label {
+  min-width: 100px;
+}
+
+.mat-tab-body-content {
+  padding: 0;
+}
+
+/* Menu Styling */
+.mat-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Fee Records Tab Styling */
+.fee-records-tab {
+  padding: 24px;
+}
+
+.semester-chips {
+  margin-bottom: 24px;
+}
+
+.semester-chips mat-chip-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.semester-chips mat-chip {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  padding: 8px 16px;
+}
+
+.semester-chips mat-chip[highlighted="true"] {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+}
+
+.semester-chips mat-chip:not([highlighted="true"]) {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.semester-chips mat-chip:not([highlighted="true"]):hover {
+  background: #e0e0e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.semester-chips mat-chip mat-icon {
+  margin-right: 6px;
+}
+
+/* Fee Heads Table */
+.fee-heads-table {
+  width: 100%;
+  margin-top: 20px;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.fee-heads-table th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 16px;
+  text-align: left;
+}
+
+.fee-heads-table td {
+  padding: 16px;
+  font-size: 14px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.fee-heads-table td mat-icon {
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+.fee-heads-table td mat-icon[color="success"] {
+  color: #10b981;
+}
+
+.fee-heads-table td mat-icon[color="disabled"] {
+  color: #9ca3af;
+}
+
+.fee-heads-table tr:hover {
+  background-color: #f9fafb;
+}
+
+/* Status Chips */
+.paid-chip {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #065f46;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid #6ee7b7;
+}
+
+.unpaid-chip {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid #fca5a5;
+}
+
+/* Fine Amount Styling */
+.fine-amount {
+  color: #dc2626;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fine-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #f59e0b;
+  cursor: help;
+}
+
+.no-fine {
+  color: #9ca3af;
+}
+
+/* Semester Stats */
+.semester-stats {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.stat.total {
+  color: #1e40af;
+}
+
+.stat.paid {
+  color: #059669;
+}
+
+.stat.fine {
+  color: #f59e0b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat.fine mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.stat.pending {
+  color: #dc2626;
+}
+
+.stat::before {
+  font-size: 12px;
+  font-weight: 400;
+  color: #64748b;
+}
+
+.stat.total::before {
+  content: 'Total Amount';
+}
+
+.stat.paid::before {
+  content: 'Paid';
+}
+
+.stat.fine::before {
+  content: 'Fine Paid';
+}
+
+.stat.pending::before {
+  content: 'Pending';
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  color: #666;
+}
+
+.loading-state mat-spinner {
+  margin-bottom: 16px;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #cbd5e1;
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  font-size: 16px;
+  margin: 8px 0;
+}
+/* ==================== INTERNAL MARKS TAB STYLES ==================== */
+
+.internal-marks-tab {
+  padding: 24px;
+}
+
+.marks-header {
+  margin-bottom: 24px;
+}
+
+.marks-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 8px 0;
+  color: #1976d2;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.marks-header h3 mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.marks-header .subtitle {
+  margin: 0;
+  color: #757575;
+  font-size: 14px;
+}
+
+.academic-year-selector {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.academic-year-selector mat-form-field {
+  min-width: 250px;
+}
+
+.marks-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+}
+
+.summary-card mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  opacity: 0.9;
+}
+
+.summary-info {
+  flex: 1;
+}
+
+.summary-value {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.summary-label {
+  font-size: 13px;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+.marks-table {
+  width: 100%;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.marks-table th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  font-size: 14px;
+  color: #424242;
+  padding: 16px 12px !important;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.marks-table td {
+  padding: 14px 12px !important;
+  font-size: 14px;
+}
+
+.marks-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.marks-input {
+  width: 120px;
+  margin: 0;
+}
+
+.marks-input ::ng-deep .mat-mdc-form-field-wrapper {
+  padding-bottom: 0;
+}
+
+.marks-input ::ng-deep .mat-mdc-text-field-wrapper {
+  padding: 0;
+}
+
+.marks-value {
+  font-weight: 600;
+  font-size: 16px;
+  color: #1976d2;
+}
+
+.percentage-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Grade Chips Styling */
+.grade-A\+,
+.grade-A {
+  background-color: #4caf50 !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.grade-B\+,
+.grade-B {
+  background-color: #2196f3 !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.grade-C {
+  background-color: #ff9800 !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.grade-D {
+  background-color: #ff5722 !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.grade-F {
+  background-color: #f44336 !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.grade-AB {
+  background-color: #9e9e9e !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.initial-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #757575;
+}
+
+.initial-state .info-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  color: #9e9e9e;
+  opacity: 0.5;
+}
+
+.initial-state h3 {
+  margin: 16px 0 8px 0;
+  color: #424242;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.initial-state p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .internal-marks-tab {
+    padding: 16px;
+  }
+
+  .marks-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .academic-year-selector {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .academic-year-selector mat-form-field,
+  .academic-year-selector button {
+    width: 100%;
+  }
+
+  .marks-table {
+    font-size: 12px;
+  }
+
+  .marks-table th,
+  .marks-table td {
+    padding: 10px 8px !important;
+  }
+
+  .summary-card {
+    padding: 16px;
+  }
+
+  .summary-value {
+    font-size: 24px;
+  }
+}
+
+/* ==================== ACHIEVEMENTS TAB STYLES ==================== */
+
+.achievements-tab {
+  padding: 24px;
+}
+
+.achievements-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.achievements-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: #1976d2;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.achievements-header h3 mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #ffc107;
+}
+
+.info-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: #e3f2fd;
+  border-left: 4px solid #2196F3;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  color: #1565c0;
+  font-size: 14px;
+}
+
+.info-banner mat-icon {
+  color: #2196F3;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.achievement-card {
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.achievement-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.achievement-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.achievement-card mat-card-header {
+  padding: 16px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.achievement-card mat-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.status-chip {
+  font-size: 12px;
+  height: 24px;
+  min-height: 24px;
+}
+
+.status-chip mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
+
+.status-approved {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+.status-pending {
+  background-color: #ff9800 !important;
+  color: white !important;
+}
+
+.status-rejected {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+.achievement-card mat-card-content {
+  padding: 16px;
+}
+
+.achievement-description {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.achievement-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #666;
+  font-size: 13px;
+}
+
+.meta-item mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #999;
+}
+
+.achievement-card mat-card-actions {
+  padding: 12px 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Admin Approval Section */
+.approval-section {
+  margin-top: 40px;
+  padding: 24px;
+  background: #fff9e6;
+  border-radius: 8px;
+  border: 2px dashed #ffc107;
+}
+
+.approval-section h4 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #f57c00;
+  margin: 0 0 24px 0;
+  font-size: 20px;
+}
+
+.approval-section h4 mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.pending-card {
+  border-left: 4px solid #ff9800;
+}
+
+.approval-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .achievements-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .achievements-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .achievements-header button {
+    width: 100%;
+  }
+
+  .achievement-card mat-card-title {
+    font-size: 16px;
+  }
+
+  .approval-actions {
+    flex-direction: column;
+  }
+
+  .approval-actions button {
+    width: 100%;
+  }
+}

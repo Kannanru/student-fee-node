@@ -1,0 +1,280 @@
+.bulk-upload-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.upload-card {
+  mat-card-header {
+    background: linear-gradient(135deg, #1976d2 0%, #2196f3 100%);
+    color: white;
+    padding: 1.5rem;
+    margin: -16px -16px 1rem -16px;
+    border-radius: 4px 4px 0 0;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.5rem;
+      margin: 0;
+
+      mat-icon {
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+  }
+}
+
+.instructions {
+  background: #f5f5f5;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+
+  h3 {
+    margin-top: 0;
+    color: #1976d2;
+  }
+
+  ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+
+    li {
+      margin-bottom: 0.5rem;
+      line-height: 1.6;
+    }
+
+    ul {
+      margin-top: 0.5rem;
+      li {
+        margin-bottom: 0.25rem;
+      }
+    }
+  }
+}
+
+.download-template {
+  margin-top: 1rem;
+  text-align: center;
+
+  button {
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+.academic-year-input {
+  margin: 2rem 0;
+
+  mat-form-field {
+    width: 300px;
+  }
+}
+
+.upload-section {
+  margin: 2rem 0;
+}
+
+.file-input-wrapper {
+  margin-bottom: 1.5rem;
+
+  input[type="file"] {
+    display: none;
+  }
+
+  .file-input-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: #e3f2fd;
+    border: 2px dashed #1976d2;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+
+    &:hover {
+      background: #bbdefb;
+      border-color: #1565c0;
+    }
+
+    mat-icon {
+      color: #1976d2;
+    }
+  }
+}
+
+.upload-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+
+  button {
+    mat-spinner {
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+.upload-summary {
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #1976d2;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &.total {
+    background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+    color: white;
+  }
+
+  &.success {
+    background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+    color: white;
+  }
+
+  &.failed {
+    background: linear-gradient(135deg, #ef5350 0%, #f44336 100%);
+    color: white;
+  }
+
+  &.already-paid {
+    background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%);
+    color: white;
+  }
+
+  &.invalid {
+    background: linear-gradient(135deg, #bdbdbd 0%, #9e9e9e 100%);
+    color: white;
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.results-table {
+  margin-top: 2rem;
+
+  .table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h4 {
+      margin: 0;
+      color: #424242;
+    }
+
+    button {
+      mat-icon {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+
+    table {
+      width: 100%;
+
+      th {
+        background: #f5f5f5;
+        font-weight: 600;
+        color: #424242;
+      }
+
+      td, th {
+        padding: 1rem;
+      }
+
+      tr:hover {
+        background: #fafafa;
+      }
+
+      mat-chip {
+        color: white;
+        font-weight: 500;
+        font-size: 0.75rem;
+        min-height: 24px;
+        padding: 4px 12px;
+      }
+    }
+  }
+}
+
+.summary-actions {
+  margin-top: 2rem;
+  text-align: center;
+
+  button {
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+mat-divider {
+  margin: 2rem 0;
+}
+
+mat-spinner {
+  ::ng-deep circle {
+    stroke: white;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .bulk-upload-container {
+    padding: 0.5rem;
+  }
+
+  .summary-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat-card .stat-value {
+    font-size: 2rem;
+  }
+
+  .academic-year-input mat-form-field {
+    width: 100%;
+  }
+}

@@ -1,0 +1,217 @@
+<div class="subject-master-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>book</mat-icon>
+        Internal Marks Subject Master
+      </mat-card-title>
+      <mat-card-subtitle>Manage subjects for internal marks assessment by department and year</mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <!-- Subject Form -->
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>{{ isEditMode() ? 'Edit Subject' : 'Add New Subject' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="subjectForm" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Subject Code</mat-label>
+            <input matInput formControlName="subjectCode" placeholder="e.g., ANAT101" maxlength="20" required>
+            <mat-hint>Unique code for the subject</mat-hint>
+            <mat-error *ngIf="subjectForm.get('subjectCode')?.hasError('required')">
+              Subject code is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Subject Name</mat-label>
+            <input matInput formControlName="subjectName" placeholder="e.g., Anatomy" maxlength="200" required>
+            <mat-error *ngIf="subjectForm.get('subjectName')?.hasError('required')">
+              Subject name is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Department</mat-label>
+            <mat-select formControlName="department" required>
+              <mat-option *ngFor="let dept of departments" [value]="dept">{{ dept }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="subjectForm.get('department')?.hasError('required')">
+              Department is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Year</mat-label>
+            <mat-select formControlName="year" required>
+              <mat-option *ngFor="let y of years" [value]="y">{{ yearLabel(y) }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="subjectForm.get('year')?.hasError('required')">
+              Year is required
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Semester removed: module uses Year-based mapping now -->
+
+          <mat-form-field appearance="outline">
+            <mat-label>Max Marks</mat-label>
+            <input matInput type="number" formControlName="maxMarks" min="1" max="1000" required>
+            <mat-error *ngIf="subjectForm.get('maxMarks')?.hasError('required')">
+              Max marks is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Passing Marks</mat-label>
+            <input matInput type="number" formControlName="passingMarks" min="0" max="1000" required>
+            <mat-error *ngIf="subjectForm.get('passingMarks')?.hasError('required')">
+              Passing marks is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Credits</mat-label>
+            <input matInput type="number" formControlName="credits" min="0" max="10">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="2" maxlength="500" placeholder="Optional description"></textarea>
+          </mat-form-field>
+        </div>
+
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="submitting()">
+            <mat-icon>{{ isEditMode() ? 'save' : 'add' }}</mat-icon>
+            {{ isEditMode() ? 'Update Subject' : 'Create Subject' }}
+          </button>
+          <button mat-button type="button" (click)="resetForm()" [disabled]="submitting()">
+            <mat-icon>clear</mat-icon>
+            Cancel
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Filters and Subject List -->
+  <mat-card class="list-card">
+    <mat-card-header>
+      <mat-card-title>Subject List ({{ filteredSubjects().length }})</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <!-- Filters -->
+      <div class="filters">
+        <mat-form-field appearance="outline">
+          <mat-label>Filter by Department</mat-label>
+          <mat-select [(value)]="selectedDepartment" (selectionChange)="selectedDepartment.set($event.value)">
+            <mat-option value="">All Departments</mat-option>
+            <mat-option *ngFor="let dept of departments" [value]="dept">{{ dept }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Filter by Year</mat-label>
+          <mat-select [(value)]="selectedYear" (selectionChange)="selectedYear.set($event.value)">
+            <mat-option [value]="null">All Years</mat-option>
+            <mat-option *ngFor="let y of years" [value]="y">{{ yearLabel(y) }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Semester filter removed: using Year-based filters only -->
+
+        <button mat-button (click)="clearFilters()">
+          <mat-icon>filter_alt_off</mat-icon>
+          Clear Filters
+        </button>
+      </div>
+
+      <!-- Subjects Table -->
+      <div class="table-container" *ngIf="!loading(); else loadingTemplate">
+        <table mat-table [dataSource]="filteredSubjects()" class="subjects-table" *ngIf="filteredSubjects().length > 0; else noDataTemplate">
+          
+          <ng-container matColumnDef="subjectCode">
+            <th mat-header-cell *matHeaderCellDef>Code</th>
+            <td mat-cell *matCellDef="let subject">
+              <strong>{{ subject.subjectCode }}</strong>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="subjectName">
+            <th mat-header-cell *matHeaderCellDef>Subject Name</th>
+            <td mat-cell *matCellDef="let subject">{{ subject.subjectName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="department">
+            <th mat-header-cell *matHeaderCellDef>Department</th>
+            <td mat-cell *matCellDef="let subject">{{ subject.department }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="year">
+            <th mat-header-cell *matHeaderCellDef>Year</th>
+            <td mat-cell *matCellDef="let subject">{{ yearLabel(subject.year) }}</td>
+          </ng-container>
+
+          <!-- Semester column removed -->
+
+          <ng-container matColumnDef="maxMarks">
+            <th mat-header-cell *matHeaderCellDef>Max Marks</th>
+            <td mat-cell *matCellDef="let subject">{{ subject.maxMarks }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="credits">
+            <th mat-header-cell *matHeaderCellDef>Credits</th>
+            <td mat-cell *matCellDef="let subject">{{ subject.credits }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let subject">
+              <mat-chip [color]="subject.isActive ? 'primary' : ''" 
+                        [class.inactive-chip]="!subject.isActive">
+                {{ subject.isActive ? 'Active' : 'Inactive' }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let subject">
+              <button mat-icon-button color="primary" (click)="editSubject(subject)" matTooltip="Edit">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button [color]="subject.isActive ? 'warn' : 'accent'" 
+                      (click)="toggleStatus(subject)" 
+                      [matTooltip]="subject.isActive ? 'Deactivate' : 'Activate'">
+                <mat-icon>{{ subject.isActive ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteSubject(subject)" matTooltip="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <ng-template #noDataTemplate>
+          <div class="no-data">
+            <mat-icon>info</mat-icon>
+            <p>No subjects found. Create your first subject using the form above.</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <ng-template #loadingTemplate>
+        <div class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p>Loading subjects...</p>
+        </div>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+</div>

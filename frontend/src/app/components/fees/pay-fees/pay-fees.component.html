@@ -1,0 +1,337 @@
+<div class="pay-fees-container">
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading fee details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error() && !loading() && !success()" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <h3>{{ error() }}</h3>
+    <button mat-raised-button color="primary" (click)="loadBillSummary()">
+      <mat-icon>refresh</mat-icon>
+      Retry
+    </button>
+  </div>
+
+  <!-- Success State -->
+  <div *ngIf="success()" class="success-container">
+    <mat-icon color="primary">check_circle</mat-icon>
+    <h2>Payment Successful!</h2>
+    <p>Your payment has been processed successfully.</p>
+    <p>Redirecting to fee details...</p>
+  </div>
+
+  <!-- Payment Form -->
+  <div *ngIf="!loading() && !error() && !success() && billSummary()" class="content">
+    <!-- Student Info Card -->
+    <mat-card class="student-info-card">
+      <mat-card-header>
+        <mat-card-title>
+          <div class="title-row">
+            <div>
+              <h2>{{ safeStudent.name }}</h2>
+              <p class="subtitle">{{ safeStudent.registerNumber }}</p>
+            </div>
+            <button mat-icon-button (click)="cancel()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="student-details">
+          <div class="detail-item">
+            <mat-icon>school</mat-icon>
+            <span>{{ safeStudent.class }} - {{ safeStudent.section }}</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon>receipt_long</mat-icon>
+            <span>{{ safeBill.billNumber }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Fee Summary -->
+    <mat-card class="fee-summary-card">
+      <mat-card-header>
+        <mat-card-title>Fee Summary</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span class="label">Total Fee:</span>
+            <span class="value total">{{ formatCurrency(safeBill.totalAmount) }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Paid:</span>
+            <span class="value paid">{{ formatCurrency(safeBill.paidAmount) }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Pending:</span>
+            <span class="value pending">{{ formatCurrency(safeBill.pendingAmount) }}</span>
+          </div>
+          <div class="summary-item" *ngIf="safeBill.overdueAmount > 0">
+            <span class="label">Overdue:</span>
+            <span class="value overdue">{{ formatCurrency(safeBill.overdueAmount) }}</span>
+          </div>
+        </div>
+
+        <!-- Quick Amount Selection -->
+        <div class="quick-amounts">
+          <h4>Quick Select:</h4>
+          <button mat-raised-button color="primary" (click)="setFullAmount()">
+            <mat-icon>account_balance_wallet</mat-icon>
+            Full Pending Amount
+          </button>
+          <div class="installments" *ngIf="billSummary()?.installments">
+            <button *ngFor="let inst of billSummary()?.installments" 
+                    mat-stroked-button 
+                    (click)="setInstallmentAmount(inst)"
+                    [disabled]="inst.status === 'paid'"
+                    class="installment-btn">
+              <mat-icon>event</mat-icon>
+              Installment #{{ inst.installmentNumber }}
+              <span class="inst-amount">{{ formatCurrency(inst.amount - inst.paidAmount) }}</span>
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Payment Form Stepper -->
+    <mat-card class="payment-form-card">
+      <mat-card-header>
+        <mat-card-title>Payment Details</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-stepper linear #stepper>
+          <!-- Step 1: Basic Payment Info -->
+          <mat-step [stepControl]="paymentForm" label="Payment Amount">
+            <form [formGroup]="paymentForm">
+              <div class="form-section">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Payment Amount</mat-label>
+                  <input matInput type="number" formControlName="amount" placeholder="Enter amount">
+                  <span matPrefix>₹&nbsp;</span>
+                  <mat-error *ngIf="paymentForm.get('amount')?.hasError('required')">
+                    Amount is required
+                  </mat-error>
+                  <mat-error *ngIf="paymentForm.get('amount')?.hasError('min')">
+                    Amount must be greater than 0
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Payment Date</mat-label>
+                  <input matInput [matDatepicker]="picker" formControlName="paymentDate">
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Remarks (Optional)</mat-label>
+                  <textarea matInput formControlName="remarks" rows="3" 
+                            placeholder="Add any remarks"></textarea>
+                </mat-form-field>
+
+                <div class="stepper-actions">
+                  <button mat-raised-button color="primary" matStepperNext>
+                    Next
+                    <mat-icon>arrow_forward</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </mat-step>
+
+          <!-- Step 2: Payment Mode -->
+          <mat-step label="Payment Mode">
+            <form [formGroup]="paymentForm">
+              <div class="form-section">
+                <h3>Select Payment Method</h3>
+                <mat-radio-group formControlName="paymentMode" class="payment-modes">
+                  <mat-radio-button *ngFor="let mode of paymentModes" [value]="mode.value">
+                    <div class="mode-option">
+                      <mat-icon>{{ mode.icon }}</mat-icon>
+                      <span>{{ mode.label }}</span>
+                    </div>
+                  </mat-radio-button>
+                </mat-radio-group>
+
+                <div class="stepper-actions">
+                  <button mat-button matStepperPrevious>
+                    <mat-icon>arrow_back</mat-icon>
+                    Back
+                  </button>
+                  <button mat-raised-button color="primary" matStepperNext 
+                          [disabled]="!paymentForm.get('paymentMode')?.value">
+                    Next
+                    <mat-icon>arrow_forward</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </mat-step>
+
+          <!-- Step 3: Payment Details (Conditional) -->
+          <mat-step [stepControl]="paymentDetailsForm" label="Additional Details" 
+                    *ngIf="requiresPaymentDetails()">
+            <form [formGroup]="paymentDetailsForm">
+              <div class="form-section">
+                <!-- Cheque Details -->
+                <div *ngIf="paymentForm.get('paymentMode')?.value === 'cheque'">
+                  <h3>Cheque Details</h3>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Cheque Number</mat-label>
+                    <input matInput formControlName="chequeNumber">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Bank Name</mat-label>
+                    <input matInput formControlName="chequeBankName">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Cheque Date</mat-label>
+                    <input matInput [matDatepicker]="chequePicker" formControlName="chequeDate">
+                    <mat-datepicker-toggle matSuffix [for]="chequePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #chequePicker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+
+                <!-- DD Details -->
+                <div *ngIf="paymentForm.get('paymentMode')?.value === 'dd'">
+                  <h3>Demand Draft Details</h3>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>DD Number</mat-label>
+                    <input matInput formControlName="ddNumber">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Bank Name</mat-label>
+                    <input matInput formControlName="ddBankName">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>DD Date</mat-label>
+                    <input matInput [matDatepicker]="ddPicker" formControlName="ddDate">
+                    <mat-datepicker-toggle matSuffix [for]="ddPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #ddPicker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+
+                <!-- Card Details -->
+                <div *ngIf="paymentForm.get('paymentMode')?.value === 'card'">
+                  <h3>Card Payment Details</h3>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Card Type</mat-label>
+                    <mat-select formControlName="cardType">
+                      <mat-option value="visa">Visa</mat-option>
+                      <mat-option value="mastercard">Mastercard</mat-option>
+                      <mat-option value="rupay">RuPay</mat-option>
+                      <mat-option value="amex">American Express</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Last 4 Digits</mat-label>
+                    <input matInput formControlName="cardLast4" maxlength="4" 
+                           placeholder="XXXX">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Transaction ID</mat-label>
+                    <input matInput formControlName="transactionId">
+                  </mat-form-field>
+                </div>
+
+                <!-- UPI Details -->
+                <div *ngIf="paymentForm.get('paymentMode')?.value === 'upi'">
+                  <h3>UPI Payment Details</h3>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>UPI ID</mat-label>
+                    <input matInput formControlName="upiId" placeholder="username@bank">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Transaction ID</mat-label>
+                    <input matInput formControlName="transactionId">
+                  </mat-form-field>
+                </div>
+
+                <!-- Net Banking Details -->
+                <div *ngIf="paymentForm.get('paymentMode')?.value === 'netbanking'">
+                  <h3>Net Banking Details</h3>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Bank Name</mat-label>
+                    <input matInput formControlName="bankName">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Transaction ID</mat-label>
+                    <input matInput formControlName="transactionId">
+                  </mat-form-field>
+                </div>
+
+                <div class="stepper-actions">
+                  <button mat-button matStepperPrevious>
+                    <mat-icon>arrow_back</mat-icon>
+                    Back
+                  </button>
+                  <button mat-raised-button color="primary" matStepperNext>
+                    Next
+                    <mat-icon>arrow_forward</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </mat-step>
+
+          <!-- Step 4: Confirmation -->
+          <mat-step label="Review & Submit">
+            <div class="form-section">
+              <h3>Payment Summary</h3>
+              <div class="confirmation-details">
+                <div class="confirm-item">
+                  <mat-icon>account_balance_wallet</mat-icon>
+                  <div>
+                    <span class="label">Amount to Pay</span>
+                    <span class="value">{{ formatCurrency(paymentForm.get('amount')?.value || 0) }}</span>
+                  </div>
+                </div>
+                <div class="confirm-item">
+                  <mat-icon>{{ getSelectedModeIcon() }}</mat-icon>
+                  <div>
+                    <span class="label">Payment Mode</span>
+                    <span class="value">{{ paymentForm.get('paymentMode')?.value | titlecase }}</span>
+                  </div>
+                </div>
+                <div class="confirm-item">
+                  <mat-icon>calendar_today</mat-icon>
+                  <div>
+                    <span class="label">Payment Date</span>
+                    <span class="value">{{ formatDate(paymentForm.get('paymentDate')?.value) }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <mat-divider></mat-divider>
+
+              <div class="stepper-actions final-actions">
+                <button mat-button matStepperPrevious>
+                  <mat-icon>arrow_back</mat-icon>
+                  Back
+                </button>
+                <button mat-button (click)="cancel()">
+                  Cancel
+                </button>
+                <button mat-raised-button color="primary" 
+                        (click)="submitPayment()"
+                        [disabled]="processing()">
+                  <mat-spinner *ngIf="processing()" diameter="20"></mat-spinner>
+                  <mat-icon *ngIf="!processing()">check</mat-icon>
+                  {{ processing() ? 'Processing...' : 'Confirm Payment' }}
+                </button>
+              </div>
+            </div>
+          </mat-step>
+        </mat-stepper>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

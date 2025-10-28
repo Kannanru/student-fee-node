@@ -1,0 +1,246 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { SocketService, AttendanceEventData, ExceptionData } from '../../../services/socket.service';
+import { HttpClient } from '@angular/common/http';
+import { Subscription } from 'rxjs';
+
+interface StudentStatus {
+  studentId: string;
+  name: string;
+  rollNumber: string;
+  status: 'Pending' | 'In' | 'Out' | 'Absent';
+  lastUpdated?: Date;
+  hallName?: string;
+}
+
+interface SessionInfo {
+  subject: string;
+  hallName: string;
+  periodNumber: number;
+  startTime: string;
+  endTime: string;
+  faculty: string;
+}
+
+@Component({
+  selector: 'app-realtime-dashboard',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTableModule,
+    MatChipsModule,
+    MatBadgeModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    MatSelectModule,
+    MatFormFieldModule
+  ],
+  templateUrl: './realtime-dashboard.component.html',
+  styleUrl: './realtime-dashboard.component.css'
+})
+export class RealtimeDashboardComponent implements OnInit, OnDestroy {
+  // Connection status
+  isConnected = false;
+  
+  // Class selection
+  selectedProgram: string = '';
+  selectedYear: string = '';
+  selectedSection: string = 'A';
+  
+  programs = ['MBBS', 'BDS', 'B.Sc Nursing'];
+  years = ['1', '2', '3', '4'];
+  sections = ['A', 'B'];
+  
+  // Session info
+  currentSession: SessionInfo | null = null;
+  
+  // Student status tracking
+  studentStatuses = new MatTableDataSource<StudentStatus>([]);
+  studentColumns = ['rollNumber', 'name', 'status', 'lastUpdated'];
+  
+  // Statistics
+  classStats = {
+    total: 0,
+    present: 0,
+    absent: 0,
+    pending: 0
+  };
+
+  private subscriptions: Subscription[] = [];
+  private absentCheckInterval: any;
+
+  constructor(
+    private socketService: SocketService,
+    private snackBar: MatSnackBar,
+    private http: HttpClient
+  ) {}
+
+  ngOnInit(): void {
+    // Connect to Socket.IO
+    this.socketService.connect();
+    
+    // Subscribe to connection status
+    this.subscriptions.push(
+      this.socketService.connected$.subscribe(connected => {
+        this.isConnected = connected;
+        if (connected) {
+          this.snackBar.open('✅ Real-time updates connected', 'Close', { duration: 3000 });
+          this.socketService.joinDashboard();
+          this.socketService.joinAttendanceStream();
+        } else {
+          this.snackBar.open('❌ Real-time updates disconnected', 'Close', { duration: 3000 });
+        }
+      })
+    );
+
+    // Subscribe to attendance events
+    this.subscriptions.push(
+      this.socketService.onAttendanceEvent().subscribe(event => {
+        this.handleAttendanceEvent(event);
+      })
+    );
+
+    // Subscribe to exceptions
+    this.subscriptions.push(
+      this.socketService.onException().subscribe(exception => {
+        this.handleException(exception);
+      })
+    );
+
+    // Subscribe to session updates
+    this.subscriptions.push(
+      this.socketService.onSessionUpdate().subscribe(update => {
+        this.handleSessionUpdate(update);
+      })
+    );
+
+    // Subscribe to dashboard updates
+    this.subscriptions.push(
+      this.socketService.onDashboardUpdate().subscribe(update => {
+        console.log('Dashboard update:', update);
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    
+    // Disconnect socket
+    this.socketService.disconnect();
+  }
+
+  handleAttendanceEvent(event: AttendanceEventData): void {
+    console.log('New attendance event:', event);
+    
+    // Add to recent events (keep last 20)
+    const currentData = this.recentEvents.data;
+    currentData.unshift(event);
+    if (currentData.length > 20) {
+      currentData.pop();
+    }
+    this.recentEvents.data = [...currentData]; // Trigger change detection
+
+    // Update statistics
+    this.todayStats.totalEvents++;
+    if (event.status === 'Present') {
+      this.todayStats.present++;
+    } else if (event.status === 'Late') {
+      this.todayStats.late++;
+    }
+
+    // Show notification
+    if (event.type === 'ATTENDANCE_MARKED' && event.student) {
+      this.snackBar.open(
+        `${event.student.name} - ${event.direction} - ${event.status}`,
+        'Close',
+        { duration: 2000 }
+      );
+    }
+  }
+
+  handleException(exception: ExceptionData): void {
+    console.log('New exception:', exception);
+    
+    // Add to exceptions (keep last 10)
+    this.exceptions.unshift(exception);
+    if (this.exceptions.length > 10) {
+      this.exceptions.pop();
+    }
+
+    // Update statistics
+    this.todayStats.exceptions++;
+
+    // Show warning notification
+    this.snackBar.open(
+      `⚠️ Exception: ${exception.reason}`,
+      'Close',
+      { duration: 3000, panelClass: ['warning-snackbar'] }
+    );
+  }
+
+  handleSessionUpdate(update: any): void {
+    console.log('Session update:', update);
+    
+    // Update or add session stats
+    const existingIndex = this.sessionStats.findIndex(s => s.sessionId === update.sessionId);
+    if (existingIndex >= 0) {
+      this.sessionStats[existingIndex] = update;
+    } else {
+      this.sessionStats.push(update);
+    }
+  }
+
+  reconnect(): void {
+    this.socketService.disconnect();
+    setTimeout(() => {
+      this.socketService.connect();
+      this.socketService.joinDashboard();
+      this.socketService.joinAttendanceStream();
+    }, 1000);
+  }
+
+  clearEvents(): void {
+    this.recentEvents.data = [];
+    this.todayStats.totalEvents = 0;
+    this.todayStats.present = 0;
+    this.todayStats.late = 0;
+  }
+
+  clearExceptions(): void {
+    this.exceptions = [];
+    this.todayStats.exceptions = 0;
+  }
+
+  getStatusColor(status: string): string {
+    switch (status?.toLowerCase()) {
+      case 'present': return 'primary';
+      case 'late': return 'accent';
+      case 'absent': return 'warn';
+      default: return '';
+    }
+  }
+
+  getDirectionIcon(direction: string): string {
+    return direction === 'IN' ? 'login' : 'logout';
+  }
+
+  formatTimestamp(timestamp: Date | string): string {
+    return new Date(timestamp).toLocaleTimeString();
+  }
+}

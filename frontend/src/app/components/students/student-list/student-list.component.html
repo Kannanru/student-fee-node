@@ -1,0 +1,24 @@
+<!-- Student List with Shared Components -->
+<div class="student-list-container">
+  <!-- Shared List View Component -->
+  <app-list-view
+    title="Students"
+    [items]="listItems"
+    [loading]="loading"
+    searchPlaceholder="Search students by name, ID, or program..."
+    [showAddButton]="true"
+    addButtonText="Add New Student"
+    [showFilters]="true"
+    [showTabs]="true"
+    [tabs]="tabs"
+    [filterOptions]="filterOptions"
+    (searchChange)="onSearchChange($event)"
+    (filterChange)="onFilterChange($event)"
+    (tabChange)="onTabChange($event)"
+    (addClick)="onAddClick()"
+    (itemClick)="onItemClick($event)"
+  (onView)="onView($event)"
+  (onEdit)="onEdit($event)"
+  (onDelete)="onDeleteById($event)">
+  </app-list-view>
+</div>

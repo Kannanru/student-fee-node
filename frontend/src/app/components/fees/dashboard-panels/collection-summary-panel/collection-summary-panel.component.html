@@ -1,0 +1,160 @@
+<mat-card class="collection-summary-panel">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>bar_chart</mat-icon>
+      Collection Summary
+    </mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div *ngIf="loading" class="loading-container">
+      <div class="skeleton-section" *ngFor="let i of [1,2,3]"></div>
+    </div>
+
+    <div *ngIf="!loading && !summary" class="empty-state">
+      <mat-icon>analytics</mat-icon>
+      <h3>No Data Available</h3>
+      <p>Collection summary data not available.</p>
+    </div>
+
+    <div *ngIf="!loading && summary" class="summary-content">
+      
+      <!-- Total Summary Banner -->
+      <div class="total-banner">
+        <div class="total-item">
+          <div class="total-label">Total Collection</div>
+          <div class="total-value">{{ formatCurrency(summary.summary.totalAmount) }}</div>
+        </div>
+        <div class="divider"></div>
+        <div class="total-item">
+          <div class="total-label">Total Payments</div>
+          <div class="total-value">{{ summary.summary.totalPayments }}</div>
+        </div>
+      </div>
+
+      <mat-tab-group class="summary-tabs">
+        
+        <!-- By Fee Head Tab -->
+        <mat-tab label="By Fee Head">
+          <div class="tab-content">
+            <div *ngIf="summary.byHead.length === 0" class="no-data">
+              No fee head data available
+            </div>
+            <div *ngIf="summary.byHead.length > 0" class="breakdown-list">
+              <div class="breakdown-item" *ngFor="let item of summary.byHead">
+                <div class="item-header">
+                  <div class="item-info">
+                    <mat-icon class="item-icon">receipt</mat-icon>
+                    <div>
+                      <div class="item-label">{{ item.headName }}</div>
+                      <div class="item-meta">{{ item.count }} transactions</div>
+                    </div>
+                  </div>
+                  <div class="item-stats">
+                    <div class="item-amount">{{ formatCurrency(item.amount) }}</div>
+                    <div class="item-percentage">{{ item.percentage }}</div>
+                  </div>
+                </div>
+                <div class="progress-bar">
+                  <div 
+                    class="progress-fill" 
+                    [style.width]="getBarWidth(item.amount, getMaxAmount(summary.byHead))">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- By Payment Mode Tab -->
+        <mat-tab label="By Payment Mode">
+          <div class="tab-content">
+            <div *ngIf="summary.byMode.length === 0" class="no-data">
+              No payment mode data available
+            </div>
+            <div *ngIf="summary.byMode.length > 0" class="breakdown-list">
+              <div class="breakdown-item" *ngFor="let item of summary.byMode">
+                <div class="item-header">
+                  <div class="item-info">
+                    <mat-icon class="item-icon">{{ getPaymentModeIcon(item.mode) }}</mat-icon>
+                    <div>
+                      <div class="item-label">{{ item.mode }}</div>
+                      <div class="item-meta">{{ item.count }} transactions</div>
+                    </div>
+                  </div>
+                  <div class="item-stats">
+                    <div class="item-amount">{{ formatCurrency(item.amount) }}</div>
+                    <div class="item-percentage">{{ item.percentage }}</div>
+                  </div>
+                </div>
+                <div class="progress-bar">
+                  <div 
+                    class="progress-fill mode" 
+                    [style.width]="getBarWidth(item.amount, getMaxAmount(summary.byMode))">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- By Quota Tab -->
+        <mat-tab label="By Quota">
+          <div class="tab-content">
+            <div *ngIf="summary.byQuota.length === 0" class="no-data">
+              No quota data available
+            </div>
+            <div *ngIf="summary.byQuota.length > 0" class="breakdown-list">
+              <div class="breakdown-item" *ngFor="let item of summary.byQuota">
+                <div class="item-header">
+                  <div class="item-info">
+                    <mat-chip 
+                      class="quota-chip" 
+                      [style.background-color]="getQuotaColor(item.quota)">
+                      {{ item.quota }}
+                    </mat-chip>
+                    <div class="item-meta">{{ item.count }} students</div>
+                  </div>
+                  <div class="item-stats">
+                    <div class="item-amount">{{ formatCurrency(item.amount) }}</div>
+                    <div class="item-percentage">{{ item.percentage }}</div>
+                  </div>
+                </div>
+                <div class="progress-bar">
+                  <div 
+                    class="progress-fill quota" 
+                    [style.width]="getBarWidth(item.amount, getMaxAmount(summary.byQuota))"
+                    [style.background-color]="getQuotaColor(item.quota)">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Daily Trend Tab -->
+        <mat-tab label="Daily Trend">
+          <div class="tab-content">
+            <div *ngIf="!summary.dailyTrend || summary.dailyTrend.length === 0" class="no-data">
+              No trend data available
+            </div>
+            <div *ngIf="summary.dailyTrend && summary.dailyTrend.length > 0" class="trend-chart">
+              <div class="trend-item" *ngFor="let day of summary.dailyTrend">
+                <div class="trend-date">{{ formatDate(day.date) }}</div>
+                <div class="trend-bar-container">
+                  <div 
+                    class="trend-bar" 
+                    [style.width]="getBarWidth(day.amount, getMaxAmount(summary.dailyTrend))">
+                    <div class="trend-amount">{{ formatCurrency(day.amount) }}</div>
+                  </div>
+                </div>
+                <div class="trend-count">{{ day.count }} payments</div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+      </mat-tab-group>
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,65 @@
+### Dashboard API Tests
+### Test all dashboard endpoints
+### Base URL: http://localhost:5000/api/dashboard
+
+@baseUrl = http://localhost:5000
+@token = YOUR_JWT_TOKEN_HERE
+
+### 1. Get Fee Statistics
+GET {{baseUrl}}/api/dashboard/fee-stats
+Authorization: Bearer {{token}}
+
+### 2. Get Fee Statistics with Filters
+GET {{baseUrl}}/api/dashboard/fee-stats?academicYear=2025-2026&quota=puducherry-ut
+Authorization: Bearer {{token}}
+
+### 3. Get Recent Payments (default 10)
+GET {{baseUrl}}/api/dashboard/recent-payments
+Authorization: Bearer {{token}}
+
+### 4. Get Recent Payments with Limit
+GET {{baseUrl}}/api/dashboard/recent-payments?limit=5
+Authorization: Bearer {{token}}
+
+### 5. Get Recent Payments Filtered
+GET {{baseUrl}}/api/dashboard/recent-payments?limit=20&academicYear=2025-2026&quota=nri
+Authorization: Bearer {{token}}
+
+### 6. Get Defaulters (default 10)
+GET {{baseUrl}}/api/dashboard/defaulters
+Authorization: Bearer {{token}}
+
+### 7. Get Defaulters with Filters
+GET {{baseUrl}}/api/dashboard/defaulters?limit=20&minDaysOverdue=30&department=Medicine
+Authorization: Bearer {{token}}
+
+### 8. Get Collection Summary
+GET {{baseUrl}}/api/dashboard/collection-summary
+Authorization: Bearer {{token}}
+
+### 9. Get Collection Summary with Date Range
+GET {{baseUrl}}/api/dashboard/collection-summary?startDate=2025-10-01&endDate=2025-10-17
+Authorization: Bearer {{token}}
+
+### 10. Get Collection Summary for Academic Year
+GET {{baseUrl}}/api/dashboard/collection-summary?academicYear=2025-2026
+Authorization: Bearer {{token}}
+
+### 11. Get Complete Dashboard Overview (All data in one call)
+GET {{baseUrl}}/api/dashboard/overview
+Authorization: Bearer {{token}}
+
+### 12. Get Dashboard Overview with Filters
+GET {{baseUrl}}/api/dashboard/overview?academicYear=2025-2026&department=Medicine&quota=puducherry-ut
+Authorization: Bearer {{token}}
+
+### 13. Test without Authentication (should fail)
+GET {{baseUrl}}/api/dashboard/fee-stats
+
+### 14. Get Fee Statistics - All Quotas Comparison
+GET {{baseUrl}}/api/dashboard/fee-stats?academicYear=2025-2026
+Authorization: Bearer {{token}}
+
+### 15. Get Defaulters - High Priority (>60 days)
+GET {{baseUrl}}/api/dashboard/defaulters?minDaysOverdue=60&limit=50
+Authorization: Bearer {{token}}

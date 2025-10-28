@@ -1,0 +1,200 @@
+<div class="bulk-upload-container">
+  <mat-card class="upload-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>cloud_upload</mat-icon>
+        Bulk Fee Upload
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Instructions -->
+      <div class="instructions" *ngIf="!uploadComplete()">
+        <h3>Instructions</h3>
+        <ol>
+          <li>Download the Excel template using the button below</li>
+          <li>Fill in the student fee data with the following columns:
+            <ul>
+              <li><strong>Student ID</strong> - Student's ID, enrollment number, or register number</li>
+              <li><strong>Fee Year</strong> - Academic year (e.g., "1", "2", "1st Year", "2nd Year")</li>
+              <li><strong>Payment Status</strong> - "Paid" or "Not Paid"</li>
+            </ul>
+          </li>
+          <li>Upload the completed Excel file</li>
+          <li>Review the processing summary and results</li>
+        </ol>
+
+        <div class="download-template">
+          <button mat-raised-button color="primary" (click)="downloadTemplate()">
+            <mat-icon>download</mat-icon>
+            Download Template
+          </button>
+        </div>
+      </div>
+
+      <mat-divider *ngIf="!uploadComplete()"></mat-divider>
+
+      <!-- Academic Year Input -->
+      <div class="academic-year-input" *ngIf="!uploadComplete()">
+        <mat-form-field appearance="outline">
+          <mat-label>Academic Year</mat-label>
+          <input matInput [(ngModel)]="academicYear" placeholder="2024-2025">
+          <mat-hint>Enter the academic year for fee records</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <!-- File Upload Section -->
+      <div class="upload-section" *ngIf="!uploadComplete()">
+        <div class="file-input-wrapper">
+          <input 
+            type="file" 
+            id="fileInput" 
+            accept=".xlsx,.xls" 
+            (change)="onFileSelected($event)"
+            #fileInput>
+          <label for="fileInput" class="file-input-label">
+            <mat-icon>attach_file</mat-icon>
+            <span *ngIf="!selectedFile()">Choose Excel File</span>
+            <span *ngIf="selectedFile()">{{ selectedFile()?.name }}</span>
+          </label>
+        </div>
+
+        <div class="upload-actions" *ngIf="selectedFile()">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="uploadFile()"
+            [disabled]="uploading()">
+            <mat-icon *ngIf="!uploading()">cloud_upload</mat-icon>
+            <mat-spinner *ngIf="uploading()" diameter="20"></mat-spinner>
+            {{ uploading() ? 'Uploading...' : 'Upload File' }}
+          </button>
+          
+          <button 
+            mat-button 
+            (click)="resetUpload()"
+            [disabled]="uploading()">
+            Cancel
+          </button>
+        </div>
+      </div>
+
+      <!-- Upload Summary -->
+      <div class="upload-summary" *ngIf="uploadComplete() && summary()">
+        <h3>
+          <mat-icon color="primary">assessment</mat-icon>
+          Upload Summary
+        </h3>
+
+        <div class="summary-stats">
+          <div class="stat-card total">
+            <div class="stat-value">{{ summary()!.total }}</div>
+            <div class="stat-label">Total Rows</div>
+          </div>
+
+          <div class="stat-card success">
+            <div class="stat-value">{{ summary()!.successful }}</div>
+            <div class="stat-label">Successful</div>
+          </div>
+
+          <div class="stat-card failed">
+            <div class="stat-value">{{ summary()!.failed }}</div>
+            <div class="stat-label">Failed</div>
+          </div>
+
+          <div class="stat-card already-paid">
+            <div class="stat-value">{{ summary()!.alreadyPaid }}</div>
+            <div class="stat-label">Already Paid</div>
+          </div>
+
+          <div class="stat-card invalid">
+            <div class="stat-value">{{ summary()!.invalid }}</div>
+            <div class="stat-label">Invalid Rows</div>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Results Table -->
+        <div class="results-table">
+          <div class="table-header">
+            <h4>Detailed Results</h4>
+            <button mat-button color="primary" (click)="exportResults()">
+              <mat-icon>download</mat-icon>
+              Export Results
+            </button>
+          </div>
+
+          <div class="table-wrapper">
+            <table mat-table [dataSource]="summary()!.details" class="results-table">
+              <!-- Row Number Column -->
+              <ng-container matColumnDef="rowNumber">
+                <th mat-header-cell *matHeaderCellDef>Row</th>
+                <td mat-cell *matCellDef="let element">{{ element.rowNumber }}</td>
+              </ng-container>
+
+              <!-- Student ID Column -->
+              <ng-container matColumnDef="studentId">
+                <th mat-header-cell *matHeaderCellDef>Student ID</th>
+                <td mat-cell *matCellDef="let element">{{ element.studentId }}</td>
+              </ng-container>
+
+              <!-- Year Column -->
+              <ng-container matColumnDef="year">
+                <th mat-header-cell *matHeaderCellDef>Year</th>
+                <td mat-cell *matCellDef="let element">{{ element.year }}</td>
+              </ng-container>
+
+              <!-- Status Column -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let element">
+                  <mat-chip [style.background-color]="getStatusColor(element.success)">
+                    {{ element.success ? 'Success' : 'Failed' }}
+                  </mat-chip>
+                </td>
+              </ng-container>
+
+              <!-- Message Column -->
+              <ng-container matColumnDef="message">
+                <th mat-header-cell *matHeaderCellDef>Message</th>
+                <td mat-cell *matCellDef="let element">
+                  <span [matTooltip]="element.message">
+                    {{ element.message }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <!-- Bill Number Column -->
+              <ng-container matColumnDef="billNumber">
+                <th mat-header-cell *matHeaderCellDef>Bill Number</th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.billNumber || '—' }}
+                </td>
+              </ng-container>
+
+              <!-- Receipt Number Column -->
+              <ng-container matColumnDef="receiptNumber">
+                <th mat-header-cell *matHeaderCellDef>Receipt Number</th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.receiptNumber || '—' }}
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="summary-actions">
+          <button mat-raised-button color="primary" (click)="resetUpload()">
+            <mat-icon>refresh</mat-icon>
+            Upload Another File
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

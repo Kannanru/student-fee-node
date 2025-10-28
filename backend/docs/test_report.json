@@ -1,0 +1,366 @@
+{
+  "title": "MGDC API Test Report",
+  "baseUrl": "http://127.0.0.1:64268",
+  "date": "2025-10-16T10:41:41.697Z",
+  "totals": {
+    "pass": 6,
+    "fail": 19,
+    "skipped": 3,
+    "durationMs": 724
+  },
+  "tests": [
+    {
+      "title": "Health: GET /api/health",
+      "module": "Health",
+      "method": "GET",
+      "path": "/api/health",
+      "scenario": "",
+      "status": "PASS",
+      "durationMs": 9,
+      "request": null,
+      "response": {
+        "status": "OK",
+        "message": "Backend is running."
+      },
+      "error": null
+    },
+    {
+      "title": "Students: POST /api/students/login (happy path)",
+      "module": "Students",
+      "method": "POST",
+      "path": "/api/students/login",
+      "scenario": "(happy path)",
+      "status": "FAIL",
+      "durationMs": 187,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 200)"
+    },
+    {
+      "title": "Students: POST /api/students/login (wrong password → 401)",
+      "module": "Students",
+      "method": "POST",
+      "path": "/api/students/login",
+      "scenario": "(wrong password → 401)",
+      "status": "PASS",
+      "durationMs": 15,
+      "request": {
+        "email": "student@example.com",
+        "password": "WrongPass"
+      },
+      "response": {
+        "success": false,
+        "message": "Invalid email or password"
+      },
+      "error": null
+    },
+    {
+      "title": "Auth: POST /api/auth/register (happy path)",
+      "module": "Auth",
+      "method": "POST",
+      "path": "/api/auth/register",
+      "scenario": "(happy path)",
+      "status": "FAIL",
+      "durationMs": 32,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 500 (expected 201/200)"
+    },
+    {
+      "title": "Auth: POST /api/auth/login (happy path)",
+      "module": "Auth",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "scenario": "(happy path)",
+      "status": "FAIL",
+      "durationMs": 18,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 500 (expected 200)"
+    },
+    {
+      "title": "Students: GET /api/students without token → 401",
+      "module": "Students",
+      "method": "GET",
+      "path": "/api/students",
+      "scenario": "without token → 401",
+      "status": "PASS",
+      "durationMs": 7,
+      "request": null,
+      "response": {
+        "message": "No token provided"
+      },
+      "error": null
+    },
+    {
+      "title": "Students: GET /api/students (happy path)",
+      "module": "Students",
+      "method": "GET",
+      "path": "/api/students",
+      "scenario": "(happy path)",
+      "status": "FAIL",
+      "durationMs": 61,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 200)"
+    },
+    {
+      "title": "Fees: POST /api/fees/structure missing fields → 400",
+      "module": "Fees",
+      "method": "POST",
+      "path": "/api/fees/structure",
+      "scenario": "missing fields → 400",
+      "status": "FAIL",
+      "durationMs": 22,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 400)"
+    },
+    {
+      "title": "Fees: POST /api/fees/structure happy path",
+      "module": "Fees",
+      "method": "POST",
+      "path": "/api/fees/structure",
+      "scenario": "happy path",
+      "status": "FAIL",
+      "durationMs": 6,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 201/409)"
+    },
+    {
+      "title": "Fees: GET /api/fees/student/:studentId (happy path)",
+      "module": "Fees",
+      "method": "GET",
+      "path": "/api/fees/student/:studentId",
+      "scenario": "(happy path)",
+      "status": "FAIL",
+      "durationMs": 20,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 200/404)"
+    },
+    {
+      "title": "Fees: POST /api/fees/:feeId/payment amount > due → 400",
+      "module": "Fees",
+      "method": "POST",
+      "path": "/api/fees/:feeId/payment",
+      "scenario": "amount > due → 400",
+      "status": "SKIPPED",
+      "durationMs": 0,
+      "request": null,
+      "response": null,
+      "error": null
+    },
+    {
+      "title": "Fees: POST /api/fees/:feeId/payment happy path",
+      "module": "Fees",
+      "method": "POST",
+      "path": "/api/fees/:feeId/payment",
+      "scenario": "happy path",
+      "status": "SKIPPED",
+      "durationMs": 0,
+      "request": null,
+      "response": null,
+      "error": null
+    },
+    {
+      "title": "Penalty: POST /api/penalty-config missing fields → 400",
+      "module": "Penalty",
+      "method": "POST",
+      "path": "/api/penalty-config",
+      "scenario": "missing fields → 400",
+      "status": "FAIL",
+      "durationMs": 18,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 400)"
+    },
+    {
+      "title": "Penalty: POST /api/penalty-config happy path",
+      "module": "Penalty",
+      "method": "POST",
+      "path": "/api/penalty-config",
+      "scenario": "happy path",
+      "status": "FAIL",
+      "durationMs": 6,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 201/409)"
+    },
+    {
+      "title": "Penalty: GET /api/penalty-config",
+      "module": "Penalty",
+      "method": "GET",
+      "path": "/api/penalty-config",
+      "scenario": "",
+      "status": "FAIL",
+      "durationMs": 6,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 200)"
+    },
+    {
+      "title": "Timetable: POST /api/timetable happy path",
+      "module": "Timetable",
+      "method": "POST",
+      "path": "/api/timetable",
+      "scenario": "happy path",
+      "status": "FAIL",
+      "durationMs": 15,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 201/200)"
+    },
+    {
+      "title": "Timetable: GET /api/timetable",
+      "module": "Timetable",
+      "method": "GET",
+      "path": "/api/timetable",
+      "scenario": "",
+      "status": "FAIL",
+      "durationMs": 42,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 200)"
+    },
+    {
+      "title": "Attendance: POST /api/attendance/record happy path",
+      "module": "Attendance",
+      "method": "POST",
+      "path": "/api/attendance/record",
+      "scenario": "happy path",
+      "status": "FAIL",
+      "durationMs": 22,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 200/201)"
+    },
+    {
+      "title": "Attendance: GET /api/attendance/student/:id/daily",
+      "module": "Attendance",
+      "method": "GET",
+      "path": "/api/attendance/student/:id/daily",
+      "scenario": "",
+      "status": "FAIL",
+      "durationMs": 51,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 200/404)"
+    },
+    {
+      "title": "Attendance: GET /api/attendance/admin/occupancy",
+      "module": "Attendance",
+      "method": "GET",
+      "path": "/api/attendance/admin/occupancy",
+      "scenario": "",
+      "status": "FAIL",
+      "durationMs": 34,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 200)"
+    },
+    {
+      "title": "Attendance: GET /api/attendance/admin/export.pdf returns PDF",
+      "module": "Attendance",
+      "method": "GET",
+      "path": "/api/attendance/admin/export.pdf",
+      "scenario": "returns PDF",
+      "status": "FAIL",
+      "durationMs": 27,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 200)"
+    },
+    {
+      "title": "Employees: GET /api/employees unauthorized → 401",
+      "module": "Employees",
+      "method": "GET",
+      "path": "/api/employees",
+      "scenario": "unauthorized → 401",
+      "status": "PASS",
+      "durationMs": 13,
+      "request": null,
+      "response": {
+        "message": "No token provided"
+      },
+      "error": null
+    },
+    {
+      "title": "Employees: POST /api/employees missing fields → 400",
+      "module": "Employees",
+      "method": "POST",
+      "path": "/api/employees",
+      "scenario": "missing fields → 400",
+      "status": "FAIL",
+      "durationMs": 8,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 400)"
+    },
+    {
+      "title": "Employees: POST /api/employees happy path",
+      "module": "Employees",
+      "method": "POST",
+      "path": "/api/employees",
+      "scenario": "happy path",
+      "status": "FAIL",
+      "durationMs": 5,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 201/200)"
+    },
+    {
+      "title": "Employees: GET /api/employees (happy path)",
+      "module": "Employees",
+      "method": "GET",
+      "path": "/api/employees",
+      "scenario": "(happy path)",
+      "status": "FAIL",
+      "durationMs": 22,
+      "request": null,
+      "response": null,
+      "error": "Unexpected status 401 (expected 200)"
+    },
+    {
+      "title": "Razorpay: skipped (set TEST_INCLUDE_RAZORPAY=1 to enable)",
+      "module": "Razorpay",
+      "method": "",
+      "path": "",
+      "scenario": "skipped (set TEST_INCLUDE_RAZORPAY=1 to enable)",
+      "status": "SKIPPED",
+      "durationMs": 0,
+      "request": null,
+      "response": null,
+      "error": null
+    },
+    {
+      "title": "Admin: GET /admin/docs",
+      "module": "Admin",
+      "method": "GET",
+      "path": "/admin/docs",
+      "scenario": "",
+      "status": "PASS",
+      "durationMs": 54,
+      "request": null,
+      "response": {
+        "contentType": "text/html; charset=UTF-8"
+      },
+      "error": null
+    },
+    {
+      "title": "Admin: GET /admin/home",
+      "module": "Admin",
+      "method": "GET",
+      "path": "/admin/home",
+      "scenario": "",
+      "status": "PASS",
+      "durationMs": 24,
+      "request": null,
+      "response": {
+        "contentType": "text/html; charset=UTF-8"
+      },
+      "error": null
+    }
+  ]
+}

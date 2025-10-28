@@ -1,0 +1,9 @@
+.quota-form-container { padding: 24px; max-width: 900px; margin: 0 auto; }
+.header-section { margin-bottom: 24px; }
+.header-section h1 { display: flex; align-items: center; gap: 12px; margin: 0; font-size: 28px; font-weight: 600; color: #1976d2; }
+.subtitle { margin: 8px 0 0 44px; color: #666; font-size: 14px; }
+mat-card { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
+.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.full-width { grid-column: 1 / -1; }
+.form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e0e0e0; }
+@media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }

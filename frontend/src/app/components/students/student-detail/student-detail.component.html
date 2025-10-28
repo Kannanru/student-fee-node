@@ -1,0 +1,965 @@
+<!-- src/app/components/students/student-detail/student-detail.component.html -->
+<div class="student-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading student details...</p>
+  </div>
+
+  <!-- Student Details -->
+  <div *ngIf="!loading && student" class="details-container">
+    
+    <!-- Header Section -->
+    <div class="header-section">
+      <div class="header-content">
+        <button mat-icon-button (click)="goBack()" class="back-button">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        
+        <div class="title-section">
+          <h1>Student Details</h1>
+          <p class="subtitle">Complete information and records</p>
+        </div>
+        
+        <div class="header-actions">
+          <button mat-stroked-button (click)="editStudent()">
+            <mat-icon>edit</mat-icon>
+            Edit
+          </button>
+          
+          <button mat-button [matMenuTriggerFor]="actionsMenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          
+          <mat-menu #actionsMenu="matMenu">
+            <button mat-menu-item (click)="deleteStudent()">
+              <mat-icon color="warn">delete</mat-icon>
+              Delete Student
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student Overview Card -->
+    <mat-card class="overview-card">
+      <mat-card-content>
+        <div class="student-overview">
+          <div class="student-avatar">
+            <mat-icon>person</mat-icon>
+          </div>
+          
+          <div class="student-info">
+            <h2>{{ student.firstName }} {{ student.lastName }}</h2>
+            <div class="info-chips">
+              <mat-chip [style.background-color]="getStatusColor(student.status)" [style.color]="'white'">
+                {{ student.status | titlecase }}
+              </mat-chip>
+              <mat-chip>{{ student.programName }} - Sem {{ student.semester }}</mat-chip>
+              <mat-chip *ngIf="student.section">Section: {{ student.section }}</mat-chip>
+              <mat-chip *ngIf="student.rollNumber">Roll No: {{ student.rollNumber }}</mat-chip>
+            </div>
+            <div class="contact-info">
+              <span class="info-item">
+                <mat-icon>phone</mat-icon>
+                {{ student.contactNumber }}
+              </span>
+              <span class="info-item" *ngIf="student.email">
+                <mat-icon>email</mat-icon>
+                {{ student.email }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="student-id">
+            <span class="id-label">Student ID</span>
+            <span class="id-value">{{ student.studentId }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Detailed Information Tabs -->
+    <mat-card class="tabs-card">
+      <mat-tab-group>
+        
+        <!-- Personal Information Tab -->
+        <mat-tab label="Personal Info">
+          <div class="tab-content">
+            <div class="info-grid">
+              <div class="info-section">
+                <h3>
+                  <mat-icon>person</mat-icon>
+                  Personal Details
+                </h3>
+                <div class="info-rows">
+                  <div class="info-row">
+                    <span class="label">Full Name:</span>
+                    <span class="value">{{ student.firstName }} {{ student.lastName }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Date of Birth:</span>
+                    <span class="value">{{ student.dob ? formatDate(student.dob) : 'N/A' }}</span>
+                  </div>
+                  <div class="info-row" *ngIf="getAge()">
+                    <span class="label">Age:</span>
+                    <span class="value">{{ getAge() }} years</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Gender:</span>
+                    <span class="value">{{ student.gender | titlecase }}</span>
+                  </div>
+                  <div class="info-row" *ngIf="student.bloodGroup">
+                    <span class="label">Blood Group:</span>
+                    <span class="value">{{ student.bloodGroup }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="info-section">
+                <h3>
+                  <mat-icon>contact_phone</mat-icon>
+                  Contact Information
+                </h3>
+                <div class="info-rows">
+                  <div class="info-row">
+                    <span class="label">Phone Number:</span>
+                    <span class="value">{{ student.contactNumber }}</span>
+                  </div>
+                  <div class="info-row" *ngIf="student.email">
+                    <span class="label">Email:</span>
+                    <span class="value">{{ student.email }}</span>
+                  </div>
+                  <div class="info-row" *ngIf="student.aadharNumber">
+                    <span class="label">Aadhar Number:</span>
+                    <span class="value">{{ student.aadharNumber }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Emergency Contact:</span>
+                    <span class="value">{{ student.emergencyContactName }} ({{ student.emergencyContactNumber }})</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Permanent Address:</span>
+                    <span class="value address">{{ student.permanentAddress }}</span>
+                  </div>
+                  <div class="info-row" *ngIf="student.currentAddress">
+                    <span class="label">Current Address:</span>
+                    <span class="value address">{{ student.currentAddress }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Academic Information Tab -->
+        <mat-tab label="Academic Info">
+          <div class="tab-content">
+            <div class="info-grid">
+              <div class="info-section">
+                <h3>
+                  <mat-icon>school</mat-icon>
+                  Academic Details
+                </h3>
+                <div class="info-rows">
+                  <div class="info-row">
+                    <span class="label">Student ID:</span>
+                    <span class="value student-id-text">{{ student.studentId }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Enrollment Number:</span>
+                    <span class="value">{{ student.enrollmentNumber }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Program:</span>
+                    <span class="value">{{ student.programName }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Academic Year:</span>
+                    <span class="value">{{ student.academicYear }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Semester:</span>
+                    <span class="value">{{ student.semester }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Section:</span>
+                    <span class="value">{{ student.section || 'Not Assigned' }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Roll Number:</span>
+                    <span class="value">{{ student.rollNumber || 'Not Assigned' }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Student Type:</span>
+                    <span class="value">{{ student.studentType | titlecase }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Admission Date:</span>
+                    <span class="value">{{ student.admissionDate ? formatDate(student.admissionDate) : 'N/A' }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Status:</span>
+                    <span class="value">
+                      <mat-chip 
+                        [style.background-color]="getStatusColor(student.status)"
+                        [style.color]="'white'"
+                        class="status-chip-small">
+                        {{ student.status | titlecase }}
+                      </mat-chip>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="info-section">
+                <h3>
+                  <mat-icon>attach_money</mat-icon>
+                  Fee Summary
+                </h3>
+                <div class="fee-summary">
+                  <div class="fee-stat">
+                    <span class="fee-amount total">₹{{ getTotalFees() | number }}</span>
+                    <span class="fee-label">Total Fees</span>
+                  </div>
+                  <div class="fee-stat">
+                    <span class="fee-amount paid">₹{{ getPaidFees() | number }}</span>
+                    <span class="fee-label">Paid</span>
+                  </div>
+                  <div class="fee-stat">
+                    <span class="fee-amount pending">₹{{ getPendingFees() | number }}</span>
+                    <span class="fee-label">Pending</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Guardian Information Tab -->
+        <mat-tab label="Guardian Info">
+          <div class="tab-content">
+            <div class="info-grid">
+              <div class="info-section">
+                <h3>
+                  <mat-icon>family_restroom</mat-icon>
+                  Guardian Information
+                </h3>
+                <div class="info-rows">
+                  <div class="info-row">
+                    <span class="label">Guardian Name:</span>
+                    <span class="value">{{ student.guardianName }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Guardian Contact:</span>
+                    <span class="value">{{ student.guardianContact }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="info-section">
+                <h3>
+                  <mat-icon>emergency</mat-icon>
+                  Emergency Contact
+                </h3>
+                <div class="info-rows">
+                  <div class="info-row">
+                    <span class="label">Emergency Contact Name:</span>
+                    <span class="value">{{ student.emergencyContactName }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">Emergency Contact Number:</span>
+                    <span class="value">{{ student.emergencyContactNumber }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="info-section" *ngIf="student.parentInfo">
+                <h3>
+                  <mat-icon>info</mat-icon>
+                  Additional Parent Information
+                </h3>
+                <div class="info-rows">
+                  <div class="info-row" *ngIf="student.parentInfo.fatherName">
+                    <span class="label">Father's Name:</span>
+                    <span class="value">{{ student.parentInfo.fatherName }}</span>
+                  </div>
+                  <div class="info-row" *ngIf="student.parentInfo.motherName">
+                    <span class="label">Mother's Name:</span>
+                    <span class="value">{{ student.parentInfo.motherName }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Fee Records Tab -->
+        <mat-tab label="Fee Records">
+          <div class="tab-content fee-records-tab">
+            <div class="fee-records-header">
+              <h3>
+                <mat-icon>receipt_long</mat-icon>
+                Semester-wise Fee Details
+              </h3>
+              <p class="subtitle">View payment status for all semesters</p>
+            </div>
+
+            <!-- Loading State -->
+            <div *ngIf="loadingFeeRecords" class="loading-state">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Loading fee records...</p>
+            </div>
+
+            <!-- No Data State -->
+            <div *ngIf="!loadingFeeRecords && semesters.length === 0" class="no-data">
+              <mat-icon class="no-data-icon">receipt</mat-icon>
+              <h3>No Fee Records Found</h3>
+              <p>No fee structures have been assigned to this student yet.</p>
+            </div>
+
+            <!-- Semester Selection -->
+            <div *ngIf="!loadingFeeRecords && semesters.length > 0" class="semesters-container">
+              <div class="semester-chips">
+                <mat-chip-set>
+                  <mat-chip 
+                    *ngFor="let semester of semesters" 
+                    [highlighted]="selectedSemester === semester"
+                    (click)="selectSemester(semester)"
+                    class="semester-chip">
+                    <mat-icon>school</mat-icon>
+                    Semester {{ semester }}
+                  </mat-chip>
+                </mat-chip-set>
+              </div>
+
+              <!-- Selected Semester Fee Details -->
+              <div *ngIf="selectedSemester && semesterFeeHeads.length > 0" class="semester-fee-details">
+                <div class="semester-header">
+                  <h4>Semester {{ selectedSemester }} - Fee Breakdown</h4>
+                  <div class="semester-stats">
+                    <span class="stat total">Total: ₹{{ getSemesterTotal() | number }}</span>
+                    <span class="stat paid">Paid: ₹{{ getSemesterPaid() | number }}</span>
+                    <span class="stat fine">
+                      <mat-icon>warning</mat-icon>
+                      Fine Paid: ₹{{ semesterFineTotal | number }}
+                    </span>
+                    <span class="stat pending">Pending: ₹{{ getSemesterPending() | number }}</span>
+                  </div>
+                </div>
+
+                <!-- Fee Heads Table -->
+                <table mat-table [dataSource]="semesterFeeHeads" class="fee-heads-table">
+                  
+                  <!-- Fee Head Name Column -->
+                  <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef>Fee Head</th>
+                    <td mat-cell *matCellDef="let feeHead">
+                      <div class="fee-head-name">
+                        <mat-icon>{{ feeHead.isPaid ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                        {{ feeHead.name }}
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <!-- Amount Column -->
+                  <ng-container matColumnDef="amount">
+                    <th mat-header-cell *matHeaderCellDef>Amount</th>
+                    <td mat-cell *matCellDef="let feeHead">₹{{ feeHead.totalAmount || feeHead.amount | number }}</td>
+                  </ng-container>
+
+                  <!-- Fine Amount Column -->
+                  <ng-container matColumnDef="fineAmount">
+                    <th mat-header-cell *matHeaderCellDef>Fine</th>
+                    <td mat-cell *matCellDef="let feeHead">
+                      <span *ngIf="feeHead.fineAmount && feeHead.fineAmount > 0" class="fine-amount">
+                        ₹{{ feeHead.fineAmount | number }}
+                        <mat-icon class="fine-icon" matTooltip="{{ feeHead.daysDelayed }} days × ₹{{ feeHead.finePerDay }}/day">warning</mat-icon>
+                      </span>
+                      <span *ngIf="!feeHead.fineAmount || feeHead.fineAmount === 0" class="no-fine">—</span>
+                    </td>
+                  </ng-container>
+
+                  <!-- Status Column -->
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <td mat-cell *matCellDef="let feeHead">
+                      <mat-chip [class.paid-chip]="feeHead.isPaid" [class.unpaid-chip]="!feeHead.isPaid">
+                        {{ feeHead.isPaid ? 'PAID' : 'UNPAID' }}
+                      </mat-chip>
+                    </td>
+                  </ng-container>
+
+                  <!-- Bill Number Column -->
+                  <ng-container matColumnDef="billNumber">
+                    <th mat-header-cell *matHeaderCellDef>Bill Number</th>
+                    <td mat-cell *matCellDef="let feeHead">
+                      <span *ngIf="feeHead.isPaid" class="bill-number">{{ feeHead.billNumber || 'N/A' }}</span>
+                      <span *ngIf="!feeHead.isPaid" class="no-bill">—</span>
+                    </td>
+                  </ng-container>
+
+                  <!-- Paid Date Column -->
+                  <ng-container matColumnDef="paidDate">
+                    <th mat-header-cell *matHeaderCellDef>Paid Date</th>
+                    <td mat-cell *matCellDef="let feeHead">
+                      <span *ngIf="feeHead.isPaid">{{ feeHead.paidDate | date:'dd MMM yyyy' }}</span>
+                      <span *ngIf="!feeHead.isPaid" class="no-date">—</span>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+              </div>
+
+              <!-- No Fee Heads for Selected Semester -->
+              <div *ngIf="selectedSemester && semesterFeeHeads.length === 0" class="no-data-semester">
+                <mat-icon>info</mat-icon>
+                <p>No fee structure found for Semester {{ selectedSemester }}</p>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Attendance Records Tab -->
+        <mat-tab label="Attendance Records">
+          <div class="tab-content attendance-records-tab">
+            <div class="attendance-records-header">
+              <h3>
+                <mat-icon>calendar_today</mat-icon>
+                Attendance History
+              </h3>
+              <p class="subtitle">View period-wise attendance for any date</p>
+            </div>
+
+            <!-- Date Selection -->
+            <div class="date-selector">
+              <mat-form-field appearance="outline">
+                <mat-label>Select Date</mat-label>
+                <input 
+                  matInput 
+                  [matDatepicker]="attendancePicker" 
+                  [(ngModel)]="selectedAttendanceDate"
+                  (dateChange)="loadAttendanceRecords()"
+                  [max]="maxDate">
+                <mat-datepicker-toggle matSuffix [for]="attendancePicker"></mat-datepicker-toggle>
+                <mat-datepicker #attendancePicker></mat-datepicker>
+              </mat-form-field>
+              <button mat-raised-button color="primary" (click)="loadTodayAttendance()">
+                <mat-icon>today</mat-icon>
+                Today
+              </button>
+            </div>
+
+            <!-- Loading State -->
+            <div *ngIf="loadingAttendanceRecords" class="loading-state">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Loading attendance records...</p>
+            </div>
+
+            <!-- Attendance Records Table -->
+            <div *ngIf="!loadingAttendanceRecords && attendanceRecords.length > 0" class="attendance-records-container">
+              <div class="date-display">
+                <mat-icon>event</mat-icon>
+                <strong>{{ formatAttendanceDate(selectedAttendanceDate) }}</strong>
+              </div>
+
+              <table mat-table [dataSource]="attendanceRecords" class="attendance-table">
+                
+                <!-- Period Column -->
+                <ng-container matColumnDef="period">
+                  <th mat-header-cell *matHeaderCellDef>Period</th>
+                  <td mat-cell *matCellDef="let record">
+                    <div class="period-cell">
+                      <mat-icon>schedule</mat-icon>
+                      <span class="period-number">Period {{ record.periodNumber }}</span>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <!-- Time Column -->
+                <ng-container matColumnDef="time">
+                  <th mat-header-cell *matHeaderCellDef>Time</th>
+                  <td mat-cell *matCellDef="let record">
+                    {{ record.startTime }} - {{ record.endTime }}
+                  </td>
+                </ng-container>
+
+                <!-- Subject Column -->
+                <ng-container matColumnDef="subject">
+                  <th mat-header-cell *matHeaderCellDef>Subject</th>
+                  <td mat-cell *matCellDef="let record">
+                    <div class="subject-cell">
+                      <strong>{{ record.subject }}</strong>
+                      <span class="faculty-name">{{ record.faculty }}</span>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <!-- Hall Column -->
+                <ng-container matColumnDef="hall">
+                  <th mat-header-cell *matHeaderCellDef>Hall</th>
+                  <td mat-cell *matCellDef="let record">
+                    <mat-chip class="hall-chip">{{ record.hallName }}</mat-chip>
+                  </td>
+                </ng-container>
+
+                <!-- Status Column -->
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef>Status</th>
+                  <td mat-cell *matCellDef="let record">
+                    <mat-chip [class]="getAttendanceStatusClass(record.status)">
+                      <mat-icon *ngIf="record.status === 'Present'">check_circle</mat-icon>
+                      <mat-icon *ngIf="record.status === 'Absent'">cancel</mat-icon>
+                      <mat-icon *ngIf="record.status === 'Leave'">event_busy</mat-icon>
+                      <mat-icon *ngIf="record.status === 'Late'">schedule</mat-icon>
+                      <mat-icon *ngIf="record.status === 'Pending'">hourglass_empty</mat-icon>
+                      <mat-icon *ngIf="record.status === 'Not Marked'">help_outline</mat-icon>
+                      {{ record.status }}
+                    </mat-chip>
+                  </td>
+                </ng-container>
+
+                <!-- Remarks Column -->
+                <ng-container matColumnDef="remarks">
+                  <th mat-header-cell *matHeaderCellDef>Remarks</th>
+                  <td mat-cell *matCellDef="let record">
+                    <span *ngIf="record.remarks" class="remarks-text">{{ record.remarks }}</span>
+                    <span *ngIf="!record.remarks" class="no-remarks">-</span>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="attendanceDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: attendanceDisplayedColumns"></tr>
+              </table>
+
+              <!-- Summary -->
+              <div class="attendance-summary">
+                <div class="summary-card present">
+                  <mat-icon>check_circle</mat-icon>
+                  <div class="summary-info">
+                    <span class="summary-count">{{ getAttendanceSummary('Present') }}</span>
+                    <span class="summary-label">Present</span>
+                  </div>
+                </div>
+                <div class="summary-card absent">
+                  <mat-icon>cancel</mat-icon>
+                  <div class="summary-info">
+                    <span class="summary-count">{{ getAttendanceSummary('Absent') }}</span>
+                    <span class="summary-label">Absent</span>
+                  </div>
+                </div>
+                <div class="summary-card leave">
+                  <mat-icon>event_busy</mat-icon>
+                  <div class="summary-info">
+                    <span class="summary-count">{{ getAttendanceSummary('Leave') }}</span>
+                    <span class="summary-label">Leave</span>
+                  </div>
+                </div>
+                <div class="summary-card late">
+                  <mat-icon>schedule</mat-icon>
+                  <div class="summary-info">
+                    <span class="summary-count">{{ getAttendanceSummary('Late') }}</span>
+                    <span class="summary-label">Late</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- No Attendance Records State -->
+            <div *ngIf="!loadingAttendanceRecords && attendanceRecords.length === 0" class="no-data">
+              <mat-icon class="no-data-icon">event_note</mat-icon>
+              <h3>No Attendance Records</h3>
+              <p>No attendance found for {{ formatAttendanceDate(selectedAttendanceDate) }}</p>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Leave Records Tab -->
+        <mat-tab label="Leave Records">
+          <div class="tab-content leave-records-tab">
+            <div class="leave-records-header">
+              <h3>
+                <mat-icon>event_busy</mat-icon>
+                Leave History
+              </h3>
+              <p class="subtitle">View all leave applications and their status</p>
+            </div>
+
+            <!-- Loading State -->
+            <div *ngIf="loadingLeaveRecords" class="loading-state">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Loading leave records...</p>
+            </div>
+
+            <!-- Leave Records Table -->
+            <div *ngIf="!loadingLeaveRecords && leaveRecords.length > 0" class="leave-records-container">
+              <table mat-table [dataSource]="leaveRecords" class="leave-table">
+                
+                <!-- Dates Column -->
+                <ng-container matColumnDef="dates">
+                  <th mat-header-cell *matHeaderCellDef>Leave Period</th>
+                  <td mat-cell *matCellDef="let leave">
+                    <div class="date-range">
+                      <div>{{ formatLeaveDate(leave.startDate) }}</div>
+                      <mat-icon>arrow_forward</mat-icon>
+                      <div>{{ formatLeaveDate(leave.endDate) }}</div>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <!-- Days Column -->
+                <ng-container matColumnDef="days">
+                  <th mat-header-cell *matHeaderCellDef>Days</th>
+                  <td mat-cell *matCellDef="let leave">
+                    <mat-chip class="days-chip">{{ leave.numberOfDays }} day(s)</mat-chip>
+                  </td>
+                </ng-container>
+
+                <!-- Type Column -->
+                <ng-container matColumnDef="type">
+                  <th mat-header-cell *matHeaderCellDef>Type</th>
+                  <td mat-cell *matCellDef="let leave">
+                    <span class="leave-type-badge">{{ leave.leaveType }}</span>
+                  </td>
+                </ng-container>
+
+                <!-- Reason Column -->
+                <ng-container matColumnDef="reason">
+                  <th mat-header-cell *matHeaderCellDef>Reason</th>
+                  <td mat-cell *matCellDef="let leave">
+                    <div class="reason-cell">
+                      <p class="reason-text">{{ leave.reason }}</p>
+                      <p *ngIf="leave.remarks" class="remarks-text">Note: {{ leave.remarks }}</p>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <!-- Status Column -->
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef>Status</th>
+                  <td mat-cell *matCellDef="let leave">
+                    <mat-chip [class]="getLeaveStatusClass(leave.status)">
+                      <mat-icon *ngIf="leave.status === 'pending'">pending</mat-icon>
+                      <mat-icon *ngIf="leave.status === 'approved'">check_circle</mat-icon>
+                      <mat-icon *ngIf="leave.status === 'rejected'">cancel</mat-icon>
+                      {{ leave.status | titlecase }}
+                    </mat-chip>
+                  </td>
+                </ng-container>
+
+                <!-- Approved By Column -->
+                <ng-container matColumnDef="approvedBy">
+                  <th mat-header-cell *matHeaderCellDef>Action By</th>
+                  <td mat-cell *matCellDef="let leave">
+                    <div class="action-info">
+                      <span *ngIf="leave.approvedByName" class="action-by">{{ leave.approvedByName }}</span>
+                      <span *ngIf="leave.approvalDate" class="action-date">{{ formatLeaveDate(leave.approvalDate) }}</span>
+                      <span *ngIf="leave.rejectionReason" class="rejection-reason">{{ leave.rejectionReason }}</span>
+                      <span *ngIf="!leave.approvedByName && leave.status === 'pending'" class="pending-text">Awaiting Review</span>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="leaveDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: leaveDisplayedColumns"></tr>
+              </table>
+            </div>
+
+            <!-- No Leave Records State -->
+            <div *ngIf="!loadingLeaveRecords && leaveRecords.length === 0" class="no-data">
+              <mat-icon class="no-data-icon">event_available</mat-icon>
+              <h3>No Leave Records</h3>
+              <p>This student has not applied for any leaves yet.</p>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Internal Marks Tab -->
+        <mat-tab label="Internal Marks">
+          <div class="tab-content internal-marks-tab">
+            <div class="marks-header">
+              <h3>
+                <mat-icon>grading</mat-icon>
+                Internal Assessment Marks
+              </h3>
+              <p class="subtitle">View and manage internal marks by academic year</p>
+            </div>
+
+            <!-- Academic Year Selector (year-based) -->
+            <div class="academic-year-selector">
+              <mat-form-field appearance="outline">
+                <mat-label>Select Year</mat-label>
+                <mat-select [(ngModel)]="selectedAcademicYear" (selectionChange)="loadInternalMarks()">
+                  <mat-option [value]="1">1st Year</mat-option>
+                  <mat-option [value]="2">2nd Year</mat-option>
+                  <mat-option [value]="3">3rd Year</mat-option>
+                  <mat-option [value]="4">4th Year</mat-option>
+                  <mat-option [value]="5">5th Year</mat-option>
+                  <mat-option [value]="6">6th Year</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <button mat-raised-button color="primary" (click)="loadInternalMarks()">
+                <mat-icon>refresh</mat-icon>
+                Refresh
+              </button>
+            </div>
+
+            <!-- Loading State -->
+            <div *ngIf="loadingInternalMarks" class="loading-state">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Loading internal marks...</p>
+            </div>
+
+            <!-- Marks Data Display -->
+            <div *ngIf="!loadingInternalMarks && internalMarksData" class="marks-content">
+              <!-- Summary Cards -->
+              <div class="marks-summary">
+                <div class="summary-card">
+                  <mat-icon>subject</mat-icon>
+                  <div class="summary-info">
+                    <div class="summary-value">{{ internalMarksData.summary.totalSubjects }}</div>
+                    <div class="summary-label">Total Subjects</div>
+                  </div>
+                </div>
+                <div class="summary-card">
+                  <mat-icon>check_circle</mat-icon>
+                  <div class="summary-info">
+                    <div class="summary-value">{{ internalMarksData.summary.marksEntered }}</div>
+                    <div class="summary-label">Marks Entered</div>
+                  </div>
+                </div>
+                <div class="summary-card">
+                  <mat-icon>grade</mat-icon>
+                  <div class="summary-info">
+                    <div class="summary-value">{{ internalMarksData.summary.percentage }}%</div>
+                    <div class="summary-label">Overall Percentage</div>
+                  </div>
+                </div>
+                <div class="summary-card">
+                  <mat-icon>score</mat-icon>
+                  <div class="summary-info">
+                    <div class="summary-value">{{ internalMarksData.summary.totalMarksObtained }}/{{ internalMarksData.summary.totalMaxMarks }}</div>
+                    <div class="summary-label">Total Marks</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Marks Table -->
+              <div class="table-container" *ngIf="internalMarksData.subjects.length > 0; else noSubjects">
+                <table mat-table [dataSource]="internalMarksData.subjects" class="marks-table">
+                  
+                  <!-- Subject Code Column -->
+                  <ng-container matColumnDef="subjectCode">
+                    <th mat-header-cell *matHeaderCellDef>Code</th>
+                    <td mat-cell *matCellDef="let element">
+                      <strong>{{ element.subject.subjectCode }}</strong>
+                    </td>
+                  </ng-container>
+
+                  <!-- Subject Name Column -->
+                  <ng-container matColumnDef="subjectName">
+                    <th mat-header-cell *matHeaderCellDef>Subject</th>
+                    <td mat-cell *matCellDef="let element">{{ element.subject.subjectName }}</td>
+                  </ng-container>
+
+                  <!-- Semester column removed: module is year-based -->
+
+                  <!-- Max Marks Column -->
+                  <ng-container matColumnDef="maxMarks">
+                    <th mat-header-cell *matHeaderCellDef>Max Marks</th>
+                    <td mat-cell *matCellDef="let element">{{ element.subject.maxMarks }}</td>
+                  </ng-container>
+
+                  <!-- Marks Obtained Column -->
+                  <ng-container matColumnDef="marksObtained">
+                    <th mat-header-cell *matHeaderCellDef>Marks Obtained</th>
+                    <td mat-cell *matCellDef="let element">
+                      <!-- Show input if no marks OR if editing -->
+                      <mat-form-field *ngIf="!element.marks || element.isEditing" appearance="outline" class="marks-input">
+                        <input matInput type="number" 
+                               [(ngModel)]="element.tempMarks" 
+                               [max]="element.subject.maxMarks"
+                               min="0"
+                               placeholder="Enter marks">
+                      </mat-form-field>
+                      <!-- Show marks value if not editing -->
+                      <span *ngIf="element.marks && !element.isEditing" class="marks-value">
+                        {{ element.marks.marksObtained }}
+                      </span>
+                    </td>
+                  </ng-container>
+
+                  <!-- Percentage Column -->
+                  <ng-container matColumnDef="percentage">
+                    <th mat-header-cell *matHeaderCellDef>Percentage</th>
+                    <td mat-cell *matCellDef="let element">
+                      <span *ngIf="element.marks && !element.isEditing" class="percentage-badge">
+                        {{ element.marks.percentage }}%
+                      </span>
+                      <span *ngIf="!element.marks || element.isEditing">-</span>
+                    </td>
+                  </ng-container>
+
+                  <!-- Grade Column -->
+                  <ng-container matColumnDef="grade">
+                    <th mat-header-cell *matHeaderCellDef>Grade</th>
+                    <td mat-cell *matCellDef="let element">
+                      <mat-chip *ngIf="element.marks && !element.isEditing" 
+                                [class]="'grade-' + element.marks.grade">
+                        {{ element.marks.grade }}
+                      </mat-chip>
+                      <span *ngIf="!element.marks || element.isEditing">-</span>
+                    </td>
+                  </ng-container>
+
+                  <!-- Actions Column -->
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                    <td mat-cell *matCellDef="let element">
+                      <!-- Save button (for new marks or editing) -->
+                      <button mat-icon-button color="primary" 
+                              *ngIf="!element.marks || element.isEditing"
+                              (click)="saveInternalMarks(element)"
+                              [disabled]="!element.tempMarks && element.tempMarks !== 0"
+                              matTooltip="Save marks">
+                        <mat-icon>save</mat-icon>
+                      </button>
+                      
+                      <!-- Cancel button (when editing) -->
+                      <button mat-icon-button color="warn" 
+                              *ngIf="element.isEditing"
+                              (click)="cancelEditMarks(element)"
+                              matTooltip="Cancel">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                      
+                      <!-- Edit button (when marks exist and not editing) -->
+                      <button mat-icon-button color="accent" 
+                              *ngIf="element.marks && !element.isEditing"
+                              (click)="editInternalMarks(element)"
+                              matTooltip="Edit marks">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                      
+                      <!-- Delete button (when marks exist and not editing) -->
+                      <button mat-icon-button color="warn" 
+                              *ngIf="element.marks && !element.isEditing"
+                              (click)="deleteInternalMarks(element)"
+                              matTooltip="Delete marks">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="marksColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: marksColumns;"></tr>
+                </table>
+              </div>
+
+              <ng-template #noSubjects>
+                <div class="no-data">
+                  <mat-icon class="no-data-icon">info</mat-icon>
+                  <h3>No Subjects Found</h3>
+                  <p>No subjects have been configured for {{ student.programName }} - {{ getYearLabel(selectedAcademicYear) }} for the selected year.</p>
+                </div>
+              </ng-template>
+            </div>
+
+            <!-- Initial Load State -->
+            <div *ngIf="!loadingInternalMarks && !internalMarksData" class="initial-state">
+              <mat-icon class="info-icon">grading</mat-icon>
+              <h3>Select Academic Year</h3>
+              <p>Choose an academic year from the dropdown above to view internal marks.</p>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Achievements Tab -->
+        <mat-tab label="Achievements">
+          <div class="tab-content achievements-tab">
+            <div class="achievements-header">
+              <h3>
+                <mat-icon>emoji_events</mat-icon>
+                Student Achievements
+              </h3>
+              <button mat-raised-button color="primary" (click)="openCreateAchievementDialog()">
+                <mat-icon>add</mat-icon>
+                Create Achievement
+              </button>
+            </div>
+
+            <!-- Info Banner -->
+            <div class="info-banner">
+              <mat-icon>info</mat-icon>
+              <span>Achievements you create will be sent for admin approval. Only approved achievements will be displayed here.</span>
+            </div>
+
+            <!-- Loading State -->
+            <div *ngIf="loadingAchievements" class="loading-state">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Loading achievements...</p>
+            </div>
+
+            <!-- Achievements Grid -->
+            <div *ngIf="!loadingAchievements && achievements.length > 0" class="achievements-grid">
+              <mat-card *ngFor="let achievement of achievements" class="achievement-card">
+                <img mat-card-image 
+                     [src]="achievement.imageUrl ? 'http://localhost:5000' + achievement.imageUrl : 'assets/default-achievement.svg'" 
+                     [alt]="achievement.title"
+                     class="achievement-image"
+                     (error)="$event.target.src='assets/default-achievement.svg'">
+                <mat-card-header>
+                  <mat-card-title>{{ achievement.title }}</mat-card-title>
+                  <mat-chip class="status-chip status-approved">
+                    <mat-icon>check_circle</mat-icon>
+                    Approved
+                  </mat-chip>
+                </mat-card-header>
+                <mat-card-content>
+                  <p class="achievement-description">{{ achievement.description }}</p>
+                  <div class="achievement-meta">
+                    <span class="meta-item">
+                      <mat-icon>calendar_today</mat-icon>
+                      {{ achievement.approvalDate | date:'mediumDate' }}
+                    </span>
+                    <span class="meta-item">
+                      <mat-icon>person</mat-icon>
+                      {{ achievement.createdBy?.name }}
+                    </span>
+                  </div>
+                </mat-card-content>
+                <mat-card-actions>
+                  <button mat-button color="warn" (click)="deleteAchievement(achievement._id!)">
+                    <mat-icon>delete</mat-icon>
+                    Delete
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="!loadingAchievements && achievements.length === 0" class="no-data">
+              <mat-icon class="no-data-icon">emoji_events</mat-icon>
+              <h3>No Achievements Yet</h3>
+              <p>Create your first achievement using the button above.</p>
+            </div>
+          </div>
+        </mat-tab>
+
+      </mat-tab-group>
+    </mat-card>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!loading && !student" class="error-container">
+    <mat-icon class="error-icon">error</mat-icon>
+    <h3>Student Not Found</h3>
+    <p>The requested student could not be found.</p>
+    <button mat-raised-button color="primary" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Back to Students
+    </button>
+  </div>
+</div>

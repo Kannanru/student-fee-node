@@ -1,0 +1,112 @@
+<div class="fee-head-form-container">
+  <div class="header-section">
+    <h1>
+      <mat-icon>{{ isEditMode() ? 'edit' : 'add' }}</mat-icon>
+      {{ isEditMode() ? 'Edit' : 'Create' }} Fee Head
+    </h1>
+    <p class="subtitle">{{ isEditMode() ? 'Update fee head details' : 'Add a new fee category' }}</p>
+  </div>
+
+  <mat-card>
+    <mat-card-content>
+      <form [formGroup]="feeHeadForm" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Fee Head Name</mat-label>
+            <input matInput formControlName="name" placeholder="e.g., Tuition Fee">
+            <mat-error *ngIf="feeHeadForm.get('name')?.hasError('required')">Name is required</mat-error>
+            <mat-error *ngIf="feeHeadForm.get('name')?.hasError('minlength')">Minimum 3 characters</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Code</mat-label>
+            <input matInput formControlName="code" placeholder="TUITION_FEE" [readonly]="isEditMode()">
+            <button mat-icon-button matSuffix type="button" (click)="generateCode()" *ngIf="!isEditMode()" matTooltip="Generate from name">
+              <mat-icon>auto_fix_high</mat-icon>
+            </button>
+            <mat-hint>Uppercase letters, numbers, and underscores only</mat-hint>
+            <mat-error *ngIf="feeHeadForm.get('code')?.hasError('required')">Code is required</mat-error>
+            <mat-error *ngIf="feeHeadForm.get('code')?.hasError('pattern')">Use uppercase A-Z, 0-9, and _</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Category</mat-label>
+            <mat-select formControlName="category">
+              <mat-option *ngFor="let cat of categories" [value]="cat.value">
+                {{ cat.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Frequency</mat-label>
+            <mat-select formControlName="frequency">
+              <mat-option *ngFor="let freq of frequencies" [value]="freq.value">
+                {{ freq.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="2" placeholder="Brief description"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Default Amount (₹)</mat-label>
+            <input matInput type="number" formControlName="defaultAmount" placeholder="0">
+            <span matPrefix>₹&nbsp;</span>
+            <mat-error *ngIf="feeHeadForm.get('defaultAmount')?.hasError('min')">Amount must be non-negative</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>GL Code</mat-label>
+            <input matInput formControlName="glCode" placeholder="Optional">
+            <mat-hint>For accounting integration</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Display Order</mat-label>
+            <input matInput type="number" formControlName="displayOrder" placeholder="0">
+            <mat-hint>Lower numbers appear first</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+              <mat-option *ngFor="let status of statuses" [value]="status.value">
+                {{ status.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="checkbox-group">
+          <mat-slide-toggle formControlName="taxability" color="primary">
+            Taxable (GST Applicable)
+          </mat-slide-toggle>
+
+          <mat-form-field appearance="outline" class="tax-field" *ngIf="feeHeadForm.get('taxability')?.value">
+            <mat-label>Tax Percentage</mat-label>
+            <input matInput type="number" formControlName="taxPercentage" placeholder="18">
+            <span matSuffix>%</span>
+            <mat-error *ngIf="feeHeadForm.get('taxPercentage')?.hasError('min')">Must be greater than 0</mat-error>
+            <mat-error *ngIf="feeHeadForm.get('taxPercentage')?.hasError('max')">Maximum 100%</mat-error>
+          </mat-form-field>
+
+          <mat-slide-toggle formControlName="isRefundable" color="primary">
+            Refundable
+          </mat-slide-toggle>
+        </div>
+
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="feeHeadForm.invalid || loading()">
+            <mat-spinner *ngIf="loading()" diameter="20"></mat-spinner>
+            <span *ngIf="!loading()">{{ isEditMode() ? 'Update' : 'Create' }} Fee Head</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,246 @@
+<!-- src/app/components/profile/profile.component.html -->
+<div class="profile-container">
+  <div class="profile-header">
+    <button mat-icon-button (click)="goBack()" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>User Profile</h1>
+    <div class="header-actions">
+      <button mat-button (click)="editMode = !editMode" [color]="editMode ? 'warn' : 'primary'">
+        <mat-icon>{{ editMode ? 'close' : 'edit' }}</mat-icon>
+        {{ editMode ? 'Cancel' : 'Edit Profile' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="profile-content" *ngIf="currentUser">
+    <!-- Profile Card -->
+    <mat-card class="profile-card">
+      <mat-card-header>
+        <div class="profile-avatar" mat-card-avatar>
+          <img [src]="currentUser.photo || 'assets/images/default-avatar.png'" 
+               [alt]="currentUser.name" 
+               class="avatar-image"
+               (error)="onImageError($event)">
+        </div>
+        <mat-card-title>{{ currentUser.name }}</mat-card-title>
+        <mat-card-subtitle>{{ currentUser.role | titlecase }} • {{ currentUser.email }}</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="profile-info">
+          <div class="info-row">
+            <mat-icon>person</mat-icon>
+            <span class="info-label">User ID:</span>
+            <span class="info-value">{{ currentUser.id }}</span>
+          </div>
+          
+          <div class="info-row">
+            <mat-icon>badge</mat-icon>
+            <span class="info-label">Role:</span>
+            <span class="info-value role-badge" [ngClass]="'role-' + currentUser.role">
+              {{ currentUser.role | titlecase }}
+            </span>
+          </div>
+          
+          <div class="info-row">
+            <mat-icon>schedule</mat-icon>
+            <span class="info-label">Status:</span>
+            <span class="info-value status-badge" [ngClass]="'status-' + currentUser.status">
+              {{ currentUser.status | titlecase }}
+            </span>
+          </div>
+          
+          <div class="info-row" *ngIf="currentUser.phone">
+            <mat-icon>phone</mat-icon>
+            <span class="info-label">Phone:</span>
+            <span class="info-value">{{ currentUser.phone }}</span>
+          </div>
+          
+          <div class="info-row">
+            <mat-icon>event</mat-icon>
+            <span class="info-label">Member Since:</span>
+            <span class="info-value">{{ currentUser.createdAt | date:'mediumDate' }}</span>
+          </div>
+          
+          <div class="info-row">
+            <mat-icon>update</mat-icon>
+            <span class="info-label">Last Updated:</span>
+            <span class="info-value">{{ currentUser.updatedAt | date:'short' }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Student-specific Information -->
+    <mat-card class="student-info-card" *ngIf="currentUser.role === 'student' && currentUser.studentId">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>school</mat-icon>
+        <mat-card-title>Student Information</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="profile-info">
+          <div class="info-row">
+            <mat-icon>credit_card</mat-icon>
+            <span class="info-label">Student ID:</span>
+            <span class="info-value">{{ currentUser.studentId }}</span>
+          </div>
+          
+          <div class="info-row" *ngIf="currentUser.class">
+            <mat-icon>class</mat-icon>
+            <span class="info-label">Class:</span>
+            <span class="info-value">{{ currentUser.class }} - Section {{ currentUser.section }}</span>
+          </div>
+          
+          <div class="info-row" *ngIf="currentUser.rollNumber">
+            <mat-icon>format_list_numbered</mat-icon>
+            <span class="info-label">Roll Number:</span>
+            <span class="info-value">{{ currentUser.rollNumber }}</span>
+          </div>
+          
+          <div class="info-row" *ngIf="currentUser.admissionNumber">
+            <mat-icon>confirmation_number</mat-icon>
+            <span class="info-label">Admission Number:</span>
+            <span class="info-value">{{ currentUser.admissionNumber }}</span>
+          </div>
+          
+          <div class="info-row" *ngIf="currentUser.academicYear">
+            <mat-icon>calendar_today</mat-icon>
+            <span class="info-label">Academic Year:</span>
+            <span class="info-value">{{ currentUser.academicYear }}</span>
+          </div>
+          
+          <div class="info-row" *ngIf="currentUser.feeCategory">
+            <mat-icon>attach_money</mat-icon>
+            <span class="info-label">Fee Category:</span>
+            <span class="info-value">{{ currentUser.feeCategory }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Edit Profile Form -->
+    <mat-card class="edit-profile-card" *ngIf="editMode">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>edit</mat-icon>
+        <mat-card-title>Edit Profile</mat-card-title>
+        <mat-card-subtitle>Update your profile information</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="edit-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Profile Photo URL</mat-label>
+              <input matInput formControlName="photo" placeholder="https://example.com/photo.jpg">
+              <mat-icon matSuffix>image</mat-icon>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Phone Number</mat-label>
+              <input matInput formControlName="phone" placeholder="Enter phone number">
+              <mat-icon matSuffix>phone</mat-icon>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Emergency Contact</mat-label>
+              <input matInput formControlName="emergencyContact" placeholder="Emergency contact number">
+              <mat-icon matSuffix>contact_phone</mat-icon>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Medical Information</mat-label>
+              <textarea matInput formControlName="medicalInfo" rows="3" placeholder="Any medical information or allergies"></textarea>
+              <mat-icon matSuffix>local_hospital</mat-icon>
+            </mat-form-field>
+          </div>
+          
+          <!-- Student Specific Fields -->
+          <div class="form-row" *ngIf="currentUser?.role === 'student'">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Aadhar Number</mat-label>
+              <input matInput formControlName="aadharNumber" placeholder="123456789012" maxlength="12">
+              <mat-icon matSuffix>badge</mat-icon>
+              <mat-hint>12-digit Aadhar number</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row" *ngIf="currentUser?.role === 'student'">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Permanent Address</mat-label>
+              <textarea matInput formControlName="permanentAddress" rows="3" placeholder="Enter permanent address"></textarea>
+              <mat-icon matSuffix>home</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row" *ngIf="currentUser?.role === 'student'">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Current Address</mat-label>
+              <textarea matInput formControlName="currentAddress" rows="3" placeholder="Enter current address (if different)"></textarea>
+              <mat-icon matSuffix>location_on</mat-icon>
+              <mat-hint>Leave blank if same as permanent address</mat-hint>
+            </mat-form-field>
+          </div>
+          
+          <!-- Address Section -->
+          <h3>Address Information</h3>
+          <div formGroupName="address">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Street Address</mat-label>
+                <input matInput formControlName="street" placeholder="Enter street address">
+                <mat-icon matSuffix>home</mat-icon>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>City</mat-label>
+                <input matInput formControlName="city" placeholder="Enter city">
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline">
+                <mat-label>State</mat-label>
+                <input matInput formControlName="state" placeholder="Enter state">
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>PIN Code</mat-label>
+                <input matInput formControlName="pincode" placeholder="Enter PIN code">
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline">
+                <mat-label>Country</mat-label>
+                <input matInput formControlName="country" placeholder="Enter country">
+              </mat-form-field>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit" [disabled]="profileForm.invalid || isUpdating">
+              <mat-spinner diameter="20" *ngIf="isUpdating"></mat-spinner>
+              <mat-icon *ngIf="!isUpdating">save</mat-icon>
+              {{ isUpdating ? 'Updating...' : 'Update Profile' }}
+            </button>
+            <button mat-button type="button" (click)="cancelEdit()">
+              <mat-icon>cancel</mat-icon>
+              Cancel
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="!currentUser">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading profile...</p>
+  </div>
+</div>

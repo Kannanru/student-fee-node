@@ -1,0 +1,98 @@
+<mat-card class="student-status-widget">
+  <mat-card-content>
+    <div class="widget-header">
+      <div class="widget-icon">
+        <mat-icon>school</mat-icon>
+      </div>
+      <div class="widget-title">Student Status</div>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+      <div class="skeleton-text large"></div>
+      <div class="skeleton-text medium"></div>
+      <div class="skeleton-text medium"></div>
+    </div>
+
+    <div *ngIf="!loading && data" class="widget-content">
+      <div class="total-students">
+        <div class="total-number">{{ data.total }}</div>
+        <div class="total-label">Total Students</div>
+      </div>
+
+      <div class="status-breakdown">
+        <!-- Paid Status -->
+        <div class="status-item paid">
+          <div class="status-header">
+            <div class="status-info">
+              <mat-icon class="status-icon">check_circle</mat-icon>
+              <span class="status-label">Fully Paid</span>
+            </div>
+            <div class="status-value">
+              <span class="count">{{ data.paid }}</span>
+              <span class="percentage">{{ getPercentage(data.paid) }}%</span>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill paid" [style.width]="getProgressWidth(data.paid)"></div>
+          </div>
+        </div>
+
+        <!-- Partially Paid Status -->
+        <div class="status-item partial">
+          <div class="status-header">
+            <div class="status-info">
+              <mat-icon class="status-icon">pending</mat-icon>
+              <span class="status-label">Partially Paid</span>
+            </div>
+            <div class="status-value">
+              <span class="count">{{ data.partiallyPaid }}</span>
+              <span class="percentage">{{ getPercentage(data.partiallyPaid) }}%</span>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill partial" [style.width]="getProgressWidth(data.partiallyPaid)"></div>
+          </div>
+        </div>
+
+        <!-- Pending Status -->
+        <div class="status-item pending">
+          <div class="status-header">
+            <div class="status-info">
+              <mat-icon class="status-icon">schedule</mat-icon>
+              <span class="status-label">Pending</span>
+            </div>
+            <div class="status-value">
+              <span class="count">{{ data.pending }}</span>
+              <span class="percentage">{{ getPercentage(data.pending) }}%</span>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill pending" [style.width]="getProgressWidth(data.pending)"></div>
+          </div>
+        </div>
+
+        <!-- Overdue Status -->
+        <div class="status-item overdue" *ngIf="data.overdue > 0">
+          <div class="status-header">
+            <div class="status-info">
+              <mat-icon class="status-icon">warning</mat-icon>
+              <span class="status-label">Overdue</span>
+            </div>
+            <div class="status-value">
+              <span class="count">{{ data.overdue }}</span>
+              <span class="percentage">{{ getPercentage(data.overdue) }}%</span>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill overdue" [style.width]="getProgressWidth(data.overdue)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!loading && !data" class="no-data">
+      <mat-icon>info</mat-icon>
+      <p>No data available</p>
+    </div>
+  </mat-card-content>
+</mat-card>

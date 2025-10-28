@@ -1,0 +1,297 @@
+/* src/app/components/shared/header/header.component.css */
+
+.app-header {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0;
+  min-height: 80px;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 80px;
+}
+
+/* Logo Section */
+.logo-section {
+  flex-shrink: 0;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.institution-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  background: white;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.institution-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.institution-name {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  color: white;
+  letter-spacing: -0.5px;
+}
+
+.institution-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  font-weight: 500;
+  max-width: 300px;
+  line-height: 1.2;
+}
+
+.institution-tagline {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Navigation Links */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+  margin: 0 40px;
+}
+
+.nav-links button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-transform: none;
+  min-width: auto;
+}
+
+.nav-links button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.nav-links button.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nav-links button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Header Actions */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.search-btn {
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* User Menu */
+.user-menu-btn {
+  padding: 8px;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.user-menu-btn:hover .user-avatar {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* User Menu Dropdown */
+::ng-deep .user-menu {
+  margin-top: 8px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 250px;
+}
+
+.user-menu-header {
+  padding: 20px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-avatar-large {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.user-info h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.user-info p {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+::ng-deep .user-menu .mat-mdc-menu-item {
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+::ng-deep .user-menu .mat-mdc-menu-item:hover {
+  background: rgba(59, 130, 246, 0.08);
+}
+
+::ng-deep .user-menu .logout-btn {
+  color: #ef4444;
+}
+
+::ng-deep .user-menu .logout-btn:hover {
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .nav-links {
+    margin: 0 20px;
+  }
+  
+  .nav-links button {
+    padding: 12px 16px;
+  }
+  
+  .nav-links button span {
+    display: none;
+  }
+}
+
+@media (max-width: 968px) {
+  .header-container {
+    padding: 0 16px;
+  }
+  
+  .institution-subtitle {
+    display: none;
+  }
+  
+  .institution-tagline {
+    display: none;
+  }
+  
+  .nav-links {
+    gap: 4px;
+    margin: 0 16px;
+  }
+  
+  .nav-links button {
+    padding: 10px 12px;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    min-height: 60px;
+  }
+  
+  .header-container {
+    height: 60px;
+  }
+  
+  .institution-logo {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .institution-name {
+    font-size: 20px;
+  }
+  
+  .nav-links {
+    display: none;
+  }
+  
+  .header-actions {
+    gap: 8px;
+  }
+}
+
+/* Badge Styling */
+::ng-deep .mat-badge-content {
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+}

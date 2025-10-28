@@ -1,0 +1,92 @@
+<div class="quota-form-container">
+  <div class="header-section">
+    <h1><mat-icon>{{ isEditMode() ? 'edit' : 'add' }}</mat-icon>{{ isEditMode() ? 'Edit' : 'Create' }} Quota</h1>
+    <p class="subtitle">{{ isEditMode() ? 'Update quota details' : 'Add a new admission quota' }}</p>
+  </div>
+
+  <mat-card>
+    <mat-card-content>
+      <form [formGroup]="quotaForm" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Quota Code</mat-label>
+            <mat-select formControlName="code" [disabled]="isEditMode()">
+              <mat-option *ngFor="let quota of quotaCodes" [value]="quota.value">{{ quota.label }}</mat-option>
+            </mat-select>
+            <mat-error>Quota code is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name">
+            <mat-error>Name is required (min 3 characters)</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Display Name</mat-label>
+            <input matInput formControlName="displayName" placeholder="Name shown in UI">
+            <mat-error>Display name is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="2"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Eligibility Criteria</mat-label>
+            <textarea matInput formControlName="eligibilityCriteria" rows="2" placeholder="Brief description of eligibility"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Default Currency</mat-label>
+            <mat-select formControlName="defaultCurrency">
+              <mat-option *ngFor="let curr of currencies" [value]="curr.value">{{ curr.label }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Seat Allocation</mat-label>
+            <input matInput type="number" formControlName="seatAllocation" placeholder="Total seats">
+            <mat-error>Must be non-negative</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Priority</mat-label>
+            <input matInput type="number" formControlName="priority" placeholder="Display order">
+            <mat-hint>Lower numbers appear first</mat-hint>
+          </mat-form-field>
+
+          <div class="full-width">
+            <mat-slide-toggle formControlName="requiresUSDTracking" color="primary">
+              Requires USD Tracking (Dual Currency)
+            </mat-slide-toggle>
+          </div>
+
+          <div class="full-width">
+            <mat-slide-toggle formControlName="active" color="primary">Active</mat-slide-toggle>
+          </div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>UI Color</mat-label>
+            <input matInput type="color" formControlName="metadata.color">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Icon</mat-label>
+            <input matInput formControlName="metadata.icon" placeholder="Material icon name">
+            <mat-hint>e.g., people, school, public</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="quotaForm.invalid || loading()">
+            <mat-spinner *ngIf="loading()" diameter="20"></mat-spinner>
+            <span *ngIf="!loading()">{{ isEditMode() ? 'Update' : 'Create' }} Quota</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

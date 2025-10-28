@@ -1,0 +1,48 @@
+<mat-card class="collection-widget">
+  <mat-card-content>
+    <div class="widget-header">
+      <div class="widget-icon">
+        <mat-icon>payments</mat-icon>
+      </div>
+      <div class="widget-title">Total Collection</div>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+      <div class="skeleton-text large"></div>
+      <div class="skeleton-text small"></div>
+    </div>
+
+    <div *ngIf="!loading && data" class="widget-content">
+      <div class="main-amount">
+        {{ formatCurrency(data.amount) }}
+      </div>
+      
+      <div class="sub-amount" *ngIf="data.amountUSD > 0">
+        {{ formatUSD(data.amountUSD) }}
+      </div>
+
+      <div class="widget-stats">
+        <div class="stat-item">
+          <span class="stat-label">Payments</span>
+          <span class="stat-value">{{ data.paymentsCount }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Students</span>
+          <span class="stat-value">{{ data.studentsCount }}</span>
+        </div>
+      </div>
+
+      <div class="trend-indicator" *ngIf="data.trend" [class]="getTrendClass()">
+        <mat-icon class="trend-icon">{{ getTrendIcon() }}</mat-icon>
+        <span class="trend-text">
+          {{ data.trend.percentage }} vs last period
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="!loading && !data" class="no-data">
+      <mat-icon>info</mat-icon>
+      <p>No data available</p>
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,172 @@
+<!-- Modern List View Component - Simplified to a single implementation -->
+<div class="list-view-container">
+  <!-- Header Section -->
+  <div class="list-header">
+    <div class="list-title-section">
+      <h2 class="list-title">{{ title }}</h2>
+      <span class="item-count" *ngIf="!loading">({{ items.length }})</span>
+    </div>
+    
+    <div class="list-actions">
+      <!-- Search -->
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+   <input matInput 
+     [(ngModel)]="searchTerm" 
+     (input)="onSearchChange()"
+     [placeholder]="searchPlaceholder">
+        <button *ngIf="searchTerm" 
+                matSuffix 
+                mat-icon-button 
+                (click)="searchTerm=''; onSearchChange()">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <!-- Filters -->
+      <div class="filter-section" *ngIf="showFilters && filterOptions.length > 0">
+        <mat-form-field *ngFor="let filter of filterOptions" 
+                        appearance="outline" 
+                        class="filter-field">
+          <mat-label>{{ filter.label }}</mat-label>
+          <mat-select [(value)]="selectedFilters[filter.value]" 
+                      (selectionChange)="onFilterChange(filter.value, $event.value)">
+            <mat-option value="">All</mat-option>
+            <mat-option *ngFor="let option of filter.options" [value]="option.value">
+              {{ option.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Add Button -->
+      <button *ngIf="showAddButton" 
+              mat-raised-button 
+              color="primary" 
+              class="add-button"
+              (click)="onAddClick()">
+        <mat-icon>add</mat-icon>
+        {{ addButtonText }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabs Section -->
+  <mat-tab-group *ngIf="showTabs && tabs.length > 0" 
+                 [selectedIndex]="getSelectedTabIndex()"
+                 (selectedIndexChange)="onSelectedIndexChange($event)"
+                 class="list-tabs">
+    <mat-tab *ngFor="let tab of tabs">
+      <ng-template mat-tab-label>
+        {{ tab.label }}
+        <span *ngIf="tab.count !== undefined" class="tab-count">{{ tab.count }}</span>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+
+  <!-- Loading State -->
+  <div *ngIf="loading || isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading {{ title.toLowerCase() }}...</p>
+  </div>
+
+  <!-- Items List -->
+  <div *ngIf="!loading && !isLoading" class="items-container">
+    <!-- Empty State -->
+    <div *ngIf="items.length === 0" class="empty-state">
+      <mat-icon class="empty-icon">inbox</mat-icon>
+      <h3>{{ emptyMessage }}</h3>
+      <p>Try adjusting your search or filters</p>
+      <button *ngIf="showAddButton" 
+              mat-raised-button 
+              color="primary" 
+              (click)="onAddClick()">
+        <mat-icon>add</mat-icon>
+        {{ addButtonText }}
+      </button>
+    </div>
+
+    <!-- Items Grid -->
+    <div *ngIf="items.length > 0" class="items-grid">
+      <mat-card *ngFor="let item of items" 
+                class="item-card" 
+                (click)="onItemClick(item)">
+        
+        <!-- Item Header -->
+        <div class="item-header">
+          <div class="item-avatar">
+            <div class="avatar-circle" [style.background]="generateAvatarColor(item.title || item['name'])">
+              {{ generateInitials(item.title || item['name']) }}
+            </div>
+          </div>
+          
+          <div class="item-info">
+            <h3 class="item-name">{{ item.title || item['name'] }}</h3>
+            <p class="item-subtitle" *ngIf="item.subtitle">
+              {{ item.subtitle }}
+            </p>
+            <p class="item-description" *ngIf="item.description">
+              {{ item.description }}
+            </p>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="item-actions">
+            <!-- Default Actions -->
+            <button mat-icon-button 
+                    matTooltip="View"
+                    color="primary"
+                    (click)="onActionClick('view', item, $event)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            
+            <button mat-icon-button 
+                    matTooltip="Edit"
+                    color="accent"
+                    (click)="onActionClick('edit', item, $event)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            
+            <button mat-icon-button 
+                    matTooltip="Delete"
+                    color="warn"
+                    (click)="onActionClick('delete', item, $event)">
+              <mat-icon>delete</mat-icon>
+            </button>
+            
+            <!-- Custom Actions -->
+            <button *ngFor="let action of (itemConfig?.actions || [])" 
+                    mat-icon-button 
+                    [matTooltip]="action.tooltip"
+                    [color]="action.color || 'primary'"
+                    (click)="onActionClick(action.key, item, $event)">
+              <mat-icon>{{ action.icon }}</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Item Details -->
+        <div class="item-details" *ngIf="item.metadata && item.metadata.length > 0">
+          <div *ngFor="let meta of item.metadata" class="item-field">
+            <span class="field-label">{{ meta.label }}</span>
+            <span class="field-value">{{ meta.value }}</span>
+          </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="item-tags" *ngIf="item.tags && item.tags.length > 0">
+          <mat-chip *ngFor="let tag of item.tags" class="tag-chip">
+            {{ tag }}
+          </mat-chip>
+        </div>
+
+        <!-- Status -->
+        <div class="item-footer">
+          <mat-chip [ngClass]="getStatusClass(item.status)" class="status-chip">
+            {{ item.status }}
+          </mat-chip>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>

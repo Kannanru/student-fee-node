@@ -1,0 +1,344 @@
+.student-fee-view-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Loading and Error States */
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.error-container mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+}
+
+/* Header Card */
+.header-card {
+  margin-bottom: 24px;
+}
+
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.title-row h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.subtitle {
+  margin: 4px 0 0 0;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.actions button mat-icon {
+  margin-right: 8px;
+}
+
+.student-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.info-item mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+/* Summary Cards */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.summary-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.summary-card mat-card-content {
+  padding: 24px;
+}
+
+.summary-card mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+}
+
+.summary-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.summary-card .amount {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.summary-card.total mat-icon {
+  color: #2196F3;
+}
+
+.summary-card.paid mat-icon {
+  color: #4CAF50;
+}
+
+.summary-card.paid .amount {
+  color: #4CAF50;
+}
+
+.summary-card.pending mat-icon {
+  color: #FF9800;
+}
+
+.summary-card.pending .amount {
+  color: #FF9800;
+}
+
+.summary-card.overdue mat-icon {
+  color: #F44336;
+}
+
+.summary-card.overdue .amount {
+  color: #F44336;
+}
+
+/* Progress Card */
+.progress-card {
+  margin-bottom: 24px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.percentage {
+  color: #2196F3;
+  font-size: 18px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 24px;
+  background-color: #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2196F3 0%, #4CAF50 100%);
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  color: white;
+  font-weight: 600;
+}
+
+/* Tabs */
+.tabs-card {
+  margin-bottom: 24px;
+}
+
+.tab-content {
+  padding: 24px;
+  min-height: 300px;
+}
+
+/* Tables */
+.fee-table {
+  width: 100%;
+  background: white;
+}
+
+.fee-table th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.fee-table td,
+.fee-table th {
+  padding: 16px;
+}
+
+.fee-table tr:hover {
+  background-color: #fafafa;
+}
+
+.paid-amount {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.pending-amount {
+  color: #FF9800;
+  font-weight: 600;
+}
+
+.overdue-date {
+  color: #F44336;
+  font-weight: 600;
+}
+
+.payment-mode {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-mode mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Concessions */
+.concession-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.concession-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.concession-card h4 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+}
+
+.concession-card p {
+  margin: 0 0 12px 0;
+  opacity: 0.9;
+}
+
+.concession-amount {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* No Data State */
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.no-data mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+}
+
+/* Material Chips */
+mat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+mat-chip mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .student-fee-view-container {
+    padding: 16px;
+  }
+
+  .title-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .actions button {
+    flex: 1;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .student-info {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .fee-table {
+    font-size: 12px;
+  }
+
+  .fee-table td,
+  .fee-table th {
+    padding: 8px;
+  }
+
+  .tab-content {
+    padding: 16px;
+  }
+}

@@ -1,0 +1,243 @@
+﻿<div class="fee-collection-container">
+  <div class="page-header">
+    <button mat-icon-button (click)="navigateToDashboard()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>Fee Collection</h1>
+  </div>
+
+  <form [formGroup]="paymentForm">
+    <!-- Student Selection with Search -->
+    <mat-card>
+      <mat-card-header><mat-card-title>1. Select Student</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Search Student</mat-label>
+          <input matInput 
+                 [formControl]="studentSearchControl"
+                 [matAutocomplete]="auto"
+                 placeholder="Search by name, ID, department...">
+          <mat-icon matPrefix>search</mat-icon>
+          <button mat-icon-button matSuffix *ngIf="studentSearchControl.value" (click)="clearStudentSearch()">
+            <mat-icon>clear</mat-icon>
+          </button>
+          <mat-autocomplete #auto="matAutocomplete" 
+                            (optionSelected)="onStudentSelect($event)"
+                            [displayWith]="displayStudentName">
+            <mat-option *ngFor="let student of filteredStudents()" [value]="student">
+              <div class="student-option">
+                <div class="student-name">{{ getStudentDisplayName(student) }}</div>
+                <div class="student-details">
+                  {{ student.studentId }} | {{ student.department || student.programName }} | Year {{ student.year }}
+                </div>
+              </div>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <div *ngIf="loading()" class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Fee Structure Selection -->
+    <mat-card *ngIf="selectedStudent()">
+      <mat-card-header><mat-card-title>2. Select Fee Structure</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <p><strong>Student:</strong> {{ getStudentDisplayName(selectedStudent()!) }}</p>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Select Fee Structure</mat-label>
+          <mat-select formControlName="feeStructureId" (selectionChange)="onFeeStructureSelect($event)">
+            <mat-option>Select Structure</mat-option>
+            <mat-option *ngFor="let structure of feeStructures()" [value]="structure._id">
+              {{ structure.name }} (₹{{ structure.totalAmount | number }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div *ngIf="loadingStructures()"><mat-spinner diameter="40"></mat-spinner></div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Fee Heads Selection -->
+    <mat-card *ngIf="selectedFeeStructure()">
+      <mat-card-header>
+        <mat-card-title>3. Select Fee Heads to Collect</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="summary-stats">
+          <mat-chip-set>
+            <mat-chip highlighted>Total: {{ totalFeeHeads() }}</mat-chip>
+            <mat-chip color="accent" highlighted>Paid: {{ paidFeeHeads() }}</mat-chip>
+            <mat-chip color="warn" highlighted>Unpaid: {{ unpaidFeeHeads() }}</mat-chip>
+            <mat-chip color="primary" highlighted>Selected: {{ selectedCount() }}</mat-chip>
+          </mat-chip-set>
+        </div>
+        
+        <!-- Paid Fee Heads as Cards -->
+        <div *ngIf="paidFeeHeads() > 0" class="paid-section">
+          <h3 class="section-title">
+            <mat-icon>check_circle</mat-icon>
+            Paid Fee Heads
+          </h3>
+          <div class="paid-cards-grid">
+            <mat-card *ngFor="let head of getPaidFeeHeads()" class="paid-fee-card">
+              <mat-card-content>
+                <div class="paid-card-header">
+                  <mat-icon class="paid-icon">verified</mat-icon>
+                  <span class="paid-status">PAID</span>
+                </div>
+                <h4 class="fee-name">{{ head.name }}</h4>
+                <div class="fee-amount">₹{{ (head.totalAmount || head.amount) | number }}</div>
+                <div class="bill-info">
+                  <mat-icon>receipt</mat-icon>
+                  <span>Bill: {{ head.billNumber || 'N/A' }}</span>
+                </div>
+                <div class="paid-date">
+                  <mat-icon>event</mat-icon>
+                  <span>{{ head.paidDate | date:'dd MMM yyyy' }}</span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <!-- Unpaid Fee Heads as List -->
+        <div *ngIf="unpaidFeeHeads() > 0" class="unpaid-section">
+          <h3 class="section-title">
+            <mat-icon>list</mat-icon>
+            Unpaid Fee Heads
+          </h3>
+          <div class="unpaid-fee-list">
+            <div *ngFor="let head of getUnpaidFeeHeads()" 
+                 class="unpaid-fee-item"
+                 [class.selected]="isFeeHeadSelected(head._id)">
+              <mat-checkbox 
+                [checked]="isFeeHeadSelected(head._id)" 
+                (change)="toggleFeeHead(head)"
+                class="fee-checkbox">
+                <div class="unpaid-content">
+                  <div class="unpaid-header">
+                    <span class="fee-name">{{ head.name }}</span>
+                    <span class="fee-amount">₹{{ (head.totalAmount || head.amount) | number }}</span>
+                  </div>
+                  <div *ngIf="head.description" class="fee-description">
+                    {{ head.description }}
+                  </div>
+                </div>
+              </mat-checkbox>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="loadingHeads()" class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading fee heads...</p>
+        </div>
+        
+        <div *ngIf="allPaid()" class="alert-box alert-success">
+          <mat-icon>verified</mat-icon>
+          <span>All fee heads have been paid for this structure!</span>
+        </div>
+
+        <div *ngIf="!loadingHeads() && feeHeads().length === 0" class="alert-box alert-info">
+          <mat-icon>info</mat-icon>
+          <span>No fee heads found for this structure.</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Payment Details -->
+    <mat-card *ngIf="selectedCount() > 0">
+      <mat-card-header><mat-card-title>4. Payment Details</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div class="payment-summary">
+          <h3>Payment Summary</h3>
+          <p><strong>Student:</strong> {{ getStudentDisplayName(selectedStudent()!) }}</p>
+          <p><strong>Fee Structure:</strong> {{ selectedFeeStructure()?.name }}</p>
+          <p><strong>Selected Fee Heads:</strong> {{ selectedCount() }}</p>
+          
+          <mat-divider class="summary-divider"></mat-divider>
+          
+          <div class="amount-row">
+            <span>Fee Amount:</span>
+            <span class="amount">₹{{ totalAmount() | number:'1.2-2' }}</span>
+          </div>
+          
+          <!-- Fine Display -->
+          <div class="amount-row fine-row" *ngIf="fineAmount() > 0">
+            <span class="fine-label">
+              <mat-icon color="warn" class="fine-icon">warning</mat-icon>
+              Late Payment Fine
+              <small class="fine-details">({{ daysDelayed() }} days × ₹{{ finePerDay() }}/day)</small>
+            </span>
+            <span class="amount fine-amount">₹{{ fineAmount() | number:'1.2-2' }}</span>
+          </div>
+          
+          <mat-divider class="total-divider"></mat-divider>
+          
+          <div class="amount-row total-row">
+            <span><strong>Total Amount:</strong></span>
+            <span class="amount total-amount"><strong>₹{{ totalAmountWithFine() | number:'1.2-2' }}</strong></span>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Payment Mode</mat-label>
+          <mat-select formControlName="paymentMode" required>
+            <mat-option *ngFor="let mode of paymentModes" [value]="mode.value">
+              {{ mode.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- <div *ngIf="paymentForm.value.paymentMode === 'online' || paymentForm.value.paymentMode === 'bank_transfer'">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Transaction ID</mat-label>
+            <input matInput formControlName="transactionId">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Bank Name</mat-label>
+            <input matInput formControlName="bankName">
+          </mat-form-field>
+        </div> -->
+
+        <div *ngIf="paymentForm.value.paymentMode === 'cheque' || paymentForm.value.paymentMode === 'dd'">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ paymentForm.value.paymentMode === 'cheque' ? 'Cheque' : 'DD' }} Number</mat-label>
+            <input matInput formControlName="chequeNumber">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="chequeDate">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Bank Name</mat-label>
+            <input matInput formControlName="bankName">
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Payment Reference (Optional)</mat-label>
+          <input matInput formControlName="paymentReference">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Remarks (Optional)</mat-label>
+          <textarea matInput formControlName="remarks" rows="3"></textarea>
+        </mat-form-field>
+
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" (click)="submitPayment()" 
+                  [disabled]="paymentForm.invalid || submitting()">
+            <mat-icon>check_circle</mat-icon>
+            {{ submitting() ? 'Processing...' : 'Submit Payment' }}
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </form>
+</div>

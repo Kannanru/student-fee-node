@@ -1,0 +1,213 @@
+/* src/app/components/login/login.component.css */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  padding: 20px;
+}
+
+.login-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 1;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.login-header h1 {
+  color: #333;
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.login-header p {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-actions {
+  margin-top: 16px;
+}
+
+.login-button {
+  height: 48px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 8px;
+  position: relative;
+}
+
+.login-button mat-spinner {
+  margin-right: 8px;
+}
+
+.form-links {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.forgot-password {
+  color: #1976d2;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+  color: #1565c0;
+  text-decoration: underline;
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.login-footer p {
+  color: #888;
+  font-size: 12px;
+  margin: 0;
+}
+
+.health-status {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  padding: 12px 16px;
+  border-radius: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.health-status.online {
+  border-left: 4px solid #42a5f5;
+  color: #1976d2;
+}
+
+.health-status.offline {
+  border-left: 4px solid #1565c0;
+  color: #0d47a1;
+}
+
+.health-status mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .login-container {
+    padding: 16px;
+  }
+  
+  .login-card {
+    padding: 24px;
+    max-width: 100%;
+  }
+  
+  .login-header h1 {
+    font-size: 24px;
+  }
+  
+  .health-status {
+    bottom: 16px;
+    right: 16px;
+    padding: 8px 12px;
+  }
+}
+
+/* Material Form Field Customizations */
+.mat-mdc-form-field {
+  margin-bottom: 8px;
+}
+
+.mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background-color: #fafafa;
+}
+
+.mat-mdc-form-field .mat-mdc-form-field-focus-overlay {
+  background-color: transparent;
+}
+
+/* Button Loading State */
+.login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Error States */
+.mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
+  border-color: #f44336;
+}
+
+/* Test Credentials Buttons */
+.test-btn {
+  font-size: 11px !important;
+  padding: 4px 12px !important;
+  min-width: auto !important;
+  height: 28px !important;
+  border-radius: 14px !important;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.test-btn:hover {
+  opacity: 1;
+}
+
+.test-credentials {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 16px;
+  margin-top: 16px;
+}
+
+/* Animation for health status */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.health-status.offline {
+  animation: pulse 2s infinite;
+}

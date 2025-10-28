@@ -1,0 +1,550 @@
+<div class="fee-structure-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
+        {{ isEditMode ? 'Edit Fee Structure' : 'Create New Fee Structure' }}
+      </mat-card-title>
+      <mat-card-subtitle>
+        {{ isEditMode ? 'Update existing fee structure details' : 'Define fee structure for a specific program, year, and quota' }}
+      </mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading...</p>
+    </div>
+  } @else if (error()) {
+    <mat-card class="error-card">
+      <mat-icon>error</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="error.set('')">Dismiss</button>
+    </mat-card>
+  } @else {
+    <form [formGroup]="feeStructureForm">
+      <mat-stepper linear #stepper>
+        
+        <!-- Step 1: Basic Information -->
+        <mat-step [stepControl]="basicInfoGroup">
+          <ng-template matStepLabel>Basic Information</ng-template>
+          
+          <mat-card class="step-card">
+            <mat-card-content>
+              <div formGroupName="basicInfo">
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Fee Structure Code</mat-label>
+                    <input matInput formControlName="code" placeholder="e.g., MBBS-Y1-S1-PU-V1" required>
+                    <button mat-icon-button matSuffix (click)="generateCode()" matTooltip="Auto-generate code">
+                      <mat-icon>auto_fix_high</mat-icon>
+                    </button>
+                    <mat-hint>Unique identifier. Change version (V1, V2, V3...) if creating multiple structures for same program/year/semester/quota</mat-hint>
+                    <mat-error>Code is required and must be unique</mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Fee Structure Name</mat-label>
+                    <input matInput formControlName="name" placeholder="e.g., MBBS Year 1 Semester 1 - Puducherry UT - 2024-2025">
+                    <button mat-icon-button matSuffix (click)="generateName()" matTooltip="Auto-generate name">
+                      <mat-icon>auto_fix_high</mat-icon>
+                    </button>
+                    <mat-hint>Descriptive name for easy identification</mat-hint>
+                    <mat-error>Name is required</mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Description</mat-label>
+                    <textarea matInput formControlName="description" rows="3" 
+                      placeholder="Additional notes or special instructions for this fee structure"></textarea>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="button-row">
+                <button mat-raised-button matStepperNext color="primary">
+                  Next <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-step>
+
+        <!-- Step 2: Academic Details -->
+        <mat-step [stepControl]="academicDetailsGroup">
+          <ng-template matStepLabel>Academic Details</ng-template>
+          
+          <mat-card class="step-card">
+            <mat-card-content>
+              <div formGroupName="academicDetails">
+                <div class="form-row two-columns">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Program</mat-label>
+                    <mat-select formControlName="program" (selectionChange)="generateCode(); generateName()">
+                      @for (program of programs; track program.value) {
+                        <mat-option [value]="program.value">{{ program.label }}</mat-option>
+                      }
+                    </mat-select>
+                    <mat-icon matPrefix>school</mat-icon>
+                    <mat-error>Program is required</mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Department</mat-label>
+                    <mat-select formControlName="department">
+                      @for (dept of departments; track dept) {
+                        <mat-option [value]="dept">{{ dept }}</mat-option>
+                      }
+                    </mat-select>
+                  <mat-icon matPrefix>business</mat-icon>
+                  <mat-error>Department is required</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row three-columns">
+                <mat-form-field appearance="outline">
+                  <mat-label>Year</mat-label>
+                  <mat-select formControlName="year" (selectionChange)="generateCode(); generateName()">
+                    @for (year of years; track year) {
+                      <mat-option [value]="year">Year {{ year }}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-icon matPrefix>calendar_today</mat-icon>
+                  <mat-error>Year is required</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Semester</mat-label>
+                  <mat-select formControlName="semester" (selectionChange)="generateCode(); generateName()">
+                    @for (sem of semesters; track sem) {
+                      <mat-option [value]="sem">Semester {{ sem }}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-icon matPrefix>event_note</mat-icon>
+                  <mat-error>Semester is required</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Academic Year</mat-label>
+                  <mat-select formControlName="academicYear" (selectionChange)="generateName()">
+                    @for (ay of academicYears; track ay) {
+                      <mat-option [value]="ay">{{ ay }}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-icon matPrefix>date_range</mat-icon>
+                  <mat-error>Academic Year is required</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row two-columns">
+                <mat-form-field appearance="outline">
+                  <mat-label>Effective From</mat-label>
+                  <input matInput type="date" formControlName="effectiveFrom" required>
+                  <mat-icon matPrefix>event</mat-icon>
+                  <mat-error>Effective date is required</mat-error>
+                  <mat-hint>Date when this fee structure becomes active</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Payment Mode</mat-label>
+                  <mat-select formControlName="mode">
+                    <mat-option value="full">Full Payment</mat-option>
+                    <mat-option value="2">2 Installments</mat-option>
+                    <mat-option value="4">4 Installments</mat-option>
+                  </mat-select>
+                  <mat-icon matPrefix>payment</mat-icon>
+                  <mat-error>Payment mode is required</mat-error>
+                  <mat-hint>How students can pay this fee</mat-hint>
+                </mat-form-field>
+              </div>
+
+              <!-- Installment Configuration -->
+              @if (academicDetailsGroup.get('mode')?.value) {
+                <div class="installment-section">
+                  <h3>
+                    <mat-icon>schedule</mat-icon>
+                    Installment Configuration
+                  </h3>
+                  <p class="hint-text">Configure due dates and late payment fines for each installment</p>
+
+                  @for (installment of dueDatesArray.controls; track installment; let i = $index) {
+                    <div class="installment-card" [formGroup]="$any(installment)">
+                      <div class="installment-header">
+                        <h4>
+                          @if (academicDetailsGroup.get('mode')?.value === 'full') {
+                            <span>Full Payment Details</span>
+                          } @else {
+                            <span>Installment {{ i + 1 }} of {{ academicDetailsGroup.get('mode')?.value }}</span>
+                          }
+                        </h4>
+                      </div>
+
+                      <div class="installment-fields">
+                        <mat-form-field appearance="outline">
+                          <mat-label>Due Date</mat-label>
+                          <input matInput type="date" formControlName="dueDate" required>
+                          <mat-icon matPrefix>event</mat-icon>
+                          <mat-error>Due date is required</mat-error>
+                          <mat-hint>Last date for payment without fine</mat-hint>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                          <mat-label>Amount (₹)</mat-label>
+                          <input matInput type="number" formControlName="amount" min="0" required>
+                          <mat-icon matPrefix>currency_rupee</mat-icon>
+                          <mat-error>Amount is required</mat-error>
+                          <mat-hint>Installment amount in Rupees</mat-hint>
+                        </mat-form-field>
+
+                        @if (selectedQuota()?.requiresUSDTracking) {
+                          <mat-form-field appearance="outline">
+                            <mat-label>Amount (USD)</mat-label>
+                            <input matInput type="number" formControlName="amountUSD" min="0">
+                            <mat-icon matPrefix>attach_money</mat-icon>
+                            <mat-hint>Amount in US Dollars (optional)</mat-hint>
+                          </mat-form-field>
+                        }
+
+                        <mat-form-field appearance="outline">
+                          <mat-label>Fine Per Day (₹)</mat-label>
+                          <input matInput type="number" formControlName="finePerDay" min="0">
+                          <mat-icon matPrefix color="warn">warning</mat-icon>
+                          <mat-hint>Daily fine charged after due date</mat-hint>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="full-width">
+                          <mat-label>Description</mat-label>
+                          <input matInput formControlName="description">
+                          <mat-icon matPrefix>description</mat-icon>
+                          <mat-hint>Optional description for this installment</mat-hint>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+              </div>
+
+              <div class="button-row">
+                <button mat-button matStepperPrevious>
+                  <mat-icon>arrow_back</mat-icon> Back
+                </button>
+                <button mat-raised-button matStepperNext color="primary">
+                  Next <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-step>
+
+        <!-- Step 3: Quota Selection -->
+        <mat-step [stepControl]="quotaSelectionGroup">
+          <ng-template matStepLabel>Quota Selection</ng-template>
+          
+          <mat-card class="step-card">
+            <mat-card-content>
+              <div formGroupName="quotaSelection">
+                <div class="quota-selection">
+                <h3>Select Admission Quota</h3>
+                <p class="hint-text">Choose the admission quota category for this fee structure</p>
+
+                <div class="quota-grid">
+                  @for (quota of quotas(); track quota._id) {
+                    <div class="quota-card" 
+                         [class.selected]="quotaSelectionGroup.get('quota')?.value === quota.code"
+                         (click)="quotaSelectionGroup.patchValue({ quota: quota.code }); generateCode(); generateName()">
+                      <mat-icon [style.color]="quota.metadata?.color || '#1976d2'">
+                        {{ quota.metadata?.icon || 'category' }}
+                      </mat-icon>
+                      <h4>{{ quota.displayName }}</h4>
+                      <p>{{ quota.code }}</p>
+                      @if (quota.requiresUSDTracking) {
+                        <mat-chip class="usd-chip">USD Required</mat-chip>
+                      }
+                    </div>
+                  }
+                </div>
+
+                @if (quotaSelectionGroup.get('quota')?.hasError('required') && quotaSelectionGroup.get('quota')?.touched) {
+                  <mat-error class="quota-error">Please select a quota</mat-error>
+                }
+                </div>
+              </div>
+
+              <div class="button-row">
+                <button mat-button matStepperPrevious>
+                  <mat-icon>arrow_back</mat-icon> Back
+                </button>
+                <button mat-raised-button matStepperNext color="primary" 
+                        [disabled]="!quotaSelectionGroup.get('quota')?.value">
+                  Next <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-step>
+
+        <!-- Step 4: Fee Heads Configuration -->
+        <mat-step>
+          <ng-template matStepLabel>Fee Heads</ng-template>
+          
+          <mat-card class="step-card">
+            <mat-card-content>
+              <div class="fee-heads-section">
+                <div class="section-header">
+                  <h3>Configure Fee Heads</h3>
+                  <p class="hint-text">Add fee heads and configure amounts for this structure</p>
+                </div>
+
+                <!-- Available Fee Heads -->
+                <div class="available-fee-heads">
+                  <h4>Available Fee Heads</h4>
+                  <div class="fee-heads-chips">
+                    @for (feeHead of feeHeads(); track feeHead._id) {
+                      <mat-chip class="fee-head-chip" (click)="addFeeHead(feeHead)">
+                        <mat-icon>add</mat-icon>
+                        {{ feeHead.name }}
+                        <span class="category-badge">{{ feeHead.category }}</span>
+                      </mat-chip>
+                    }
+                  </div>
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <!-- Selected Fee Heads Table -->
+                <div class="selected-fee-heads">
+                  <h4>Selected Fee Heads ({{ headsArray.length }})</h4>
+                  
+                  @if (headsArray.length === 0) {
+                    <div class="empty-state">
+                      <mat-icon>info</mat-icon>
+                      <p>No fee heads added yet. Click on available fee heads above to add them.</p>
+                    </div>
+                  } @else {
+                    <table mat-table [dataSource]="headsArray.controls" class="fee-heads-table">
+                      
+                      <!-- Fee Head Column -->
+                      <ng-container matColumnDef="feeHead">
+                        <th mat-header-cell *matHeaderCellDef>Fee Head</th>
+                        <td mat-cell *matCellDef="let element">
+                          {{ element.get('headName')?.value }}
+                        </td>
+                      </ng-container>
+
+                      <!-- Category Column -->
+                      <ng-container matColumnDef="category">
+                        <th mat-header-cell *matHeaderCellDef>Category</th>
+                        <td mat-cell *matCellDef="let element">
+                          <mat-chip class="category-chip">
+                            {{ getFeeHeadCategory(element.get('headId')?.value) }}
+                          </mat-chip>
+                        </td>
+                      </ng-container>
+
+                      <!-- Amount (INR) Column -->
+                      <ng-container matColumnDef="amount">
+                        <th mat-header-cell *matHeaderCellDef>Amount (INR)</th>
+                        <td mat-cell *matCellDef="let element; let i = index">
+                          <mat-form-field appearance="outline" class="amount-field">
+                            <input matInput type="number" [formControl]="element.get('amount')" 
+                                   (input)="onAmountChange(i)" min="0" step="100">
+                            <span matPrefix>₹&nbsp;</span>
+                          </mat-form-field>
+                        </td>
+                      </ng-container>
+
+                      <!-- Amount (USD) Column -->
+                      <ng-container matColumnDef="usd">
+                        <th mat-header-cell *matHeaderCellDef>Amount (USD)</th>
+                        <td mat-cell *matCellDef="let element">
+                          @if (isNRIQuota()) {
+                            <mat-form-field appearance="outline" class="amount-field">
+                              <input matInput type="number" [formControl]="element.get('amountUSD')" 
+                                     min="0" step="10">
+                              <span matPrefix>$&nbsp;</span>
+                            </mat-form-field>
+                          } @else {
+                            <span class="not-applicable">N/A</span>
+                          }
+                        </td>
+                      </ng-container>
+
+                      <!-- Tax Column -->
+                      <ng-container matColumnDef="tax">
+                        <th mat-header-cell *matHeaderCellDef>Tax</th>
+                        <td mat-cell *matCellDef="let element">
+                          <div class="tax-info">
+                            <span class="tax-percentage">{{ element.get('taxPercentage')?.value }}%</span>
+                            <span class="tax-amount">{{ formatCurrency(element.get('taxAmount')?.value) }}</span>
+                          </div>
+                        </td>
+                      </ng-container>
+
+                      <!-- Total Column -->
+                      <ng-container matColumnDef="total">
+                        <th mat-header-cell *matHeaderCellDef>Total</th>
+                        <td mat-cell *matCellDef="let element; let i = index">
+                          <strong>{{ formatCurrency(getTotalWithTax(i)) }}</strong>
+                        </td>
+                      </ng-container>
+
+                      <!-- Actions Column -->
+                      <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef>Actions</th>
+                        <td mat-cell *matCellDef="let element; let i = index">
+                          <button mat-icon-button color="warn" (click)="removeFeeHead(i)" 
+                                  matTooltip="Remove fee head">
+                            <mat-icon>delete</mat-icon>
+                          </button>
+                        </td>
+                      </ng-container>
+
+                      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+
+                    <!-- Totals Summary -->
+                    <div class="totals-summary">
+                      <div class="total-row">
+                        <span class="label">Subtotal (INR):</span>
+                        <span class="value">{{ formatCurrency(calculateTotals().totalINR) }}</span>
+                      </div>
+                      @if (isNRIQuota()) {
+                        <div class="total-row">
+                          <span class="label">Subtotal (USD):</span>
+                          <span class="value">{{ formatUSD(calculateTotals().totalUSD) }}</span>
+                        </div>
+                      }
+                      <div class="total-row">
+                        <span class="label">Total Tax:</span>
+                        <span class="value">{{ formatCurrency(calculateTotals().totalTax) }}</span>
+                      </div>
+                      <mat-divider></mat-divider>
+                      <div class="total-row grand-total">
+                        <span class="label">Grand Total (INR):</span>
+                        <span class="value">{{ formatCurrency(calculateTotals().grandTotal) }}</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <div class="button-row">
+                <button mat-button matStepperPrevious>
+                  <mat-icon>arrow_back</mat-icon> Back
+                </button>
+                <button mat-raised-button matStepperNext color="primary" 
+                        [disabled]="headsArray.length === 0">
+                  Next <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-step>
+
+        <!-- Step 5: Review & Submit -->
+        <mat-step>
+          <ng-template matStepLabel>Review & Submit</ng-template>
+          
+          <mat-card class="step-card">
+            <mat-card-content>
+              <div class="review-section">
+                <h3>Review Fee Structure</h3>
+                
+                <div class="review-grid">
+                  <div class="review-card">
+                    <h4>Basic Information</h4>
+                    <div class="review-item">
+                      <span class="label">Code:</span>
+                      <span class="value">{{ basicInfoGroup.get('code')?.value }}</span>
+                    </div>
+                    <div class="review-item">
+                      <span class="label">Name:</span>
+                      <span class="value">{{ basicInfoGroup.get('name')?.value }}</span>
+                    </div>
+                    <div class="review-item">
+                      <span class="label">Description:</span>
+                      <span class="value">{{ basicInfoGroup.get('description')?.value || 'N/A' }}</span>
+                    </div>
+                  </div>
+
+                  <div class="review-card">
+                    <h4>Academic Details</h4>
+                    <div class="review-item">
+                      <span class="label">Program:</span>
+                      <span class="value">{{ academicDetailsGroup.get('program')?.value }}</span>
+                    </div>
+                    <div class="review-item">
+                      <span class="label">Department:</span>
+                      <span class="value">{{ academicDetailsGroup.get('department')?.value }}</span>
+                    </div>
+                    <div class="review-item">
+                      <span class="label">Year/Semester:</span>
+                      <span class="value">Year {{ academicDetailsGroup.get('year')?.value }} / Semester {{ academicDetailsGroup.get('semester')?.value }}</span>
+                    </div>
+                    <div class="review-item">
+                      <span class="label">Academic Year:</span>
+                      <span class="value">{{ academicDetailsGroup.get('academicYear')?.value }}</span>
+                    </div>
+                    <div class="review-item">
+                      <span class="label">Effective From:</span>
+                      <span class="value">{{ academicDetailsGroup.get('effectiveFrom')?.value | date:'mediumDate' }}</span>
+                    </div>
+                    <div class="review-item">
+                      <span class="label">Payment Mode:</span>
+                      <span class="value">{{ getModeLabel(academicDetailsGroup.get('mode')?.value) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="review-card">
+                    <h4>Quota & Totals</h4>
+                    <div class="review-item">
+                      <span class="label">Quota:</span>
+                      <span class="value">{{ getQuotaLabel(quotaSelectionGroup.get('quota')?.value) }}</span>
+                    </div>
+                    <div class="review-item">
+                      <span class="label">Total Fee Heads:</span>
+                      <span class="value">{{ headsArray.length }}</span>
+                    </div>
+                    <div class="review-item">
+                      <span class="label">Grand Total:</span>
+                      <span class="value highlight">{{ formatCurrency(calculateTotals().grandTotal) }}</span>
+                    </div>
+                    @if (isNRIQuota()) {
+                      <div class="review-item">
+                        <span class="label">Total (USD):</span>
+                        <span class="value highlight">{{ formatUSD(calculateTotals().totalUSD) }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <div class="button-row">
+                <button mat-button matStepperPrevious>
+                  <mat-icon>arrow_back</mat-icon> Back
+                </button>
+                <button mat-raised-button color="primary" (click)="saveFeeStructure()" [disabled]="saving()">
+                  @if (saving()) {
+                    <mat-spinner diameter="20"></mat-spinner>
+                  } @else {
+                    <mat-icon>save</mat-icon>
+                  }
+                  {{ isEditMode ? 'Update' : 'Create' }} Fee Structure
+                </button>
+                <button mat-button (click)="cancel()">Cancel</button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-step>
+
+      </mat-stepper>
+    </form>
+  }
+</div>

@@ -1,0 +1,189 @@
+{
+  "info": {
+    "name": "MGDC API (Minimal)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Student Login",
+      "request": {
+        "method": "POST",
+        "header": [ {"key":"Content-Type","value":"application/json"} ],
+        "url": {"raw": "http://localhost:5000/api/students/login","protocol":"http","host":["localhost"],"port":"5000","path":["api","students","login"]},
+        "body": {"mode":"raw","raw":"{\n  \"email\": \"student@example.com\",\n  \"password\": \"Password123\"\n}"}
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "const token = (json && json.data && json.data.token) || json.token;",
+              "if (token) { pm.collectionVariables.set('token', token); }",
+              "const studentId = (json && json.data && json.data.student && json.data.student._id) || (json.student && json.student._id);",
+              "if (studentId) { pm.collectionVariables.set('studentObjectId', studentId); }",
+              "pm.test('Login success', function(){ pm.expect(!!token).to.be.true; });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attendance - Record",
+      "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"}, {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/attendance/record","protocol":"http","host":["localhost"],"port":"5000","path":["api","attendance","record"]},
+        "body": {"mode":"raw","raw":"{\n  \"studentId\": \"{{studentObjectId}}\",\n  \"className\": \"Anatomy 101\",\n  \"date\": \"2025-09-26\",\n  \"classStartTime\": \"2025-09-26T08:00:00.000Z\",\n  \"classEndTime\": \"2025-09-26T10:00:00.000Z\",\n  \"timeIn\": \"2025-09-26T08:10:00.000Z\",\n  \"timeOut\": \"2025-09-26T10:00:00.000Z\",\n  \"status\": \"Present\"\n}"}
+      }
+    },
+    {
+      "name": "Attendance - Student Daily",
+      "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/attendance/student/{{studentObjectId}}/daily?date=2025-09-26","protocol":"http","host":["localhost"],"port":"5000","path":["api","attendance","student","{{studentObjectId}}","daily"],"query":[{"key":"date","value":"2025-09-26"}]}
+      }
+    },
+    {
+      "name": "Attendance - Student Summary",
+      "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/attendance/student/{{studentObjectId}}/summary?startDate=2025-09-20&endDate=2025-09-27","protocol":"http","host":["localhost"],"port":"5000","path":["api","attendance","student","{{studentObjectId}}","summary"],"query":[{"key":"startDate","value":"2025-09-20"},{"key":"endDate","value":"2025-09-27"}]}
+      }
+    },
+    {
+      "name": "Attendance - Admin Daily",
+      "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/attendance/admin/daily?date=2025-09-26","protocol":"http","host":["localhost"],"port":"5000","path":["api","attendance","admin","daily"],"query":[{"key":"date","value":"2025-09-26"}]}
+      }
+    },
+    {
+      "name": "Attendance - Admin Summary",
+      "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/attendance/admin/summary?startDate=2025-09-20&endDate=2025-09-27","protocol":"http","host":["localhost"],"port":"5000","path":["api","attendance","admin","summary"],"query":[{"key":"startDate","value":"2025-09-20"},{"key":"endDate","value":"2025-09-27"}]}
+      }
+    },
+    {
+      "name": "Attendance - Admin Occupancy",
+      "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/attendance/admin/occupancy?date=2025-09-26","protocol":"http","host":["localhost"],"port":"5000","path":["api","attendance","admin","occupancy"],"query":[{"key":"date","value":"2025-09-26"}]}
+      },
+      "response": [
+        {
+          "name": "Example",
+          "originalRequest": {},
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [],
+          "cookie": [],
+          "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"className\": \"Anatomy 101\",\n      \"room\": \"A-101\",\n      \"capacity\": 60,\n      \"present\": 20,\n      \"late\": 3,\n      \"absent\": 5,\n      \"earlyLeave\": 1,\n      \"total\": 29\n    }\n  ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Attendance - Admin Export CSV",
+      "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/attendance/admin/export?startDate=2025-09-20&endDate=2025-09-27","protocol":"http","host":["localhost"],"port":"5000","path":["api","attendance","admin","export"],"query":[{"key":"startDate","value":"2025-09-20"},{"key":"endDate","value":"2025-09-27"}]}
+      },
+      "description": "CSV columns: Student Name, Student ID, Date, Class Name, Room, Time In, Time Out, Status, Late Minutes, Reason, CameraId, AI Confidence, TimetableId, Capacity.\nThe last rows include OCCUPANCY summary per class/room with capacity and counts."
+    },
+    {
+      "name": "Timetable - Create",
+      "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"}, {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/timetable","protocol":"http","host":["localhost"],"port":"5000","path":["api","timetable"]},
+        "body": {"mode":"raw","raw":"{\n  \"className\": \"Anatomy 101\",\n  \"room\": \"A-101\",\n  \"programName\": \"MBBS\",\n  \"academicYear\": \"2025-2026\",\n  \"dayOfWeek\": 5,\n  \"startTime\": \"08:00\",\n  \"endTime\": \"10:00\",\n  \"studentIds\": [\"{{studentObjectId}}\"]\n}"}
+      }
+    },
+    {
+      "name": "Timetable - List",
+      "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/timetable?programName=MBBS&academicYear=2025-2026","protocol":"http","host":["localhost"],"port":"5000","path":["api","timetable"],"query":[{"key":"programName","value":"MBBS"},{"key":"academicYear","value":"2025-2026"}]}
+      }
+    },
+    {
+      "name": "Timetable - For Student",
+      "request": { "method": "GET", "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/timetable/student/{{studentObjectId}}","protocol":"http","host":["localhost"],"port":"5000","path":["api","timetable","student","{{studentObjectId}}"]}
+      }
+  },
+  {
+      "name": "Students - List (filtered)",
+      "request": {
+        "method": "GET",
+        "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/students?programName=MBBS&page=1&limit=10","protocol":"http","host":["localhost"],"port":"5000","path":["api","students"],"query":[{"key":"programName","value":"MBBS"},{"key":"page","value":"1"},{"key":"limit","value":"10"}]}
+      }
+    },
+    {
+      "name": "Fees - Create Structure",
+      "request": {
+        "method": "POST",
+        "header": [ {"key":"Content-Type","value":"application/json"}, {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/fees/structure","protocol":"http","host":["localhost"],"port":"5000","path":["api","fees","structure"]},
+        "body": {"mode":"raw","raw":"{\n  \"studentId\": \"{{studentObjectId}}\",\n  \"academicYear\": \"2025-2026\",\n  \"semester\": \"1\",\n  \"feeBreakdown\": {\n    \"tuitionFee\": 100000,\n    \"semesterFee\": 25000\n  },\n  \"dueDate\": \"2025-10-31\"\n}"}
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "const feeId = json && json.data && (json.data._id || (json.data.feeRecord && json.data.feeRecord._id));",
+              "if (feeId) pm.collectionVariables.set('feeId', feeId);",
+              "pm.test('Fee structure created', function(){ pm.expect(!!feeId).to.be.true; });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fees - Get Student Details",
+      "request": {
+        "method": "GET",
+        "header": [ {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/fees/student/{{studentObjectId}}?academicYear=2025-2026&semester=1","protocol":"http","host":["localhost"],"port":"5000","path":["api","fees","student","{{studentObjectId}}"],"query":[{"key":"academicYear","value":"2025-2026"},{"key":"semester","value":"1"}]}
+      }
+    },
+    {
+      "name": "Fees - Process Payment",
+      "request": {
+        "method": "POST",
+        "header": [ {"key":"Content-Type","value":"application/json"}, {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/fees/{{feeId}}/payment","protocol":"http","host":["localhost"],"port":"5000","path":["api","fees","{{feeId}}","payment"]},
+        "body": {"mode":"raw","raw":"{\n  \"amountPaid\": 50000,\n  \"paymentMode\": \"UPI\",\n  \"transactionId\": \"TXN123456\",\n  \"receiptNumber\": \"RCP001\"\n}"}
+      }
+    },
+    {
+      "name": "Penalty Config - Create",
+      "request": {
+        "method": "POST",
+        "header": [ {"key":"Content-Type","value":"application/json"}, {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/penalty-config","protocol":"http","host":["localhost"],"port":"5000","path":["api","penalty-config"]},
+        "body": {"mode":"raw","raw":"{\n  \"academicYear\": \"2025-2026\",\n  \"penaltyType\": \"Fixed\",\n  \"penaltyAmount\": 5000,\n  \"gracePeriodDays\": 7\n}"}
+      }
+    },
+    {
+      "name": "HDFC - Initiate",
+      "request": {
+        "method": "POST",
+        "header": [ {"key":"Content-Type","value":"application/json"}, {"key":"Authorization","value":"Bearer {{token}}"} ],
+        "url": {"raw": "http://localhost:5000/api/payments/hdfc/initiate","protocol":"http","host":["localhost"],"port":"5000","path":["api","payments","hdfc","initiate"]},
+        "body": {"mode":"raw","raw":"{\n  \"studentId\": \"{{studentObjectId}}\",\n  \"feeId\": \"{{feeId}}\",\n  \"amount\": 50000,\n  \"redirectUrl\": \"https://example.com/return\"\n}"}
+      }
+    },
+    {
+      "name": "HDFC - Callback (simulate)",
+      "request": {
+        "method": "POST",
+        "header": [ {"key":"Content-Type","value":"application/json"} ],
+        "url": {"raw": "http://localhost:5000/api/payments/hdfc/callback","protocol":"http","host":["localhost"],"port":"5000","path":["api","payments","hdfc","callback"]},
+        "body": {"mode":"raw","raw":"{\n  \"payload\": {\n    \"feeId\": \"{{feeId}}\",\n    \"studentId\": \"{{studentObjectId}}\",\n    \"amount\": 50000,\n    \"status\": \"SUCCESS\",\n    \"gatewayTransactionId\": \"HDFC_TXN_123\"\n  },\n  \"checksum\": \"{{computedChecksum}}\"\n}"}
+      }
+    }
+  ],
+  "variable": [
+    {"key":"token","value":""},
+    {"key":"studentObjectId","value":""},
+    {"key":"feeId","value":""},
+    {"key":"computedChecksum","value":""}
+  ]
+}

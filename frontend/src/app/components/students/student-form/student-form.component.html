@@ -1,0 +1,504 @@
+<!-- src/app/components/students/student-form/student-form.component.html -->
+<div class="student-form-container">
+  <!-- Header -->
+  <div class="header-section">
+    <div class="header-content">
+      <div class="title-section">
+        <h1>
+          <mat-icon>{{ isEditMode ? 'edit' : 'person_add' }}</mat-icon>
+          {{ isEditMode ? 'Edit Student Profile' : 'Register New BDS Student' }}
+        </h1>
+        <p class="subtitle">
+          {{ isEditMode ? 'Update student information and academic details' : 'Complete registration for Bachelor of Dental Surgery program' }}
+        </p>
+      </div>
+      
+      <div class="header-actions">
+        <button mat-stroked-button (click)="onCancel()" [disabled]="saving">
+          <mat-icon>close</mat-icon>
+          Cancel
+        </button>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="onSubmit()"
+          [disabled]="saving || studentForm.invalid">
+          <mat-spinner diameter="20" *ngIf="saving" class="button-spinner"></mat-spinner>
+          <mat-icon *ngIf="!saving">{{ isEditMode ? 'save' : 'person_add' }}</mat-icon>
+          {{ saving ? 'Saving...' : (isEditMode ? 'Update Student' : 'Add Student') }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading student data...</p>
+  </div>
+
+  <!-- Form Container -->
+  <div *ngIf="!loading" class="form-container">
+    
+    <!-- Validation Summary Panel -->
+    <mat-card class="validation-summary" *ngIf="studentForm.invalid && studentForm.touched">
+      <mat-card-content>
+        <div class="validation-header">
+          <mat-icon color="warn">warning</mat-icon>
+          <h3>Form Validation Status</h3>
+        </div>
+        
+        <div class="validation-stats">
+          <div class="stat-item">
+            <span class="stat-label">Required Fields:</span>
+            <span class="stat-value">{{ getRequiredFieldsCount().filled }} / {{ getRequiredFieldsCount().total }}</span>
+          </div>
+          <mat-progress-bar 
+            mode="determinate" 
+            [value]="(getRequiredFieldsCount().filled / getRequiredFieldsCount().total) * 100"
+            [color]="getRequiredFieldsCount().filled === getRequiredFieldsCount().total ? 'primary' : 'warn'">
+          </mat-progress-bar>
+        </div>
+
+        <div class="validation-sections">
+          <div class="section-status" [class.valid]="isBasicInfoValid()" [class.invalid]="!isBasicInfoValid()">
+            <mat-icon>{{ isBasicInfoValid() ? 'check_circle' : 'error' }}</mat-icon>
+            <span>Basic Information</span>
+          </div>
+          <div class="section-status" [class.valid]="isAcademicInfoValid()" [class.invalid]="!isAcademicInfoValid()">
+            <mat-icon>{{ isAcademicInfoValid() ? 'check_circle' : 'error' }}</mat-icon>
+            <span>Academic Details</span>
+          </div>
+          <div class="section-status" [class.valid]="isGuardianInfoValid()" [class.invalid]="!isGuardianInfoValid()">
+            <mat-icon>{{ isGuardianInfoValid() ? 'check_circle' : 'error' }}</mat-icon>
+            <span>Guardian & Emergency</span>
+          </div>
+        </div>
+
+        <div class="invalid-fields" *ngIf="getInvalidFields().length > 0">
+          <h4>Missing or Invalid Fields:</h4>
+          <mat-chip-set>
+            <mat-chip *ngFor="let field of getInvalidFields()" color="warn" highlighted>
+              <mat-icon>error_outline</mat-icon>
+              {{ field }}
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+
+        <button mat-stroked-button color="warn" (click)="showValidationSummary()" class="show-errors-btn">
+          <mat-icon>error</mat-icon>
+          Show All Errors
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-stepper [linear]="false" #stepper>
+      
+      <!-- Basic Information Step -->
+      <mat-step [stepControl]="studentForm">
+        <form [formGroup]="studentForm">
+          <ng-template matStepLabel>Basic Information</ng-template>
+          
+          <mat-card class="form-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>person</mat-icon>
+                Student Details
+              </mat-card-title>
+              <mat-card-subtitle>Basic student information and contact details</mat-card-subtitle>
+            </mat-card-header>
+            
+            <mat-card-content>
+              <div class="form-row two-columns">
+                <mat-form-field appearance="outline">
+                  <mat-label>First Name</mat-label>
+                  <input matInput formControlName="firstName" placeholder="Enter first name">
+                  <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Last Name</mat-label>
+                  <input matInput formControlName="lastName" placeholder="Enter last name">
+                  <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row two-columns">
+                <mat-form-field appearance="outline">
+                  <mat-label>Student ID</mat-label>
+                  <input matInput formControlName="studentId" placeholder="STU001234">
+                  <button 
+                    mat-icon-button 
+                    matSuffix 
+                    type="button"
+                    (click)="generateStudentId()"
+                    matTooltip="Generate Student ID">
+                    <mat-icon>refresh</mat-icon>
+                  </button>
+                  <mat-error>{{ getErrorMessage('studentId') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Enrollment Number</mat-label>
+                  <input matInput formControlName="enrollmentNumber" placeholder="ENR2024XXXX">
+                  <mat-error>{{ getErrorMessage('enrollmentNumber') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row two-columns">
+                <mat-form-field appearance="outline">
+                  <mat-label>Email</mat-label>
+                  <input matInput formControlName="email" type="email" placeholder="student@example.com">
+                  <mat-error>{{ getErrorMessage('email') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Contact Number</mat-label>
+                  <input matInput formControlName="contactNumber" placeholder="9876543210" maxlength="10">
+                  <mat-error>{{ getErrorMessage('contactNumber') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Aadhar Number</mat-label>
+                  <input matInput formControlName="aadharNumber" placeholder="123456789012" maxlength="12">
+                  <mat-hint>12-digit Aadhar number (optional)</mat-hint>
+                  <mat-error>{{ getErrorMessage('aadharNumber') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row three-columns">
+                <mat-form-field appearance="outline">
+                  <mat-label>Date of Birth</mat-label>
+                  <input matInput [matDatepicker]="picker" formControlName="dob">
+                  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                  <mat-error>{{ getErrorMessage('dob') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Gender</mat-label>
+                  <mat-select formControlName="gender">
+                    <mat-option *ngFor="let gender of genderOptions" [value]="gender.value">
+                      {{ gender.label }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getErrorMessage('gender') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Blood Group</mat-label>
+                  <mat-select formControlName="bloodGroup">
+                    <mat-option value="">Select Blood Group</mat-option>
+                    <mat-option *ngFor="let bg of bloodGroupOptions" [value]="bg">
+                      {{ bg }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Permanent Address</mat-label>
+                  <textarea 
+                    matInput 
+                    formControlName="permanentAddress" 
+                    rows="3" 
+                    placeholder="Enter permanent address">
+                  </textarea>
+                  <mat-error>{{ getErrorMessage('permanentAddress') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Current Address</mat-label>
+                  <textarea 
+                    matInput 
+                    formControlName="currentAddress" 
+                    rows="3" 
+                    placeholder="Enter current address (if different from permanent)">
+                  </textarea>
+                  <mat-hint>Leave blank if same as permanent address</mat-hint>
+                  <mat-error>{{ getErrorMessage('currentAddress') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row" *ngIf="!isEditMode">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Password</mat-label>
+                  <input matInput formControlName="password" type="password" placeholder="Enter password (min 6 characters)">
+                  <mat-error>{{ getErrorMessage('password') }}</mat-error>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </form>
+      </mat-step>
+
+      <!-- Academic Information Step -->
+      <mat-step [stepControl]="studentForm">
+        <form [formGroup]="studentForm">
+          <ng-template matStepLabel>Academic Details</ng-template>
+          
+          <mat-card class="form-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>school</mat-icon>
+                Academic Information
+              </mat-card-title>
+              <mat-card-subtitle>BDS program details, semester and academic status</mat-card-subtitle>
+            </mat-card-header>
+            
+            <mat-card-content>
+              <div class="form-row two-columns">
+                <mat-form-field appearance="outline">
+                  <mat-label>Program Name</mat-label>
+                  <mat-select formControlName="programName">
+                    <mat-option *ngFor="let program of programOptions" [value]="program.value">
+                      {{ program.label }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getErrorMessage('programName') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Academic Year</mat-label>
+                  <mat-select formControlName="academicYear">
+                    <mat-option *ngFor="let year of academicYearOptions" [value]="year">
+                      {{ year }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getErrorMessage('academicYear') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row three-columns">
+                <mat-form-field appearance="outline">
+                  <mat-label>Semester</mat-label>
+                  <mat-select formControlName="semester">
+                    <mat-option *ngFor="let sem of semesterOptions" [value]="sem">
+                      Semester {{ sem }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getErrorMessage('semester') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Section</mat-label>
+                  <mat-select formControlName="section">
+                    <mat-option *ngFor="let sec of sectionOptions" [value]="sec">
+                      Section {{ sec }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matSuffix matTooltip="Class section/division">info</mat-icon>
+                  <mat-error>{{ getErrorMessage('section') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Roll Number</mat-label>
+                  <input matInput formControlName="rollNumber" placeholder="e.g., 101, 102">
+                  <mat-icon matSuffix matTooltip="Student's roll number in class">info</mat-icon>
+                  <mat-error>{{ getErrorMessage('rollNumber') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row three-columns">
+                <mat-form-field appearance="outline">
+                  <mat-label>Student Type</mat-label>
+                  <mat-select formControlName="studentType">
+                    <mat-option *ngFor="let type of studentTypeOptions" [value]="type.value">
+                      {{ type.label }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getErrorMessage('studentType') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Status</mat-label>
+                  <mat-select formControlName="status">
+                    <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+                      {{ status.label }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getErrorMessage('status') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Admission Date</mat-label>
+                  <input matInput [matDatepicker]="admissionPicker" formControlName="admissionDate">
+                  <mat-datepicker-toggle matIconSuffix [for]="admissionPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #admissionPicker></mat-datepicker>
+                  <mat-error>{{ getErrorMessage('admissionDate') }}</mat-error>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </form>
+      </mat-step>
+
+      <!-- Guardian & Emergency Contact Step -->
+      <mat-step [stepControl]="studentForm">
+        <form [formGroup]="studentForm">
+          <ng-template matStepLabel>Guardian & Emergency</ng-template>
+          
+          <mat-card class="form-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>family_restroom</mat-icon>
+                Guardian & Emergency Contact
+              </mat-card-title>
+              <mat-card-subtitle>Guardian and emergency contact information</mat-card-subtitle>
+            </mat-card-header>
+            
+            <mat-card-content>
+              <h3 class="section-title">
+                <mat-icon>person</mat-icon>
+                Guardian Information
+              </h3>
+
+              <div class="form-row two-columns">
+                <mat-form-field appearance="outline">
+                  <mat-label>Guardian Name</mat-label>
+                  <input matInput formControlName="guardianName" placeholder="Enter guardian's full name">
+                  <mat-error>{{ getErrorMessage('guardianName') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Guardian Contact</mat-label>
+                  <input matInput formControlName="guardianContact" placeholder="9876543210" maxlength="10">
+                  <mat-error>{{ getErrorMessage('guardianContact') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <mat-divider style="margin: 24px 0;"></mat-divider>
+
+              <h3 class="section-title">
+                <mat-icon>emergency</mat-icon>
+                Emergency Contact
+              </h3>
+
+              <div class="form-row two-columns">
+                <mat-form-field appearance="outline">
+                  <mat-label>Emergency Contact Name</mat-label>
+                  <input matInput formControlName="emergencyContactName" placeholder="Enter emergency contact name">
+                  <mat-error>{{ getErrorMessage('emergencyContactName') }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Emergency Contact Number</mat-label>
+                  <input matInput formControlName="emergencyContactNumber" placeholder="9876543210" maxlength="10">
+                  <mat-error>{{ getErrorMessage('emergencyContactNumber') }}</mat-error>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </form>
+      </mat-step>
+
+      <!-- Parent Information Step (Optional) -->
+      <mat-step [stepControl]="parentForm">
+        <form [formGroup]="parentForm">
+          <ng-template matStepLabel>Parent Details (Optional)</ng-template>
+          
+          <mat-card class="form-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>family_restroom</mat-icon>
+                Parent Information
+              </mat-card-title>
+              <mat-card-subtitle>Parent and guardian contact details (Optional)</mat-card-subtitle>
+            </mat-card-header>
+            
+            <mat-card-content>
+              <!-- Father Information -->
+              <div class="parent-section">
+                <h3 class="section-title">
+                  <mat-icon>person</mat-icon>
+                  Father's Information
+                </h3>
+                
+                <div class="form-row two-columns">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Father's Name</mat-label>
+                    <input matInput formControlName="fatherName" placeholder="Enter father's name">
+                    <mat-error>{{ getErrorMessage('fatherName', parentForm) }}</mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Occupation</mat-label>
+                    <input matInput formControlName="fatherOccupation" placeholder="Enter occupation">
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Father's Phone</mat-label>
+                    <input matInput formControlName="fatherPhone" placeholder="9876543210" maxlength="10">
+                    <mat-error>{{ getErrorMessage('fatherPhone', parentForm) }}</mat-error>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Mother Information -->
+              <div class="parent-section">
+                <h3 class="section-title">
+                  <mat-icon>person</mat-icon>
+                  Mother's Information
+                </h3>
+                
+                <div class="form-row two-columns">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Mother's Name</mat-label>
+                    <input matInput formControlName="motherName" placeholder="Enter mother's name">
+                    <mat-error>{{ getErrorMessage('motherName', parentForm) }}</mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Occupation</mat-label>
+                    <input matInput formControlName="motherOccupation" placeholder="Enter occupation">
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Mother's Phone</mat-label>
+                    <input matInput formControlName="motherPhone" placeholder="9876543210" maxlength="10">
+                    <mat-error>{{ getErrorMessage('motherPhone', parentForm) }}</mat-error>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Parent Email -->
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Parent Email</mat-label>
+                  <input matInput formControlName="parentEmail" type="email" placeholder="parent@example.com">
+                  <mat-error>{{ getErrorMessage('parentEmail', parentForm) }}</mat-error>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </form>
+      </mat-step>
+
+    </mat-stepper>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button mat-stroked-button (click)="onCancel()" [disabled]="saving">
+        <mat-icon>close</mat-icon>
+        Cancel
+      </button>
+      
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="onSubmit()"
+        [disabled]="saving || studentForm.invalid">
+        <mat-spinner diameter="20" *ngIf="saving" class="button-spinner"></mat-spinner>
+        <mat-icon *ngIf="!saving">{{ isEditMode ? 'save' : 'person_add' }}</mat-icon>
+        {{ saving ? 'Saving...' : (isEditMode ? 'Update Student' : 'Add Student') }}
+      </button>
+    </div>
+  </div>
+</div>

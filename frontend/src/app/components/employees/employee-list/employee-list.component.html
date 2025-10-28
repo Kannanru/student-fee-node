@@ -1,0 +1,148 @@
+<div class="employee-management-container">
+  <div class="page-title">
+    <h1>Employee Management</h1>
+    <p>Manage faculty and staff members</p>
+  </div>
+  
+  <!-- Stats Cards -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon faculty-icon">
+          <mat-icon>school</mat-icon>
+        </div>
+        <div class="stat-content">
+          <h3>{{stats.byCategory.faculty}}</h3>
+          <p>Faculty Members</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon admin-icon">
+          <mat-icon>business</mat-icon>
+        </div>
+        <div class="stat-content">
+          <h3>{{stats.byCategory.administrative}}</h3>
+          <p>Administrative Staff</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon technical-icon">
+          <mat-icon>engineering</mat-icon>
+        </div>
+        <div class="stat-content">
+          <h3>{{stats.byCategory.technical}}</h3>
+          <p>Technical Staff</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon support-icon">
+          <mat-icon>support_agent</mat-icon>
+        </div>
+        <div class="stat-content">
+          <h3>{{stats.byCategory.support}}</h3>
+          <p>Support Staff</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="search-bar">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search employees...</mat-label>
+        <input matInput 
+               [value]="searchTerm" 
+               (input)="onSearchChange($event)"
+               placeholder="Search by name, ID, department, designation">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <div class="filter-controls">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Department</mat-label>
+        <mat-select [value]="selectedDepartment" (selectionChange)="onDepartmentChange($event.value)">
+          <mat-option value="">All Departments</mat-option>
+          <mat-option *ngFor="let dept of departments" [value]="dept">{{dept}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Category</mat-label>
+        <mat-select [value]="selectedCategory" (selectionChange)="onCategoryChange($event.value)">
+          <mat-option value="">All Categories</mat-option>
+          <mat-option *ngFor="let category of categories" [value]="category">
+            {{category | titlecase}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Status</mat-label>
+        <mat-select [value]="selectedStatus" (selectionChange)="onStatusChange($event.value)">
+          <mat-option value="">All Status</mat-option>
+          <mat-option value="active">Active</mat-option>
+          <mat-option value="inactive">Inactive</mat-option>
+          <mat-option value="on-leave">On Leave</mat-option>
+          <mat-option value="terminated">Terminated</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" class="add-btn" (click)="addEmployee()">
+        <mat-icon>add</mat-icon>
+        Add Employee
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabs Section -->
+  <mat-tab-group class="employee-tabs" [selectedIndex]="selectedTabIndex" (selectedTabChange)="onTabChange($event.index)">
+    <mat-tab label="All Employees ({{stats.total}})">
+      <app-list-view
+        [items]="listItems"
+        [isLoading]="loading"
+        [emptyMessage]="'No employees found'"
+        (onView)="viewEmployee($event)"
+        (onEdit)="editEmployee($event)"
+        (onDelete)="deleteEmployee($event)">
+      </app-list-view>
+    </mat-tab>
+
+    <mat-tab label="Active ({{stats.active}})">
+      <app-list-view
+        [items]="getFilteredItems('active')"
+        [isLoading]="loading"
+        [emptyMessage]="'No active employees found'"
+        (onView)="viewEmployee($event)"
+        (onEdit)="editEmployee($event)"
+        (onDelete)="deleteEmployee($event)">
+      </app-list-view>
+    </mat-tab>
+
+    <mat-tab label="Inactive ({{stats.inactive}})">
+      <app-list-view
+        [items]="getFilteredItems('inactive')"
+        [isLoading]="loading"
+        [emptyMessage]="'No inactive employees found'"
+        (onView)="viewEmployee($event)"
+        (onEdit)="editEmployee($event)"
+        (onDelete)="deleteEmployee($event)">
+      </app-list-view>
+    </mat-tab>
+
+    <mat-tab label="On Leave ({{stats.onLeave}})">
+      <app-list-view
+        [items]="getFilteredItems('on-leave')"
+        [isLoading]="loading"
+        [emptyMessage]="'No employees on leave found'"
+        (onView)="viewEmployee($event)"
+        (onEdit)="editEmployee($event)"
+        (onDelete)="deleteEmployee($event)">
+      </app-list-view>
+    </mat-tab>
+  </mat-tab-group>
+</div>

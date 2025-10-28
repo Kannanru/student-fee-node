@@ -1,0 +1,144 @@
+<!-- src/app/components/dashboard/dashboard.component.html -->
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>MGDC Admin Dashboard</h1>
+    <p>Welcome back, {{ currentUser?.name }}!</p>
+    
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="refreshData()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+      <button mat-button (click)="openProfile()" matTooltip="View Profile">
+        <mat-icon>account_circle</mat-icon>
+        Profile
+      </button>
+      <button mat-button (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Stats Cards -->
+  <div class="stats-grid">
+    <mat-card class="stat-card students">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>school</mat-icon>
+        <mat-card-title>Total Students</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-number">{{ stats.totalStudents }}</div>
+        <div class="stat-change positive">
+          <mat-icon>trending_up</mat-icon>
+          +5% from last month
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card fees">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>attach_money</mat-icon>
+        <mat-card-title>Fees Collected</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-number">₹{{ stats.feesCollected | number }}</div>
+        <div class="stat-change positive">
+          <mat-icon>trending_up</mat-icon>
+          +12% from last month
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card attendance">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>event_available</mat-icon>
+        <mat-card-title>Avg Attendance</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-number">{{ stats.averageAttendance }}%</div>
+        <div class="stat-change" [ngClass]="stats.averageAttendance >= 75 ? 'positive' : 'negative'">
+          <mat-icon>{{ stats.averageAttendance >= 75 ? 'trending_up' : 'trending_down' }}</mat-icon>
+          {{ stats.averageAttendance >= 75 ? '+' : '-' }}3% from last week
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card pending">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>pending</mat-icon>
+        <mat-card-title>Pending Payments</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-number">{{ stats.pendingPayments }}</div>
+        <div class="stat-change negative">
+          <mat-icon>priority_high</mat-icon>
+          Requires attention
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="actions-grid">
+      <button mat-raised-button color="primary" routerLink="/students">
+        <mat-icon>people</mat-icon>
+        Manage Students
+      </button>
+      <button mat-raised-button color="accent" routerLink="/fees">
+        <mat-icon>account_balance_wallet</mat-icon>
+        Fee Management
+      </button>
+      <button mat-raised-button routerLink="/attendance">
+        <mat-icon>calendar_today</mat-icon>
+        Attendance Records
+      </button>
+      <button mat-raised-button routerLink="/leave/management">
+        <mat-icon>event_busy</mat-icon>
+        Leave Management
+      </button>
+      <button mat-raised-button routerLink="/achievements/approvals">
+        <mat-icon>emoji_events</mat-icon>
+        Achievement Approvals
+      </button>
+      <button mat-raised-button routerLink="/reports">
+        <mat-icon>assessment</mat-icon>
+        Reports & Analytics
+      </button>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="recent-activity">
+    <h2>Recent Activity</h2>
+    <mat-card class="activity-card">
+      <mat-card-content>
+        <div class="activity-list">
+          <div class="activity-item" *ngFor="let activity of recentActivities">
+            <div class="activity-icon">
+              <mat-icon>{{ activity.icon }}</mat-icon>
+            </div>
+            <div class="activity-content">
+              <div class="activity-title">{{ activity.title }}</div>
+              <div class="activity-description">{{ activity.description }}</div>
+              <div class="activity-time">{{ activity.timestamp | date:'short' }}</div>
+            </div>
+          </div>
+          
+          <div class="no-activity" *ngIf="recentActivities.length === 0">
+            <mat-icon>info</mat-icon>
+            <p>No recent activity to display</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Loading States -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading dashboard data...</p>
+  </div>
+</div>

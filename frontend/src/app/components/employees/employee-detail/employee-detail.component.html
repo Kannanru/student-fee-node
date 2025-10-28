@@ -1,0 +1,251 @@
+<div class="employee-detail-container">
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading employee details...</p>
+  </div>
+
+  <div *ngIf="!loading && employee" class="content">
+    <!-- Header Card -->
+    <mat-card class="header-card">
+      <div class="header-content">
+        <div class="employee-avatar">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <div class="employee-info">
+          <h1>{{ getFullName() }}</h1>
+          <p class="employee-id">{{ employee.employeeId }}</p>
+          <p class="designation">{{ employee.designation }} • {{ employee.department }}</p>
+          <mat-chip-set>
+            <mat-chip [color]="getStatusColor()" highlighted>
+              {{ employee.status | titlecase }}
+            </mat-chip>
+            <mat-chip>{{ getCategoryLabel() }}</mat-chip>
+          </mat-chip-set>
+        </div>
+        <div class="header-actions">
+          <button mat-icon-button color="primary" (click)="editEmployee()" matTooltip="Edit Employee">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteEmployee()" matTooltip="Delete Employee">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button mat-icon-button (click)="goBack()" matTooltip="Back to List">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Tabs for different sections -->
+    <mat-tab-group>
+      <!-- Personal Information Tab -->
+      <mat-tab label="Personal Information">
+        <mat-card>
+          <mat-card-content>
+            <div class="info-grid">
+              <div class="info-item">
+                <mat-icon>badge</mat-icon>
+                <div class="info-content">
+                  <span class="label">Employee ID</span>
+                  <span class="value">{{ employee.employeeId }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>person</mat-icon>
+                <div class="info-content">
+                  <span class="label">Full Name</span>
+                  <span class="value">{{ getFullName() }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>email</mat-icon>
+                <div class="info-content">
+                  <span class="label">Email</span>
+                  <span class="value">{{ employee.email }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>phone</mat-icon>
+                <div class="info-content">
+                  <span class="label">Phone</span>
+                  <span class="value">{{ employee.phone }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>cake</mat-icon>
+                <div class="info-content">
+                  <span class="label">Date of Birth</span>
+                  <span class="value">{{ formatDate(employee.dateOfBirth) }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>wc</mat-icon>
+                <div class="info-content">
+                  <span class="label">Gender</span>
+                  <span class="value">{{ employee.gender | titlecase }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>bloodtype</mat-icon>
+                <div class="info-content">
+                  <span class="label">Blood Group</span>
+                  <span class="value">{{ employee.bloodGroup || 'Not provided' }}</span>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </mat-tab>
+
+      <!-- Professional Information Tab -->
+      <mat-tab label="Professional Details">
+        <mat-card>
+          <mat-card-content>
+            <div class="info-grid">
+              <div class="info-item">
+                <mat-icon>event</mat-icon>
+                <div class="info-content">
+                  <span class="label">Joining Date</span>
+                  <span class="value">{{ formatDate(employee.joiningDate) }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>business</mat-icon>
+                <div class="info-content">
+                  <span class="label">Department</span>
+                  <span class="value">{{ employee.department }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>work</mat-icon>
+                <div class="info-content">
+                  <span class="label">Designation</span>
+                  <span class="value">{{ employee.designation }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>category</mat-icon>
+                <div class="info-content">
+                  <span class="label">Category</span>
+                  <span class="value">{{ getCategoryLabel() }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>school</mat-icon>
+                <div class="info-content">
+                  <span class="label">Qualification</span>
+                  <span class="value">{{ employee.qualification }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>timeline</mat-icon>
+                <div class="info-content">
+                  <span class="label">Experience</span>
+                  <span class="value">{{ employee.experience }} years</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>toggle_on</mat-icon>
+                <div class="info-content">
+                  <span class="label">Status</span>
+                  <span class="value">{{ employee.status | titlecase }}</span>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </mat-tab>
+
+      <!-- Address & Contact Tab -->
+      <mat-tab label="Address & Contact">
+        <mat-card>
+          <mat-card-content>
+            <h3>Address</h3>
+            <div class="info-grid">
+              <div class="info-item full-width">
+                <mat-icon>home</mat-icon>
+                <div class="info-content">
+                  <span class="label">Street</span>
+                  <span class="value">{{ employee.address?.street || 'Not provided' }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>location_city</mat-icon>
+                <div class="info-content">
+                  <span class="label">City</span>
+                  <span class="value">{{ employee.address?.city || 'Not provided' }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>map</mat-icon>
+                <div class="info-content">
+                  <span class="label">State</span>
+                  <span class="value">{{ employee.address?.state || 'Not provided' }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>pin_drop</mat-icon>
+                <div class="info-content">
+                  <span class="label">Pincode</span>
+                  <span class="value">{{ employee.address?.pincode || 'Not provided' }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>public</mat-icon>
+                <div class="info-content">
+                  <span class="label">Country</span>
+                  <span class="value">{{ employee.address?.country || 'Not provided' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <mat-divider style="margin: 24px 0;"></mat-divider>
+
+            <h3>Emergency Contact</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <mat-icon>contact_emergency</mat-icon>
+                <div class="info-content">
+                  <span class="label">Name</span>
+                  <span class="value">{{ employee.emergencyContact?.name || 'Not provided' }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>family_restroom</mat-icon>
+                <div class="info-content">
+                  <span class="label">Relation</span>
+                  <span class="value">{{ employee.emergencyContact?.relation || 'Not provided' }}</span>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <mat-icon>phone</mat-icon>
+                <div class="info-content">
+                  <span class="label">Phone</span>
+                  <span class="value">{{ employee.emergencyContact?.phone || 'Not provided' }}</span>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+<!-- src/app/components/login/login.component.html -->
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <img src="assets/images/mgdc-logo.png" alt="MGDC Logo" class="logo" />
+      <h1>MGDC Admin Portal</h1>
+      <p>Fee Management & Attendance System</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="Enter your email">
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
+          Please enter a valid email
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Enter your password">
+        <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword" type="button">
+          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+          Password is required
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
+          Password must be at least 6 characters long
+        </mat-error>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="submit" 
+          class="login-button full-width"
+          [disabled]="loginForm.invalid || isLoading">
+          <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+          <span *ngIf="!isLoading">Login</span>
+          <span *ngIf="isLoading">Logging in...</span>
+        </button>
+      </div>
+
+      <div class="form-links">
+        <a href="#" class="forgot-password">Forgot Password?</a>
+      </div>
+
+      <!-- Test Credentials Buttons -->
+      <div class="test-credentials" style="margin-top: 16px; text-align: center;">
+        <p style="font-size: 12px; color: #666; margin-bottom: 8px;">Quick Test:</p>
+        <div style="display: flex; gap: 8px; justify-content: center;">
+          <button mat-stroked-button type="button" (click)="fillTestCredentials('admin')" class="test-btn">
+            Admin Login
+          </button>
+          <button mat-stroked-button type="button" (click)="fillTestCredentials('student')" class="test-btn">
+            Student Login
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <div class="login-footer">
+      <p>&copy; 2025 MGDC. All rights reserved.</p>
+    </div>
+  </div>
+
+  <!-- Health Status Indicator -->
+  <div class="health-status" [ngClass]="healthStatus">
+    <mat-icon>{{ healthStatus === 'online' ? 'cloud_done' : 'cloud_off' }}</mat-icon>
+    <span>{{ healthStatus === 'online' ? 'Server Online' : 'Server Offline' }}</span>
+  </div>
+</div>

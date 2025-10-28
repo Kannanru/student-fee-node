@@ -1,0 +1,352 @@
+<div class="reports-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>receipt</mat-icon>
+        Fee Payment Reports & Analytics
+      </mat-card-title>
+    </mat-card-header>
+  </mat-card>
+
+  <mat-tab-group class="reports-tabs">
+    <!-- Daily Fee Payment Report -->
+    <mat-tab label="Daily Payment Report">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-content>
+            <form [formGroup]="dailyReportForm" class="filter-form">
+              <mat-form-field appearance="outline">
+                <mat-label>From Date</mat-label>
+                <input matInput [matDatepicker]="fromDatePicker" formControlName="fromDate">
+                <mat-datepicker-toggle matSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #fromDatePicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>To Date</mat-label>
+                <input matInput [matDatepicker]="toDatePicker" formControlName="toDate">
+                <mat-datepicker-toggle matSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #toDatePicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Program (Optional)</mat-label>
+                <mat-select formControlName="program">
+                  <mat-option value="">All Programs</mat-option>
+                  <mat-option *ngFor="let program of programs" [value]="program">{{ program }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Year (Optional)</mat-label>
+                <mat-select formControlName="year">
+                  <mat-option [value]="null">All Years</mat-option>
+                  <mat-option *ngFor="let year of years" [value]="year">Year {{ year }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Semester (Optional)</mat-label>
+                <mat-select formControlName="semester">
+                  <mat-option [value]="null">All Semesters</mat-option>
+                  <mat-option *ngFor="let sem of semesters" [value]="sem">Semester {{ sem }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" (click)="generateDailyReport()" [disabled]="loading">
+                <mat-icon>play_arrow</mat-icon> Apply
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="currentReportType === 'daily' && reportData.length > 0" class="results-card">
+          <mat-card-content>
+            <div class="export-actions">
+              <button mat-button (click)="exportToCSV()"><mat-icon>download</mat-icon> CSV</button>
+              <button mat-button (click)="exportToExcel()"><mat-icon>download</mat-icon> Excel</button>
+              <button mat-button (click)="exportToPDF()"><mat-icon>picture_as_pdf</mat-icon> PDF</button>
+            </div>
+            
+            <table mat-table [dataSource]="reportData" class="report-table">
+              <ng-container matColumnDef="studentName">
+                <th mat-header-cell *matHeaderCellDef>Student Name</th>
+                <td mat-cell *matCellDef="let row">{{ row.studentName }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="studentId">
+                <th mat-header-cell *matHeaderCellDef>Student ID</th>
+                <td mat-cell *matCellDef="let row">{{ row.studentId }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="program">
+                <th mat-header-cell *matHeaderCellDef>Program</th>
+                <td mat-cell *matCellDef="let row">{{ row.program }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="year">
+                <th mat-header-cell *matHeaderCellDef>Year</th>
+                <td mat-cell *matCellDef="let row">{{ row.year }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="feeHead">
+                <th mat-header-cell *matHeaderCellDef>Fee Head</th>
+                <td mat-cell *matCellDef="let row">{{ row.feeHead }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="amount">
+                <th mat-header-cell *matHeaderCellDef>Amount Paid</th>
+                <td mat-cell *matCellDef="let row">₹{{ row.amount | number:'1.2-2' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="paymentMethod">
+                <th mat-header-cell *matHeaderCellDef>Payment Method</th>
+                <td mat-cell *matCellDef="let row">{{ row.paymentMethod }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="transactionId">
+                <th mat-header-cell *matHeaderCellDef>Transaction ID</th>
+                <td mat-cell *matCellDef="let row">{{ row.transactionId }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="receiptNumber">
+                <th mat-header-cell *matHeaderCellDef>Receipt No.</th>
+                <td mat-cell *matCellDef="let row">{{ row.receiptNumber }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="paymentTime">
+                <th mat-header-cell *matHeaderCellDef>Payment Time</th>
+                <td mat-cell *matCellDef="let row">{{ row.paymentTime | date:'HH:mm:ss' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let row">
+                  <span class="status-badge" [ngClass]="getStatusClass(row.status)">
+                    {{ row.status }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="dailyColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: dailyColumns;"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="currentReportType === 'daily' && reportData.length === 0 && !loading" class="no-data-card">
+          <mat-card-content>
+            <div class="no-data-message">
+              <mat-icon>info</mat-icon>
+              <p>No fee payments found for the selected date and filters.</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="loading" class="loading-card">
+          <mat-card-content>
+            <div class="loading-container">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Loading payment data...</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Department Summary Tab -->
+    <mat-tab label="Department Summary">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-content>
+            <form [formGroup]="departmentReportForm" class="filter-form">
+              <mat-form-field appearance="outline">
+                <mat-label>From Date</mat-label>
+                <input matInput [matDatepicker]="deptFromPicker" formControlName="fromDate">
+                <mat-datepicker-toggle matSuffix [for]="deptFromPicker"></mat-datepicker-toggle>
+                <mat-datepicker #deptFromPicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>To Date</mat-label>
+                <input matInput [matDatepicker]="deptToPicker" formControlName="toDate">
+                <mat-datepicker-toggle matSuffix [for]="deptToPicker"></mat-datepicker-toggle>
+                <mat-datepicker #deptToPicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Program (Optional)</mat-label>
+                <mat-select formControlName="program">
+                  <mat-option value="">All Programs</mat-option>
+                  <mat-option *ngFor="let program of programs" [value]="program">{{ program }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" (click)="generateDepartmentReport()" [disabled]="loading">
+                <mat-icon>play_arrow</mat-icon> Apply
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="currentReportType === 'department' && reportData.length > 0" class="results-card">
+          <mat-card-content>
+            <div class="export-actions">
+              <button mat-button (click)="exportToCSV()"><mat-icon>download</mat-icon> CSV</button>
+              <button mat-button (click)="exportToExcel()"><mat-icon>download</mat-icon> Excel</button>
+              <button mat-button (click)="exportToPDF()"><mat-icon>picture_as_pdf</mat-icon> PDF</button>
+            </div>
+            
+            <table mat-table [dataSource]="reportData" class="report-table">
+              <ng-container matColumnDef="program">
+                <th mat-header-cell *matHeaderCellDef>Program</th>
+                <td mat-cell *matCellDef="let row">{{ row.program }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="year">
+                <th mat-header-cell *matHeaderCellDef>Year</th>
+                <td mat-cell *matCellDef="let row">{{ row.year }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="totalStudents">
+                <th mat-header-cell *matHeaderCellDef>Total Students</th>
+                <td mat-cell *matCellDef="let row">{{ row.totalStudents }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="totalCollected">
+                <th mat-header-cell *matHeaderCellDef>Total Collected</th>
+                <td mat-cell *matCellDef="let row">₹{{ row.totalCollected | number:'1.2-2' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="totalTransactions">
+                <th mat-header-cell *matHeaderCellDef>Total Transactions</th>
+                <td mat-cell *matCellDef="let row">{{ row.totalTransactions }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="averagePayment">
+                <th mat-header-cell *matHeaderCellDef>Average Payment</th>
+                <td mat-cell *matCellDef="let row">₹{{ row.averagePayment | number:'1.2-2' }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="departmentColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: departmentColumns;"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="currentReportType === 'department' && reportData.length === 0 && !loading" class="no-data-card">
+          <mat-card-content>
+            <div class="no-data-message">
+              <mat-icon>info</mat-icon>
+              <p>No fee payments found for the selected date and filters.</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="loading" class="loading-card">
+          <mat-card-content>
+            <div class="loading-container">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Loading department summary...</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Payment Methods Tab -->
+    <mat-tab label="Payment Methods">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-content>
+            <form [formGroup]="paymentMethodReportForm" class="filter-form">
+              <mat-form-field appearance="outline">
+                <mat-label>From Date</mat-label>
+                <input matInput [matDatepicker]="methodFromPicker" formControlName="fromDate">
+                <mat-datepicker-toggle matSuffix [for]="methodFromPicker"></mat-datepicker-toggle>
+                <mat-datepicker #methodFromPicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>To Date</mat-label>
+                <input matInput [matDatepicker]="methodToPicker" formControlName="toDate">
+                <mat-datepicker-toggle matSuffix [for]="methodToPicker"></mat-datepicker-toggle>
+                <mat-datepicker #methodToPicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Payment Method (Optional)</mat-label>
+                <mat-select formControlName="paymentMethod">
+                  <mat-option value="">All Methods</mat-option>
+                  <mat-option *ngFor="let method of paymentMethods" [value]="method">{{ method }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" (click)="generatePaymentMethodReport()" [disabled]="loading">
+                <mat-icon>play_arrow</mat-icon> Apply
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="currentReportType === 'paymentMethod' && reportData.length > 0" class="results-card">
+          <mat-card-content>
+            <div class="export-actions">
+              <button mat-button (click)="exportToCSV()"><mat-icon>download</mat-icon> CSV</button>
+              <button mat-button (click)="exportToExcel()"><mat-icon>download</mat-icon> Excel</button>
+              <button mat-button (click)="exportToPDF()"><mat-icon>picture_as_pdf</mat-icon> PDF</button>
+            </div>
+            
+            <table mat-table [dataSource]="reportData" class="report-table">
+              <ng-container matColumnDef="paymentMethod">
+                <th mat-header-cell *matHeaderCellDef>Payment Method</th>
+                <td mat-cell *matCellDef="let row">{{ row.paymentMethod }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="totalTransactions">
+                <th mat-header-cell *matHeaderCellDef>Total Transactions</th>
+                <td mat-cell *matCellDef="let row">{{ row.totalTransactions }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="totalAmount">
+                <th mat-header-cell *matHeaderCellDef>Total Amount</th>
+                <td mat-cell *matCellDef="let row">₹{{ row.totalAmount | number:'1.2-2' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="averageAmount">
+                <th mat-header-cell *matHeaderCellDef>Average Amount</th>
+                <td mat-cell *matCellDef="let row">₹{{ row.averageAmount | number:'1.2-2' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="percentage">
+                <th mat-header-cell *matHeaderCellDef>Percentage</th>
+                <td mat-cell *matCellDef="let row">{{ row.percentage | number:'1.1-1' }}%</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="paymentMethodColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: paymentMethodColumns;"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="currentReportType === 'paymentMethod' && reportData.length === 0 && !loading" class="no-data-card">
+          <mat-card-content>
+            <div class="no-data-message">
+              <mat-icon>info</mat-icon>
+              <p>No fee payments found for the selected date and filters.</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card *ngIf="loading" class="loading-card">
+          <mat-card-content>
+            <div class="loading-container">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Loading payment method data...</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

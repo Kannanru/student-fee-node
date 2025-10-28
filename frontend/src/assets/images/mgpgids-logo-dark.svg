@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 64" role="img" aria-label="MGPGIDS Logo Dark" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="64" height="64" rx="12" fill="url(#g)"/>
+  <g transform="translate(12,12)">
+    <circle cx="20" cy="20" r="18" fill="none" stroke="white" stroke-width="3"/>
+    <path d="M20 6 L20 34" stroke="#93c5fd" stroke-width="3" stroke-linecap="round"/>
+    <path d="M8 20 L32 20" stroke="#bfdbfe" stroke-width="3" stroke-linecap="round"/>
+    <path d="M12 26 C16 22, 24 22, 28 26" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(76,16)" fill="#e5e7eb">
+    <text x="0" y="20" font-family="Inter, Roboto, 'Segoe UI', Arial" font-size="22" font-weight="700" letter-spacing="1">MGPGIDS</text>
+    <text x="0" y="40" font-family="Inter, Roboto, 'Segoe UI', Arial" font-size="10" font-weight="500" fill="#cbd5e1">Mahatma Gandhi Postgraduate Institute of Dental Sciences</text>
+  </g>
+</svg>

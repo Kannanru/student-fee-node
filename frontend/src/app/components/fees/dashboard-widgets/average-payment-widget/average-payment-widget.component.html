@@ -1,0 +1,48 @@
+<mat-card class="average-widget">
+  <mat-card-content>
+    <div class="widget-header">
+      <div class="widget-icon">
+        <mat-icon>calculate</mat-icon>
+      </div>
+      <div class="widget-title">Average Payment</div>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+      <div class="skeleton-text large"></div>
+      <div class="skeleton-text small"></div>
+    </div>
+
+    <div *ngIf="!loading" class="widget-content">
+      <div class="main-amount">
+        {{ formatCurrency(averageAmount) }}
+      </div>
+      
+      <div class="subtitle">Per Student</div>
+
+      <div class="widget-stats">
+        <div class="stat-item">
+          <mat-icon class="stat-icon">receipt_long</mat-icon>
+          <div class="stat-content">
+            <div class="stat-value">{{ totalPayments }}</div>
+            <div class="stat-label">Total Payments</div>
+          </div>
+        </div>
+
+        <div class="stat-divider"></div>
+
+        <div class="stat-item">
+          <mat-icon class="stat-icon">people</mat-icon>
+          <div class="stat-content">
+            <div class="stat-value">{{ totalStudents }}</div>
+            <div class="stat-label">Students</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-badge">
+        <mat-icon>trending_up</mat-icon>
+        <span>{{ getPaymentsPerStudent() }} payments/student</span>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

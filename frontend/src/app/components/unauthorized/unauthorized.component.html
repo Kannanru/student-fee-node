@@ -1,0 +1,22 @@
+<div class="error-container">
+  <mat-card class="error-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar class="error-icon">block</mat-icon>
+      <mat-card-title>Access Denied</mat-card-title>
+      <mat-card-subtitle>You don't have permission to view this page</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>You need administrator privileges to access this resource. Please contact your system administrator if you believe this is an error.</p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" routerLink="/dashboard">
+        <mat-icon>home</mat-icon>
+        Go to Dashboard
+      </button>
+      <button mat-button routerLink="/login">
+        <mat-icon>login</mat-icon>
+        Login as Different User
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

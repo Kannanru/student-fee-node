@@ -1,0 +1,182 @@
+.recent-payments-panel {
+  height: 100%;
+}
+
+mat-card-header {
+  margin-bottom: 16px;
+}
+
+mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+mat-card-title mat-icon {
+  color: #667eea;
+}
+
+/* Loading state */
+.loading-container {
+  padding: 16px 0;
+}
+
+.skeleton-row {
+  height: 60px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: #95a5a6;
+}
+
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  opacity: 0.3;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #7f8c8d;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Table */
+.table-container {
+  overflow-x: auto;
+}
+
+.payments-table {
+  width: 100%;
+}
+
+.payment-row {
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.payment-row:hover {
+  background-color: #f8f9fa;
+}
+
+/* Student cell */
+.student-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0;
+}
+
+.student-name {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.student-details {
+  font-size: 12px;
+  color: #7f8c8d;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.separator {
+  color: #bdc3c7;
+}
+
+/* Amount cell */
+.amount-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.primary-amount {
+  font-weight: 700;
+  color: #27ae60;
+  font-size: 15px;
+}
+
+.secondary-amount {
+  font-size: 11px;
+  color: #95a5a6;
+}
+
+/* Mode cell */
+.mode-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mode-icon {
+  color: #667eea;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.mode-text {
+  font-size: 13px;
+  color: #34495e;
+  text-transform: capitalize;
+}
+
+/* Date cell */
+.date-cell {
+  font-size: 13px;
+  color: #7f8c8d;
+}
+
+/* Actions cell */
+.actions-cell {
+  display: flex;
+  gap: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: scroll;
+  }
+  
+  .payments-table {
+    min-width: 600px;
+  }
+  
+  .student-name {
+    font-size: 13px;
+  }
+  
+  .student-details {
+    font-size: 11px;
+  }
+  
+  .primary-amount {
+    font-size: 14px;
+  }
+}

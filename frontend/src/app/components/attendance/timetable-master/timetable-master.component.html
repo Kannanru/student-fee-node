@@ -1,0 +1,243 @@
+<div class="timetable-master-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>schedule</mat-icon>
+        Timetable Master - Semester Based
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Filter Section -->
+      <div class="filter-section">
+        <h3>Select Program & Semester</h3>
+        <form [formGroup]="filterForm" class="filter-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Program</mat-label>
+            <mat-select formControlName="programName">
+              <mat-option *ngFor="let program of programs" [value]="program">{{ program }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Year</mat-label>
+            <mat-select formControlName="year">
+              <mat-option *ngFor="let year of years" [value]="year">Year {{ year }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Semester</mat-label>
+            <mat-select formControlName="semester">
+              <mat-option *ngFor="let sem of semesters" [value]="sem">Semester {{ sem }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Academic Year</mat-label>
+            <input matInput formControlName="academicYear">
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" (click)="applyFilter()">
+            <mat-icon>search</mat-icon>
+            Load Timetable
+          </button>
+
+          <button mat-raised-button color="accent" (click)="generateSessions()">
+            <mat-icon>event</mat-icon>
+            Generate Today's Sessions
+          </button>
+        </form>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Action Buttons -->
+      <div class="actions-section" *ngIf="!showForm">
+        <button mat-raised-button color="primary" (click)="openForm()">
+          <mat-icon>add</mat-icon>
+          Add Timetable Entry
+        </button>
+      </div>
+
+      <!-- Add/Edit Form -->
+      <div class="timetable-form" *ngIf="showForm">
+        <h3>{{ editMode ? 'Edit' : 'Add' }} Timetable Entry</h3>
+        
+        <!-- Auto-generated className display -->
+        <div class="info-banner" *ngIf="timetableForm.get('className')?.value">
+          <mat-icon>info</mat-icon>
+          <span>Auto-generated Class Name: <strong>{{ timetableForm.get('className')?.value }}</strong></span>
+          <small>(Format: PROGRAM-YEAR, e.g., BDS-1)</small>
+        </div>
+
+        <form [formGroup]="timetableForm">
+          <!-- Program and Year Row -->
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Program</mat-label>
+              <mat-select formControlName="programName">
+                <mat-option *ngFor="let program of programs" [value]="program">{{ program }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Year</mat-label>
+              <mat-select formControlName="year">
+                <mat-option *ngFor="let year of years" [value]="year">Year {{ year }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Subject and Day Row -->
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Subject</mat-label>
+              <input matInput formControlName="subject" placeholder="Dental Anatomy">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Day of Week</mat-label>
+              <mat-select formControlName="dayOfWeek">
+                <mat-option *ngFor="let day of daysOfWeek" [value]="day.value">{{ day.name }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Period Number</mat-label>
+              <mat-select formControlName="periodNumber">
+                <mat-option *ngFor="let period of periods" [value]="period">Period {{ period }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Time Row -->
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Start Time</mat-label>
+              <input matInput type="time" formControlName="startTime">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>End Time</mat-label>
+              <input matInput type="time" formControlName="endTime">
+            </mat-form-field>
+          </div>
+
+          <!-- Hall, Faculty, Department Row -->
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Hall</mat-label>
+              <mat-select formControlName="hallId">
+                <mat-option *ngFor="let hall of halls" [value]="hall._id">
+                  {{ hall.hallName }} ({{ hall.capacity }} seats)
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Faculty Name</mat-label>
+              <input matInput formControlName="facultyName" placeholder="Dr. John Doe">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Department</mat-label>
+              <mat-select formControlName="department">
+                <mat-option *ngFor="let dept of departments" [value]="dept">{{ dept }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Notes</mat-label>
+              <textarea matInput formControlName="notes" rows="2"></textarea>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button color="primary" (click)="saveTimetable()" [disabled]="timetableForm.invalid">
+              <mat-icon>save</mat-icon>
+              {{ editMode ? 'Update' : 'Create' }}
+            </button>
+            <button mat-button (click)="cancelForm()">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Timetable Table -->
+      <div class="timetable-table" *ngIf="!showForm">
+        <table mat-table [dataSource]="timetables" class="mat-elevation-z2">
+          <ng-container matColumnDef="dayOfWeek">
+            <th mat-header-cell *matHeaderCellDef>Day</th>
+            <td mat-cell *matCellDef="let entry">{{ getDayName(entry.dayOfWeek) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="periodNumber">
+            <th mat-header-cell *matHeaderCellDef>Period</th>
+            <td mat-cell *matCellDef="let entry">{{ entry.periodNumber }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="subject">
+            <th mat-header-cell *matHeaderCellDef>Subject</th>
+            <td mat-cell *matCellDef="let entry">
+              <div class="subject-info">
+                <strong>{{ entry.subject }}</strong>
+                <span class="class-name">{{ entry.className }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="hall">
+            <th mat-header-cell *matHeaderCellDef>Hall</th>
+            <td mat-cell *matCellDef="let entry">{{ getHallName(entry.hallId) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="startTime">
+            <th mat-header-cell *matHeaderCellDef>Start</th>
+            <td mat-cell *matCellDef="let entry">{{ entry.startTime }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="endTime">
+            <th mat-header-cell *matHeaderCellDef>End</th>
+            <td mat-cell *matCellDef="let entry">{{ entry.endTime }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="faculty">
+            <th mat-header-cell *matHeaderCellDef>Faculty</th>
+            <td mat-cell *matCellDef="let entry">{{ entry.facultyName || 'N/A' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let entry">
+              <button mat-icon-button color="primary" (click)="editTimetable(entry)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteTimetable(entry)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <div class="no-data" *ngIf="timetables.length === 0 && !loading">
+          <mat-icon>schedule</mat-icon>
+          <p>No timetable entries found for selected filters</p>
+          <button mat-raised-button color="primary" (click)="openForm()">
+            <mat-icon>add</mat-icon>
+            Add First Entry
+          </button>
+        </div>
+
+        <div class="loading" *ngIf="loading">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading timetable...</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

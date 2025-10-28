@@ -1,0 +1,260 @@
+<div class="fee-head-list-container">
+  <!-- Header -->
+  <div class="header-section">
+    <div class="header-content">
+      <div class="title-section">
+        <h1>
+          <mat-icon>list_alt</mat-icon>
+          Fee Heads Management
+        </h1>
+        <p class="subtitle">Manage fee categories and components</p>
+      </div>
+      
+      <div class="header-actions">
+        <button mat-raised-button color="primary" (click)="createFeeHead()">
+          <mat-icon>add</mat-icon>
+          Create Fee Head
+        </button>
+        <button mat-stroked-button (click)="loadFeeHeads()">
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading fee heads...</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading()" class="content">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon" style="background: #e3f2fd;">
+            <mat-icon style="color: #1976d2;">list_alt</mat-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value">{{ totalCount() }}</div>
+            <div class="stat-label">Total Fee Heads</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon" style="background: #e8f5e9;">
+            <mat-icon style="color: #388e3c;">check_circle</mat-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value">{{ activeCount() }}</div>
+            <div class="stat-label">Active</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon" style="background: #fce4ec;">
+            <mat-icon style="color: #c2185b;">cancel</mat-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value">{{ inactiveCount() }}</div>
+            <div class="stat-label">Inactive</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Filter Section -->
+    <mat-card class="filter-card">
+      <mat-card-content>
+        <div class="filters-container">
+          <div class="filter-title">
+            <mat-icon>filter_list</mat-icon>
+            <span>Filters</span>
+          </div>
+          
+          <div class="filters">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Search</mat-label>
+              <input matInput 
+                     placeholder="Search by name or code" 
+                     [ngModel]="searchTerm()"
+                     (ngModelChange)="searchTerm.set($event)">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Category</mat-label>
+              <mat-select [ngModel]="selectedCategory()" (ngModelChange)="selectedCategory.set($event)">
+                <mat-option *ngFor="let category of categories" [value]="category">
+                  {{ getCategoryDisplayName(category) }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Status</mat-label>
+              <mat-select [ngModel]="selectedStatus()" (ngModelChange)="selectedStatus.set($event)">
+                <mat-option *ngFor="let status of statuses" [value]="status">
+                  {{ status === 'all' ? 'All Status' : (status | titlecase) }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <button mat-stroked-button (click)="clearFilters()">
+              <mat-icon>clear</mat-icon>
+              Clear Filters
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Table -->
+    <mat-card class="table-card">
+      <mat-card-content>
+        <div class="table-header">
+          <h3>Fee Heads ({{ filteredFeeHeads().length }} of {{ totalCount() }})</h3>
+          <span class="load-status" *ngIf="hasMore()">
+            <mat-icon>info</mat-icon>
+            Scroll down to load more
+          </span>
+        </div>
+
+        <div class="table-container" (scroll)="onScroll($event)">
+          <table mat-table [dataSource]="filteredFeeHeads()" class="fee-heads-table">
+            
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let head">
+                <div class="fee-head-name">
+                  <strong>{{ head.name }}</strong>
+                  <span class="description" *ngIf="head.description">{{ head.description }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Code Column -->
+            <ng-container matColumnDef="code">
+              <th mat-header-cell *matHeaderCellDef>Code</th>
+              <td mat-cell *matCellDef="let head">
+                <mat-chip>{{ head.code }}</mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Category Column -->
+            <ng-container matColumnDef="category">
+              <th mat-header-cell *matHeaderCellDef>Category</th>
+              <td mat-cell *matCellDef="let head">
+                <span class="category-badge" [class]="head.category">
+                  {{ getCategoryDisplayName(head.category) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Frequency Column -->
+            <ng-container matColumnDef="frequency">
+              <th mat-header-cell *matHeaderCellDef>Frequency</th>
+              <td mat-cell *matCellDef="let head">
+                {{ getFrequencyDisplayName(head.frequency) }}
+              </td>
+            </ng-container>
+
+            <!-- Taxability Column -->
+            <ng-container matColumnDef="taxability">
+              <th mat-header-cell *matHeaderCellDef>Tax</th>
+              <td mat-cell *matCellDef="let head">
+                <div class="tax-info">
+                  <mat-icon *ngIf="head.taxability" class="tax-icon">check_circle</mat-icon>
+                  <mat-icon *ngIf="!head.taxability" class="no-tax-icon">cancel</mat-icon>
+                  <span *ngIf="head.taxability">{{ head.taxPercentage }}%</span>
+                  <span *ngIf="!head.taxability">No Tax</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Default Amount Column -->
+            <ng-container matColumnDef="defaultAmount">
+              <th mat-header-cell *matHeaderCellDef>Default Amount</th>
+              <td mat-cell *matCellDef="let head">
+                <strong>{{ formatCurrency(head.defaultAmount || 0) }}</strong>
+              </td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let head">
+                <mat-chip [class]="'status-' + head.status">
+                  {{ head.status | titlecase }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let head">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="editFeeHead(head._id)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                  </button>
+                  <button mat-menu-item (click)="toggleStatus(head)">
+                    <mat-icon>{{ head.status === 'active' ? 'block' : 'check_circle' }}</mat-icon>
+                    <span>{{ head.status === 'active' ? 'Deactivate' : 'Activate' }}</span>
+                  </button>
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="deleteFeeHead(head)" class="delete-action">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                  </button>
+                </mat-menu>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+
+          <!-- Loading more indicator -->
+          <div *ngIf="loadingMore()" class="loading-more">
+            <mat-spinner diameter="30"></mat-spinner>
+            <span>Loading more fee heads...</span>
+          </div>
+
+          <!-- End of list indicator -->
+          <div *ngIf="!hasMore() && filteredFeeHeads().length > 0" class="end-of-list">
+            <mat-icon>check_circle</mat-icon>
+            <span>All fee heads loaded ({{ totalCount() }} total)</span>
+          </div>
+
+          <div *ngIf="filteredFeeHeads().length === 0" class="no-data">
+            <mat-icon>inbox</mat-icon>
+            <h3>No Fee Heads Found</h3>
+            <p *ngIf="searchTerm() || selectedCategory() !== 'all' || selectedStatus() !== 'all'">
+              Try adjusting your filters
+            </p>
+            <p *ngIf="!searchTerm() && selectedCategory() === 'all' && selectedStatus() === 'all'">
+              Create your first fee head to get started
+            </p>
+            <button mat-raised-button color="primary" (click)="createFeeHead()">
+              <mat-icon>add</mat-icon>
+              Create Fee Head
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

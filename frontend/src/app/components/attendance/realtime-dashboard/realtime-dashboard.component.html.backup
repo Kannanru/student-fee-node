@@ -1,0 +1,200 @@
+<div class="realtime-container">
+  <!-- Header with Connection Status -->
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>live_tv</mat-icon>
+        Real-time Attendance Dashboard
+        <span class="connection-status" [class.connected]="isConnected" [class.disconnected]="!isConnected">
+          <mat-icon>{{ isConnected ? 'wifi' : 'wifi_off' }}</mat-icon>
+          {{ isConnected ? 'Connected' : 'Disconnected' }}
+        </span>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="reconnect()" [disabled]="isConnected">
+        <mat-icon>refresh</mat-icon> Reconnect
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon total">
+          <mat-icon>event</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h3>{{ todayStats.totalEvents }}</h3>
+          <p>Total Events</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon present">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h3>{{ todayStats.present }}</h3>
+          <p>Present</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon late">
+          <mat-icon>schedule</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h3>{{ todayStats.late }}</h3>
+          <p>Late Entries</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon exceptions">
+          <mat-icon>warning</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h3 [matBadge]="todayStats.exceptions" matBadgeColor="warn" [matBadgeHidden]="todayStats.exceptions === 0">
+            {{ todayStats.exceptions }}
+          </h3>
+          <p>Exceptions</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Recent Events -->
+  <mat-card class="events-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>history</mat-icon>
+        Recent Attendance Events
+      </mat-card-title>
+      <button mat-icon-button (click)="clearEvents()">
+        <mat-icon>clear_all</mat-icon>
+      </button>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="recentEvents.data.length === 0" class="empty-state">
+        <mat-icon>inbox</mat-icon>
+        <p>No events yet. Waiting for real-time data...</p>
+        <mat-spinner *ngIf="isConnected" diameter="40"></mat-spinner>
+      </div>
+
+      <table mat-table [dataSource]="recentEvents" *ngIf="recentEvents.data.length > 0" class="events-table">
+        <ng-container matColumnDef="timestamp">
+          <th mat-header-cell *matHeaderCellDef>Time</th>
+          <td mat-cell *matCellDef="let event">{{ formatTimestamp(event.timestamp) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="studentName">
+          <th mat-header-cell *matHeaderCellDef>Student</th>
+          <td mat-cell *matCellDef="let event">
+            <div class="student-info">
+              <strong>{{ event.student?.name || 'N/A' }}</strong>
+              <small>{{ event.student?.id }}</small>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="hall">
+          <th mat-header-cell *matHeaderCellDef>Hall</th>
+          <td mat-cell *matCellDef="let event">{{ event.hall?.name || 'N/A' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="direction">
+          <th mat-header-cell *matHeaderCellDef>Direction</th>
+          <td mat-cell *matCellDef="let event">
+            <mat-chip [color]="event.direction === 'IN' ? 'primary' : 'accent'" selected>
+              <mat-icon>{{ getDirectionIcon(event.direction || '') }}</mat-icon>
+              {{ event.direction }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let event">
+            <mat-chip [color]="getStatusColor(event.status || '')" selected>
+              {{ event.status }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="eventColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: eventColumns;" class="event-row"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Exceptions -->
+  <mat-card class="exceptions-card" *ngIf="exceptions.length > 0">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>warning</mat-icon>
+        Recent Exceptions
+      </mat-card-title>
+      <button mat-icon-button (click)="clearExceptions()">
+        <mat-icon>clear_all</mat-icon>
+      </button>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="exceptions" class="exceptions-table">
+        <ng-container matColumnDef="timestamp">
+          <th mat-header-cell *matHeaderCellDef>Time</th>
+          <td mat-cell *matCellDef="let exception">{{ formatTimestamp(exception.timestamp) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="studentName">
+          <th mat-header-cell *matHeaderCellDef>Student</th>
+          <td mat-cell *matCellDef="let exception">{{ exception.student?.name || 'N/A' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="reason">
+          <th mat-header-cell *matHeaderCellDef>Reason</th>
+          <td mat-cell *matCellDef="let exception">
+            <mat-chip color="warn">{{ exception.reason }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="confidence">
+          <th mat-header-cell *matHeaderCellDef>Confidence</th>
+          <td mat-cell *matCellDef="let exception">{{ exception.confidence | number:'1.2-2' }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="exceptionColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: exceptionColumns;" class="exception-row"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Session Statistics (if any) -->
+  <mat-card class="session-stats-card" *ngIf="sessionStats.length > 0">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>class</mat-icon>
+        Active Session Statistics
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="session-grid">
+        <div *ngFor="let session of sessionStats" class="session-stat">
+          <h4>{{ session.subject }}</h4>
+          <div class="session-numbers">
+            <span class="present">{{ session.totalPresent }}</span> /
+            <span class="expected">{{ session.totalExpected }}</span>
+          </div>
+          <small>{{ session.totalLate }} late, {{ session.totalAbsent }} absent</small>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

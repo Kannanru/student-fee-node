@@ -1,0 +1,107 @@
+<!-- src/app/components/shared/header/header.component.html -->
+<mat-toolbar class="app-header">
+  <div class="header-container">
+    <!-- Logo Section -->
+    <div class="logo-section">
+      <div class="logo-container">
+        <a routerLink="/dashboard" class="logo-link" aria-label="Go to dashboard">
+        <picture>
+          <source srcset="/assets/images/mgpgids-logo-dark.svg" media="(prefers-color-scheme: dark)">
+          <img 
+            src="/assets/images/mgpgids-logo.svg" 
+            alt="MGPGIDS Logo" 
+            title="Mahatma Gandhi Postgraduate Institute of Dental Sciences"
+            class="institution-logo"
+          >
+        </picture>
+        </a>
+        <div class="institution-info">
+          <h1 class="institution-name">MGPGIDS</h1>
+          <p class="institution-subtitle">Mahatma Gandhi Postgraduate Institute of Dental Sciences</p>
+          <span class="institution-tagline">A Government of Puducherry Institution</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="nav-links">
+      <button mat-button routerLink="/dashboard" routerLinkActive="active">
+        <mat-icon>dashboard</mat-icon>
+        Dashboard
+      </button>
+      <button mat-button routerLink="/students" routerLinkActive="active">
+        <mat-icon>school</mat-icon>
+        Students
+      </button>
+      <button mat-button routerLink="/employees" routerLinkActive="active">
+        <mat-icon>people</mat-icon>
+        Employees
+      </button>
+      <button mat-button routerLink="/fees" routerLinkActive="active">
+        <mat-icon>payment</mat-icon>
+        Fee Management
+      </button>
+      <button mat-button routerLink="/attendance" routerLinkActive="active">
+        <mat-icon>event_available</mat-icon>
+        Attendance
+      </button>
+      <button mat-button routerLink="/internal-marks/subjects" routerLinkActive="active">
+        <mat-icon>grade</mat-icon>
+        Internal Marks
+      </button>
+      <button mat-button routerLink="/reports" routerLinkActive="active">
+        <mat-icon>assessment</mat-icon>
+        Reports
+      </button>
+    </div>
+
+    <!-- Right Section -->
+    <div class="header-actions">
+      <!-- Search -->
+      <button mat-icon-button matTooltip="Search" class="search-btn">
+        <mat-icon>search</mat-icon>
+      </button>
+
+      <!-- Notifications -->
+      <button mat-icon-button matTooltip="Notifications" (click)="navigateToNotifications()">
+        <mat-icon [matBadge]="notificationCount" matBadgeColor="warn" matBadgeSize="small">
+          notifications
+        </mat-icon>
+      </button>
+
+      <!-- User Menu -->
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+        <div class="user-avatar">
+          {{ user?.initials || 'AU' }}
+        </div>
+      </button>
+
+      <!-- User Menu Dropdown -->
+      <mat-menu #userMenu="matMenu" class="user-menu">
+        <div class="user-menu-header">
+          <div class="user-avatar-large">
+            {{ user?.initials || 'AU' }}
+          </div>
+          <div class="user-info">
+            <h4>{{ user?.name || 'Admin User' }}</h4>
+            <p>{{ user?.role || 'Administrator' }}</p>
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="navigateToProfile()">
+          <mat-icon>person</mat-icon>
+          <span>Profile</span>
+        </button>
+        <button mat-menu-item (click)="navigateToSettings()">
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()" class="logout-btn">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</mat-toolbar>

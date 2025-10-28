@@ -1,0 +1,29 @@
+### Test Daily Payment Reports API
+
+# Get today's payments
+GET http://localhost:5000/api/fees/daily-payments?date=2025-10-27
+Content-Type: application/json
+Authorization: Bearer your_jwt_token_here
+
+###
+
+# Get department summary for today
+GET http://localhost:5000/api/fees/daily-department-summary?date=2025-10-27
+Content-Type: application/json
+Authorization: Bearer your_jwt_token_here
+
+###
+
+# Get payment methods for today
+GET http://localhost:5000/api/fees/daily-payment-methods?date=2025-10-27
+Content-Type: application/json
+Authorization: Bearer your_jwt_token_here
+
+###
+
+# Test with different date format
+GET http://localhost:5000/api/fees/daily-payments?date=2025-10-27
+Content-Type: application/json
+Authorization: Bearer your_jwt_token_here
+
+###
