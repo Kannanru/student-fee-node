@@ -1,6 +1,10 @@
 // src/environments/environment.prod.ts
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:5000/api', // Update this with production API URL
-  useMockData: false
+  apiUrl: 'https://attendendance.askantech.com/api',
+  socketUrl: 'https://attendendance.askantech.com',
+  useMockData: false,
+  enableLogging: false,
+  version: '1.0.0',
+  buildDate: new Date().toISOString()
 };
